@@ -6,7 +6,7 @@ var _owner: String;
 func setOwner(owner: String):
 	self._owner = owner;
 
-func getOwner():
+func getOwner() -> String:
 	return _owner;
 
 #region Deck Crew Class
@@ -22,4 +22,16 @@ class DeckCrew extends Character:
 	
 	func demote():
 		_isCommander = false;
+#endregion
+
+#region Rower Class
+class Rower extends Character:
+	var _exhaustion: float;
+	
+	func _init(owner: String):
+		_owner = owner;
+		_exhaustion = 0.0;
+	
+	func getExaustion() -> float:
+		return _exhaustion;
 #endregion
