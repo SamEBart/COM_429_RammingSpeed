@@ -34,4 +34,82 @@ class Rower extends Character:
 	
 	func getExaustion() -> float:
 		return _exhaustion;
+	
+	# Might replace
+	func setExhaustion(exhaustion: float):
+		_exhaustion = exhaustion;
+	
+	# TODO: Add more functions depending on needs
+#endregion
+
+#region Marine Class
+class Marine extends Character:
+	# Possibly might change
+	var _target: Character;
+	var _roll: int;
+	
+	func getTarget() -> Character:
+		return _target;
+	
+	func setTarget(target: Character):
+		_target = target;
+	
+	#region Soldier Class
+	class Soldier extends Marine:
+		func _init(owner: String):
+			_owner = owner;
+			_target = null;
+			_roll = 0;
+		
+		func roll() -> int:
+			# TODO: Finish function when dependencies are finished
+			var roll = 0;
+			
+			#roll = Roll 1-6;
+			
+			_roll = roll;
+			return roll;
+	#endregion
+	
+	#region Archer Class
+	class Archer extends Marine:
+		var _isMelee: bool;
+		
+		func _init(owner: String):
+			_owner = owner;
+			_target = null;
+			_isMelee = false;
+		
+		func roll() -> int:
+			var roll = 0;
+			
+			#if (_isMelee):
+			#	roll = Roll 1-8;
+			#else:
+			#	roll = Roll 1-6;
+			
+			_roll = roll;
+			return roll;
+	#endregion
+	
+	#region Javelineer Class
+	class Javelineer extends Marine:
+		var _isMelee: bool;
+		
+		func _init(owner: String):
+			_owner = owner;
+			_target = null;
+			_isMelee = false;
+		
+		func roll() -> int:
+			var roll = 0;
+			
+			#if (_isMelee):
+			#	roll = Roll 1-8;
+			#else
+			#	roll = Roll 1-6;
+			
+			_roll = roll;
+			return roll;
+	#endregion
 #endregion
