@@ -1,0 +1,38 @@
+[gd_scene format=3 uid="uid://bbupvcau10tiv"]
+
+[ext_resource type="Script" uid="uid://csju0sw8nr2hb" path="res://Scripts/Ship.gd" id="1_jfy60"]
+[ext_resource type="Texture2D" uid="uid://ceh4b3bcn3t4f" path="res://Textures/boat.png" id="2_cmh36"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_xeo28"]
+atlas = ExtResource("2_cmh36")
+region = Rect2(96, 64, 96, 64)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_5gjpb"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_xeo28")
+}],
+"loop": 1,
+"name": &"straight",
+"speed": 5.0
+}]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_5gjpb"]
+radius = 13.0
+height = 28.0
+
+[node name="CharacterBody2D" type="CharacterBody2D" unique_id=1977542373]
+script = ExtResource("1_jfy60")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=17987305]
+sprite_frames = SubResource("SpriteFrames_5gjpb")
+animation = &"straight"
+
+[node name="Area2D" type="Area2D" parent="." unique_id=1782995350]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D" unique_id=681968715]
+position = Vector2(0, 8)
+shape = SubResource("CapsuleShape2D_5gjpb")
+
+[connection signal="input_event" from="Area2D" to="." method="_on_area_2d_input_event"]

@@ -1,0 +1,28 @@
+[gd_scene format=3 uid="uid://tmrcu088dgpm"]
+
+[ext_resource type="Texture2D" uid="uid://k1612xumj7yg" path="res://Textures/sailship.png" id="1_7h74f"]
+[ext_resource type="Script" uid="uid://qat734xdmqyi" path="res://Scripts/Movement.gd" id="2_k5hx4"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_kyqiw"]
+atlas = ExtResource("1_7h74f")
+region = Rect2(96, 64, 96, 64)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_5gjpb"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_kyqiw")
+}],
+"loop": 1,
+"name": &"straight",
+"speed": 5.0
+}]
+
+[node name="CharacterBody2D" type="CharacterBody2D" unique_id=2096978641]
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=432491536]
+sprite_frames = SubResource("SpriteFrames_5gjpb")
+animation = &"straight"
+
+[node name="Moving" type="Node2D" parent="." unique_id=1459071909]
+script = ExtResource("2_k5hx4")
