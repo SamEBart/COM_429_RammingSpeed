@@ -1,0 +1,26 @@
+[gd_scene format=3 uid="uid://cqqdw7h3mdimy"]
+
+[ext_resource type="Script" uid="uid://bx7sdkoksjvfk" path="res://Scripts/Enemy.gd" id="1_wovta"]
+[ext_resource type="Texture2D" uid="uid://ceh4b3bcn3t4f" path="res://Textures/boat.png" id="2_wovta"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_xeo28"]
+atlas = ExtResource("2_wovta")
+region = Rect2(96, 64, 96, 64)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_5gjpb"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_xeo28")
+}],
+"loop": 1,
+"name": &"straight",
+"speed": 5.0
+}]
+
+[node name="CharacterBody2D" type="CharacterBody2D" unique_id=1977542373]
+script = ExtResource("1_wovta")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=17987305]
+sprite_frames = SubResource("SpriteFrames_5gjpb")
+animation = &"straight"

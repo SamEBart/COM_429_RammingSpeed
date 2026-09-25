@@ -1,0 +1,33 @@
+[gd_scene format=4 uid="uid://c28e17gc8cg5u"]
+
+[ext_resource type="Texture2D" uid="uid://dxgvhbbju027a" path="res://Textures/Hex.png" id="1_1m32c"]
+[ext_resource type="Script" uid="uid://ccjwkx2l7e7mf" path="res://Scripts/tile_map_layer.gd" id="2_vwmae"]
+[ext_resource type="PackedScene" uid="uid://bue23f8wwr2as" path="res://Scenes/Trireme.tscn" id="4_1m32c"]
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_c3an2"]
+texture = ExtResource("1_1m32c")
+texture_region_size = Vector2i(148, 140)
+0:0/next_alternative_id = 2
+0:0/0 = 0
+
+[sub_resource type="TileSet" id="TileSet_5gjpb"]
+tile_shape = 3
+tile_layout = 4
+tile_offset_axis = 1
+tile_size = Vector2i(148, 140)
+sources/1 = SubResource("TileSetAtlasSource_c3an2")
+
+[node name="TileMapLayer" type="TileMapLayer" unique_id=276238427]
+tile_map_data = PackedByteArray("AAAAAP//AQAAAAAAAAABAP//AQAAAAAAAAAAAAAAAQAAAAAAAAABAAAAAQAAAAAAAAACAP//AQAAAAAAAAAAAAEAAQAAAAAAAAABAAEAAQAAAAAAAAACAAAAAQAAAAAAAAACAAEAAQAAAAAAAAABAP7/AQAAAAAAAAAAAP7/AQAAAAAAAAABAP3/AQAAAAAAAAAAAP3/AQAAAAAAAAD///7/AQAAAAAAAAD/////AQAAAAAAAAD+////AQAAAAAAAAD+/wAAAQAAAAAAAAD+//7/AQAAAAAAAAD///3/AQAAAAAAAAD+//3/AQAAAAAAAAADAP//AQAAAAAAAAADAAAAAQAAAAAAAAAEAP//AQAAAAAAAAAEAAAAAQAAAAAAAAADAAEAAQAAAAAAAAD//wAAAQAAAAAAAAA=")
+tile_set = SubResource("TileSet_5gjpb")
+script = ExtResource("2_vwmae")
+
+[node name="Camera2D" type="Camera2D" parent="." unique_id=1737997461]
+
+[node name="T 01" parent="." unique_id=1977542373 node_paths=PackedStringArray("tileMap") instance=ExtResource("4_1m32c")]
+tileMap = NodePath("..")
+starting_position = Vector2i(0, -2)
+
+[node name="T 02" parent="." unique_id=343971591 node_paths=PackedStringArray("tileMap") instance=ExtResource("4_1m32c")]
+tileMap = NodePath("..")
+starting_position = Vector2i(2, 0)
