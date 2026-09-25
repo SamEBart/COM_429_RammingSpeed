@@ -1,19 +1,18 @@
 class_name Character;
 
-# TYPE WILL CHANGE
-var _owner: String;
+var _owner: Player;
 
-func setOwner(owner: String):
+func setOwner(owner: Player):
 	self._owner = owner;
 
-func getOwner() -> String:
+func getOwner() -> Player:
 	return _owner;
 
 #region Deck Crew Class
 class DeckCrew extends Character:
 	var _isCommander;
 	
-	func _init(owner: String, isCommander: bool = false):
+	func _init(owner: Player, isCommander: bool = false):
 		_owner = owner;
 		_isCommander = isCommander;
 	
@@ -28,7 +27,7 @@ class DeckCrew extends Character:
 class Rower extends Character:
 	var _exhaustion: float;
 	
-	func _init(owner: String):
+	func _init(owner: Player):
 		_owner = owner;
 		_exhaustion = 0.0;
 	
@@ -56,7 +55,7 @@ class Marine extends Character:
 	
 	#region Soldier Class
 	class Soldier extends Marine:
-		func _init(owner: String):
+		func _init(owner: Player):
 			_owner = owner;
 			_target = null;
 			_roll = 0;
@@ -75,7 +74,7 @@ class Marine extends Character:
 	class Archer extends Marine:
 		var _isMelee: bool;
 		
-		func _init(owner: String):
+		func _init(owner: Player):
 			_owner = owner;
 			_target = null;
 			_isMelee = false;
@@ -96,7 +95,7 @@ class Marine extends Character:
 	class Javelineer extends Marine:
 		var _isMelee: bool;
 		
-		func _init(owner: String):
+		func _init(owner: Player):
 			_owner = owner;
 			_target = null;
 			_isMelee = false;
@@ -118,7 +117,7 @@ class Marine extends Character:
 	class Engineer extends Marine:
 		var _isMelee: bool;
 		
-		func _init(owner: String):
+		func _init(owner: Player):
 			_owner = owner;
 			_target = null;
 			_isMelee = false;
