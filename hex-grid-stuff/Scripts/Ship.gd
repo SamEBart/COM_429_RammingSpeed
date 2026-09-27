@@ -27,7 +27,7 @@ var is_actioning = false
 #
 #Setting Start Position
 func _ready() -> void:
-	position = tileMap.map_to_local(starting_position)
+	position = tileMap.map_to_local(starting_position) + offSet
 	add_to_group("ships")
 
 #Detect when Ship is cliked on

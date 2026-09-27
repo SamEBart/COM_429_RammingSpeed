@@ -26,8 +26,13 @@ script = ExtResource("2_vwmae")
 
 [node name="T 01" parent="." unique_id=1977542373 node_paths=PackedStringArray("tileMap") instance=ExtResource("4_1m32c")]
 tileMap = NodePath("..")
-starting_position = Vector2i(0, -2)
 
 [node name="T 02" parent="." unique_id=343971591 node_paths=PackedStringArray("tileMap") instance=ExtResource("4_1m32c")]
 tileMap = NodePath("..")
+offSet = Vector2(50, 0)
+starting_position = Vector2i(2, 0)
+
+[node name="T 03" parent="." unique_id=660984555 node_paths=PackedStringArray("tileMap") instance=ExtResource("4_1m32c")]
+tileMap = NodePath("..")
+offSet = Vector2(-50, 0)
 starting_position = Vector2i(2, 0)
