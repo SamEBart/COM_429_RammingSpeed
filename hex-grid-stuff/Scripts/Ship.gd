@@ -5,6 +5,10 @@ class_name Ship
 @export var offSet = Vector2(0, 0)
 @export var starting_position : Vector2i
 @export var movementRange = 2
+@export var movementSpeed = 1
+@export var angle = 0.0
+
+@onready var animated_sprite: AnimatedSprite2D = $AnimatedSprite2D
 
 var deck_crew = []
 var rowers = []
@@ -12,15 +16,32 @@ var marines = []
 var engineers = []
 var ballista = Ballista.new()
 var catapult
+const hex_directions = [
+	"up",			# ~0 deg
+	"right_up",		# ~60 deg
+	"right_down",	# ~120 deg
+	"down",			# ~180 deg
+	"left_down",	# ~240 deg
+	"left_up"		# ~300 deg
+]
+var fighters = []
 
 var rowing_speed
-var health = 5
+var health = 15
 
 var enemy_target_cell
 var enemy_target
 var can_action = false
 var is_actioning = false
+var can_lrf = true
 
+var boarding_target #probably make this an array maybe
+var in_boarding = false
+var boarding_action = 0
+var boarding_prepped = false
+var boarding_archers = []
+var boarding_javelins = []
+var boarding_melee = []
 
 #===============================#
 # Starting and Clicking Stuff
@@ -29,6 +50,23 @@ var is_actioning = false
 func _ready() -> void:
 	position = tileMap.map_to_local(starting_position) + offSet
 	add_to_group("ships")
+	
+	match angle:
+		0.0:
+			animated_sprite.play("up")
+		60.0:
+			animated_sprite.play("right_up")
+		120.0:
+			animated_sprite.play("right_down")
+		180.0:
+			animated_sprite.play("down")
+		240.0:
+			animated_sprite.play("left_down")
+		300:
+			animated_sprite.play("left_up")
+	
+	#Each Phase happens after another. So anyone not used up in phase 1 will be used in phase 2 etc
+
 
 #Detect when Ship is cliked on
 func _on_area_2d_input_event(viewport: Node, event: InputEvent, shape_idx:int ) -> void:
@@ -39,14 +77,19 @@ func _on_area_2d_input_event(viewport: Node, event: InputEvent, shape_idx:int ) 
 				can_action = true
 				Global.ship_clicked = true
 				print("Player is in tile: ", tileMap.local_to_map(global_position))
-				print("SHIP can move!")
+				print(name, " can move!")
 
 			#Firing
 			elif Global.action == 1:
 				can_action = true
 				Global.ship_clicked = true
 				print("Ship can Select Firing Target!")
-
+			
+			#Boarding Firing
+			elif Global.action == 2 and Global.sub_action == 2 and boarding_action == 0:
+				can_action = true
+				Global.ship_clicked = true
+				print("Ship can Select Boarding Firing Target!")
 
 func _input(event: InputEvent) -> void:
 	if Input.is_action_just_pressed("leftClick") and Global.ship_clicked:
@@ -82,6 +125,26 @@ func _input(event: InputEvent) -> void:
 				else:
 					getting_firing_target(4)
 
+		#Boarding Action
+		elif Global.action == 2 and Global.ship_clicked:
+			#Boarding Archery
+			if Global.sub_action == 2:
+				#Cannot Acrhery Due to not being in Archery Mode
+				if can_action == false:
+					print("Ship cannot boarding archery!")
+					return
+				#Can Select Archery Target
+				else:
+					getting_firing_target(1);
+			
+			#Boarding Javelins
+			if Global.sub_action == 3:
+				if can_action == false:
+					print("Ship cannot boarding javelin!")
+					return
+				#Can Select Archery Target
+				else:
+					getting_firing_target(1);
 
 #===============================#
 # Movement
@@ -109,6 +172,7 @@ func _move():
 		var playerTilePosition = tileMap.local_to_map(global_position)
 		var targetTilePosistion = playerTilePosition + movement
 		var targetPosition = tileMap.map_to_local(targetTilePosistion) + offSet
+		var global_pos: Vector2 = tileMap.map_to_local(movement)
 		
 		var tween := create_tween()
 		tween.tween_property(self, "global_position", targetPosition, 0.3)
@@ -189,6 +253,7 @@ func priming_archers():
 		return
 	else:
 		var my_guys = marines.filter(func(guy): return guy is Archer)
+		print("Archers: ", my_guys.size())
 		_fire(my_guys)
 
 func priming_ballistas():
@@ -202,31 +267,42 @@ func priming_ballistas():
 
 func _fire(my_guys):
 	if is_instance_valid(enemy_target):
-		print("Before: Ship: ", self.name, " (", self.health, ") Attacks: ", enemy_target.name, " (", enemy_target.health, ")")
+#		print("Before: Ship: ", self.name, " (", self.health, ") Attacks: ", enemy_target.name, " (", enemy_target.health, ")")
 		for guy in my_guys:
-			if health <= 0:
-				break
-			enemy_target.health -= 1
-		print("After: Ship: ", self.name, " (", self.health, ") Attacked: ", enemy_target.name, " (", enemy_target.health, ")")	
+			if health > 0:
+				print("Ship: ", self.name, " (", self.health, ") Attacks: ", enemy_target.name, " (", enemy_target.health, ")")
+				enemy_target.health -= 1
+#		print("After: Ship: ", self.name, " (", self.health, ") Attacked: ", enemy_target.name, " (", enemy_target.health, ")")	
 
 func getting_firing_target(range):
 	var mouse_cell = tileMap.local_to_map(tileMap.to_local(get_global_mouse_position()))
 	var ships: Array[Node] = get_tree().get_nodes_in_group("ships")
 	for ship in ships:
 		var target_ship_coords = tileMap.local_to_map(tileMap.to_local(ship.position))
-		var my_ship_coords = tileMap.local_to_map(position)
 		var firing_array = _get_route(get_global_mouse_position())
 		if firing_array.size() > range:
 			print("Target is outside of Archers Range: ", range)
 			return
-						
-		if mouse_cell != my_ship_coords and my_ship_coords != target_ship_coords and mouse_cell == target_ship_coords:
+		
+		if self != ship and mouse_cell == target_ship_coords:
 			enemy_target_cell = target_ship_coords
 			enemy_target = ship
 			can_action = true
 			Global.ship_clicked = false
-			print(self.name, " Targeting: ", ship.name)
+			print(self.name, " Targeting: ", self.enemy_target.name)
 			break
+
+#===============================#
+# Boarding Action
+#
+func board_check():
+	var ships: Array[Node] = get_tree().get_nodes_in_group("ships")
+	for ship in ships:
+		if enemy_target == null:
+			if position == ship.position:
+				enemy_target = ship
+				if ship.enemy_target == null:
+					ship.enemy_target = self
 
 func ship_reset():
 	enemy_target_cell = null

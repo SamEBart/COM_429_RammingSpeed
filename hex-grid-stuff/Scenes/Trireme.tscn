@@ -3,18 +3,102 @@
 [ext_resource type="Script" uid="uid://c5y5fkfrkxdit" path="res://Scripts/Trireme.gd" id="1_cytnl"]
 [ext_resource type="Texture2D" uid="uid://dw2fv77qpdhai" path="res://Textures/sailboat.png" id="2_cytnl"]
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_0oco5"]
+[sub_resource type="AtlasTexture" id="AtlasTexture_cytnl"]
 atlas = ExtResource("2_cytnl")
 region = Rect2(96, 0, 96, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_5xow5"]
+atlas = ExtResource("2_cytnl")
+region = Rect2(288, 64, 96, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_f54o2"]
+atlas = ExtResource("2_cytnl")
+region = Rect2(0, 0, 96, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qrgk7"]
+atlas = ExtResource("2_cytnl")
+region = Rect2(192, 64, 96, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_jjqf6"]
+atlas = ExtResource("2_cytnl")
+region = Rect2(288, 0, 96, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_a7y5q"]
+atlas = ExtResource("2_cytnl")
+region = Rect2(192, 0, 96, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_3uicn"]
+atlas = ExtResource("2_cytnl")
+region = Rect2(0, 64, 96, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_0oco5"]
+atlas = ExtResource("2_cytnl")
+region = Rect2(96, 64, 96, 64)
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_5gjpb"]
 animations = [{
 "frames": [{
 "duration": 1.0,
+"texture": SubResource("AtlasTexture_cytnl")
+}],
+"loop": 1,
+"name": &"down",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_5xow5")
+}],
+"loop": 1,
+"name": &"left",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_f54o2")
+}],
+"loop": 1,
+"name": &"left_down",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_qrgk7")
+}],
+"loop": 1,
+"name": &"left_up",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_jjqf6")
+}],
+"loop": 1,
+"name": &"right",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_a7y5q")
+}],
+"loop": 1,
+"name": &"right_down",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_3uicn")
+}],
+"loop": 1,
+"name": &"right_up",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
 "texture": SubResource("AtlasTexture_0oco5")
 }],
 "loop": 1,
-"name": &"straight",
+"name": &"up",
 "speed": 5.0
 }]
 
@@ -22,13 +106,16 @@ animations = [{
 radius = 13.0
 height = 28.0
 
+[sub_resource type="CircleShape2D" id="CircleShape2D_u3tg2"]
+radius = 57.00877
+
 [node name="CharacterBody2D" type="CharacterBody2D" unique_id=1977542373]
 input_pickable = true
 script = ExtResource("1_cytnl")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=17987305]
 sprite_frames = SubResource("SpriteFrames_5gjpb")
-animation = &"straight"
+animation = &"down"
 
 [node name="Area2D" type="Area2D" parent="." unique_id=1782995350]
 
@@ -36,4 +123,10 @@ animation = &"straight"
 position = Vector2(0, 8)
 shape = SubResource("CapsuleShape2D_5gjpb")
 
+[node name="DetectionArea" type="Area2D" parent="." unique_id=438145599]
+
+[node name="DetectionArea" type="CollisionShape2D" parent="DetectionArea" unique_id=2075683377]
+shape = SubResource("CircleShape2D_u3tg2")
+
 [connection signal="input_event" from="Area2D" to="." method="_on_area_2d_input_event"]
+[connection signal="area_entered" from="DetectionArea" to="." method="_on_detection_area_area_entered"]
