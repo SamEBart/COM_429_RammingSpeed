@@ -114,26 +114,26 @@ class Marine extends Character:
 #endregion
 
 #region Engineer Class
-	class Engineer extends Marine:
-		var _isMelee: bool;
+class Engineer extends Marine:
+	var _isMelee: bool;
+	
+	func _init(owner: Player):
+		_owner = owner;
+		_target = null;
+		_isMelee = false;
+	
+	func isMelee() -> bool:
+		return _isMelee;
+	
+	func setMelee(isMelee: bool):
+		_isMelee = isMelee;
+	
+	func roll() -> int:
+		var roll = 0;
 		
-		func _init(owner: Player):
-			_owner = owner;
-			_target = null;
-			_isMelee = false;
+		#if (_isMelee):
+		#	roll = Roll 1-8;
 		
-		func isMelee() -> bool:
-			return _isMelee;
-		
-		func setMelee(isMelee: bool):
-			_isMelee = isMelee;
-		
-		func roll() -> int:
-			var roll = 0;
-			
-			#if (_isMelee):
-			#	roll = Roll 1-8;
-			
-			_roll = roll;
-			return roll;
+		_roll = roll;
+		return roll;
 #endregion
