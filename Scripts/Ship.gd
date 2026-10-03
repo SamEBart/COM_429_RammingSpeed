@@ -1,3 +1,5 @@
+extends Node3D
+
 class_name Ship;
 
 const HEX_DIR = [
@@ -196,6 +198,12 @@ func kill(target: Character):
 		assert(false, "Ship.kill: Function broke. Wow, such a suprise.");
 func cleanup():
 	_dead.clear();
+
+# GETTING SHIPS LONG RANGE FIRING TARGET
+func getFiringTarget(range):
+	pass
+	
+
 #endregion
 
 #region Trireme Class
