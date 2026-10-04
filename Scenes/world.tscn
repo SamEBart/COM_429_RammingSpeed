@@ -1,7 +1,6 @@
 [gd_scene format=3 uid="uid://bq1malkvlqvh"]
 
-[ext_resource type="Script" uid="uid://vkjeetijwpro" path="res://Scripts/rts_camera.gd" id="1_a02cp"]
-[ext_resource type="Texture2D" uid="uid://cbsuxplgsi347" path="res://Textures/icon.svg" id="2_go701"]
+[ext_resource type="Script" uid="uid://w4fsr7c68kef" path="res://Scripts/main.gd" id="1_go701"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_1y4o1"]
 
@@ -12,24 +11,11 @@ sky_material = SubResource("ProceduralSkyMaterial_1y4o1")
 background_mode = 2
 sky = SubResource("Sky_2qrfo")
 
-[node name="World" type="Node3D" unique_id=768473358]
+[node name="World" type="Node3D" unique_id=768473358 groups=["players"]]
+script = ExtResource("1_go701")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1192406146]
 environment = SubResource("Environment_5gjpb")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=1981406269]
 transform = Transform3D(1, 0, 0, 0, 0.80153567, 0.59794694, 0, -0.59794694, 0.80153567, 2.3841858e-07, 1.9795564, 3.0826104)
-
-[node name="CameraPosition" type="Node3D" parent="." unique_id=2004014550]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 10, 9.702246)
-script = ExtResource("1_a02cp")
-
-[node name="CameraRotationX" type="Node3D" parent="CameraPosition" unique_id=1851446538]
-
-[node name="CameraZoomPivot" type="Node3D" parent="CameraPosition/CameraRotationX" unique_id=1212426593]
-
-[node name="Camera3D" type="Camera3D" parent="CameraPosition/CameraRotationX/CameraZoomPivot" unique_id=1926641203]
-
-[node name="Sprite3D" type="Sprite3D" parent="." unique_id=94177465]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 10.17865, 0)
-texture = ExtResource("2_go701")

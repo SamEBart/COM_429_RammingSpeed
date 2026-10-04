@@ -32,6 +32,12 @@ var _oarBanks: Array[OarBank];
 var _ballista: Ballista;
 # TODO Catapult
 
+var _attacker = self
+var _enemyTarget: Ship
+
+func _ready() -> void:
+	pass
+
 #region UNKNOWN IF NECESSARY
 #fighters
 #enemy_target_cell
@@ -160,6 +166,12 @@ func getSoldiers() -> Array[Character.Marine.Soldier]:
 	return _marineSoldiers;
 func getEngineers() -> Array[Character.Engineer]:
 	return _engineers;
+func getMarines() -> Array[Character.Marine]:
+	var array = []
+	array.append(getArchers())
+	array.append(getJavelineers())
+	array.append(getSoldiers())
+	return array
 
 func getFloatationHits() -> int:
 	return _flotationHits;
@@ -198,17 +210,41 @@ func kill(target: Character):
 		assert(false, "Ship.kill: Function broke. Wow, such a suprise.");
 func cleanup():
 	_dead.clear();
-
-# GETTING SHIPS LONG RANGE FIRING TARGET
-func getFiringTarget(range):
-	pass
-	
-
 #endregion
+
+func _on_area_3d_input_event(camera, event, event_position, normal, shape_idx):
+	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+		# Check if ship has archers to use
+		var clicker = get_viewport().get_camera_3d().get_parent().get_parent().get_parent().get_parent()
+#		print(clicker._name, " and ", _owner._name)
+		
+		# Select who is doing firing
+		if Global._action == 1 and clicker._shipClicked == false and clicker == _owner:
+			clicker._shipClicked = true
+			clicker._attacker = self
+			print("Clicked: ", clicker._attacker.name, " (", clicker._name,") and can select LRF target!")
+		
+		#Don't fire onself
+		elif Global._action == 1 and clicker._shipClicked == true and clicker == _owner:
+			print("Same self bozo. Select new target to kill")
+		
+		#Don't select ship to action that you don't own
+		elif Global._action == 1 and clicker._shipClicked == false and clicker != _owner:
+			print("Not your ship to delegate!")
+		
+		#Select firing target
+		elif Global._action == 1 and clicker._shipClicked == true and clicker != _owner:
+			# Once the tiles are in check if enemy target is outside firing range
+			clicker._attacker._enemyTarget = self
+			print("Shooter: ", clicker._attacker.name, " is targetting: ", clicker._attacker._enemyTarget.name)
+			# Reset
+			clicker._shipClicked = false
+			
+
 
 #region Trireme Class
 class Trireme extends Ship:
-	func _init(owner: Player, numOfDeckCrew: int = 10, numOfReserveRowers: int = 50,
+	func _setup(owner: Player, numOfDeckCrew: int = 10, numOfReserveRowers: int = 50,
 	numOfArchers: int = 3, numOfJavelineers: int = 3, numOfSoldiers: int = 7,
 	numOfEngineers: int = 3, numOfOarBanks: int = 50, rowersPerBank: int = 3,
 	floatationHits: int = 12, mastHP: int = 4, beakHP: int = 1, hasBallista: bool = true):

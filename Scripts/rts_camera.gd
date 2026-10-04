@@ -34,7 +34,7 @@ func _process(delta: float) -> void:
 	# GET INPUT DIRECTIONS
 	var inputDirection = Input.get_vector("left", "right", "up", "down")
 	var movementDirection = (transform.basis * Vector3(inputDirection.x, 0, inputDirection.y)).normalized()
-	var rotateKeys = Input.get_axis("roatate_left", "roatate_right")
+	var rotateKeys = Input.get_axis("roatate_right", "roatate_left")
 	var zoomDirection = (int(Input.is_action_just_released("camera_zoom_out")) -
 						int(Input.is_action_just_released("camera_zoom_in")))
 	
