@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://t0cqs0th22qe"]
 
-[ext_resource type="Script" uid="uid://csnjevllpg05x" path="res://scripts/test/turn_controller_test_window.gd" id="1_test_window"]
+[ext_resource type="Script" uid="uid://csnjevllpg05x" path="res://Scripts/test/turn_controller_test_window.gd" id="1_test_window"]
 
 [node name="TurnControllerTestWindow" type="Control" unique_id=875294488]
 layout_mode = 3
