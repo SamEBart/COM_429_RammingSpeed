@@ -26,7 +26,10 @@ const hex_directions = [
 ]
 var fighters = []
 
-var rowing_speed
+## Ordered oar speed for this turn. -1 backs up. 4 is the oar maximum.
+var rowing_speed: int = 0
+## True while the mast is lowered. A lowered mast adds 2 to overall speed, up to 6.
+var mast_down: bool = false
 var health = 15
 
 var enemy_target_cell
@@ -42,6 +45,30 @@ var boarding_prepped = false
 var boarding_archers = []
 var boarding_javelins = []
 var boarding_melee = []
+
+## This ship is a Quadrireme. Trireme overrides this and returns Trireme.
+func get_ship_kind() -> SpeedCalculator.ShipKind:
+	return SpeedCalculator.ShipKind.QUADRIREME
+
+
+## Changes rowing speed by delta.
+## A Quadrireme may change by +1 or -1. A Trireme may change by +1 or -2.
+## Returns false when delta is outside that ship's allowed change.
+func adjust_rowing_speed(delta: int) -> bool:
+	if not SpeedCalculator.adjustment_allowed(delta, get_ship_kind()):
+		return false
+	rowing_speed = SpeedCalculator.apply_rowing_adjustment(rowing_speed, delta, get_ship_kind())
+	return true
+
+
+func set_mast_down(down: bool) -> void:
+	mast_down = down
+
+
+## Speed the movement phases should use. Oars cap at 4. Mast down can raise that to 6.
+func get_overall_speed() -> int:
+	return SpeedCalculator.overall_speed(rowing_speed, mast_down)
+
 
 #===============================#
 # Starting and Clicking Stuff

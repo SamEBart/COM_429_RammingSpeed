@@ -1,6 +1,11 @@
 extends Ship
 class_name Trireme
 
+## Trireme oars may rise by 1 or drop by 2 in a Command phase.
+func get_ship_kind() -> SpeedCalculator.ShipKind:
+	return SpeedCalculator.ShipKind.TRIREME
+
+
 func _ready() -> void:
 	super()
 	
