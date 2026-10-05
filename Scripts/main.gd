@@ -18,7 +18,7 @@ func _inst_player(pos, name, id):
 	playerInstance.position = pos
 	playerInstance.initiate(name, id)
 	add_child(playerInstance)
-	add_to_group("players")
+#	playerInstance.add_to_group("players")
 	return playerInstance
 
 func _inst_tri(pos, owner, name):

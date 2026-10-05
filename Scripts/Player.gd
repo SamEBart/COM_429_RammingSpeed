@@ -9,8 +9,12 @@ var _ships: Array[Object];
 var _isSpectator: bool;
 
 #Carter WIP
-var _shipClicked = false
-var _attacker
+var _shipClicked = false				#Know when Player has a ship selected for an action
+var _attacker							#Know who Player has selected for thier action, i.e. who is doing the firing in LRF
+var _isReady = false					#Know when player is done with their turn/ready to start turn
+
+func _ready() -> void:
+	self.add_to_group("players")
 
 func initiate(name: String, playerId: int):
 	_name = name;

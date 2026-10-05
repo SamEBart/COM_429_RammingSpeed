@@ -36,7 +36,8 @@ var _attacker = self
 var _enemyTarget: Ship
 
 func _ready() -> void:
-	pass
+	add_to_group("ships")
+	_ballista = Ballista.new()
 
 #region UNKNOWN IF NECESSARY
 #fighters
@@ -98,6 +99,10 @@ class Ballista:
 		_isLoaded = true;
 		_reloadTimer = 0;
 		_health = 5;
+	
+	func fire():
+		_reloadTimer = 0
+		_isLoaded = false
 	
 	func reload():
 		if (!_isLoaded):
@@ -166,13 +171,6 @@ func getSoldiers() -> Array[Character.Marine.Soldier]:
 	return _marineSoldiers;
 func getEngineers() -> Array[Character.Engineer]:
 	return _engineers;
-func getMarines() -> Array[Character.Marine]:
-	var array = []
-	array.append(getArchers())
-	array.append(getJavelineers())
-	array.append(getSoldiers())
-	return array
-
 func getFloatationHits() -> int:
 	return _flotationHits;
 func damageShip(damage: int):
@@ -219,27 +217,33 @@ func _on_area_3d_input_event(camera, event, event_position, normal, shape_idx):
 #		print(clicker._name, " and ", _owner._name)
 		
 		# Select who is doing firing
-		if Global._action == 1 and clicker._shipClicked == false and clicker == _owner:
-			clicker._shipClicked = true
-			clicker._attacker = self
-			print("Clicked: ", clicker._attacker.name, " (", clicker._name,") and can select LRF target!")
-		
-		#Don't fire onself
-		elif Global._action == 1 and clicker._shipClicked == true and clicker == _owner:
-			print("Same self bozo. Select new target to kill")
-		
-		#Don't select ship to action that you don't own
-		elif Global._action == 1 and clicker._shipClicked == false and clicker != _owner:
-			print("Not your ship to delegate!")
-		
-		#Select firing target
-		elif Global._action == 1 and clicker._shipClicked == true and clicker != _owner:
-			# Once the tiles are in check if enemy target is outside firing range
-			clicker._attacker._enemyTarget = self
-			print("Shooter: ", clicker._attacker.name, " is targetting: ", clicker._attacker._enemyTarget.name)
-			# Reset
-			clicker._shipClicked = false
+		if Global._action == 1 and Global._subAction >= 0:
+			if clicker._shipClicked == false and clicker == _owner:
+				clicker._shipClicked = true
+				clicker._attacker = self
+				print("Clicked: ", clicker._attacker.name, " (", clicker._name,") and can select LRF target!")
 			
+			#Don't fire onself
+			elif clicker._shipClicked == true and clicker == _owner:
+				print("Same self bozo. Select new target to kill")
+			
+			#Don't select ship to action that you don't own
+			elif clicker._shipClicked == false and clicker != _owner:
+				print("Not your ship to delegate!")
+			
+			#Select firing target
+			elif clicker._shipClicked == true and clicker != _owner:
+				# Once the tiles are in check if enemy target is outside firing range
+				clicker._attacker._enemyTarget = self
+				print("Shooter: ", clicker._attacker.name, " is targetting: ", clicker._attacker._enemyTarget.name)
+				# Reset
+				clicker._shipClicked = false
+				
+
+
+func shipReset():
+	_enemyTarget = null
+	_owner._shipClicked = false
 
 
 #region Trireme Class

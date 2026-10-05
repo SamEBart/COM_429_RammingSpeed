@@ -11,7 +11,7 @@ sky_material = SubResource("ProceduralSkyMaterial_1y4o1")
 background_mode = 2
 sky = SubResource("Sky_2qrfo")
 
-[node name="World" type="Node3D" unique_id=768473358 groups=["players"]]
+[node name="World" type="Node3D" unique_id=768473358]
 script = ExtResource("1_go701")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1192406146]
