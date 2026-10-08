@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="TileMeshData" format=3 uid="uid://bbnfty2f3t1g1"]
+
+[ext_resource type="Script" uid="uid://rou5s5aylh75" path="res://scripts/WorldGen/tile_mesh_data.gd" id="1_odvnn"]
+[ext_resource type="PackedScene" uid="uid://dfv81u805a5s4" path="res://assets/Meshes/Tiles/roughhexagon.glb" id="1_t7ci4"]
+
+[resource]
+script = ExtResource("1_odvnn")
+mesh = ExtResource("1_t7ci4")
+color = Color(4.235506e-06, 0.7106894, 0.87691706, 1)
+type = 2

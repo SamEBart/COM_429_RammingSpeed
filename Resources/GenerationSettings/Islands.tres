@@ -1,0 +1,32 @@
+[gd_resource type="Resource" script_class="GenerationSettings" format=3 uid="uid://d2vlx6mnfatwt"]
+
+[ext_resource type="Resource" uid="uid://3nrb2x1h7p1f" path="res://Resources/Tiles/Ocean.tres" id="1_bc6dd"]
+[ext_resource type="Script" uid="uid://0k8jgfy8cqfx" path="res://scripts/WorldGen/generation_settings.gd" id="1_wywib"]
+[ext_resource type="Script" uid="uid://rou5s5aylh75" path="res://scripts/WorldGen/tile_mesh_data.gd" id="2_qmak6"]
+[ext_resource type="Resource" uid="uid://bbnfty2f3t1g1" path="res://Resources/Tiles/Desert.tres" id="4_8d6wy"]
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_fvu5l"]
+frequency = 0.025
+fractal_gain = 0.485
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_q8vkx"]
+frequency = 0.025
+fractal_gain = 0.8
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_3udsx"]
+frequency = 0.025
+
+[resource]
+script = ExtResource("1_wywib")
+tiles = Array[ExtResource("2_qmak6")]([ExtResource("4_8d6wy"), ExtResource("4_8d6wy")])
+biome_weights = Array[float]([0.0, 0.0])
+radius = 8
+biome_noise = SubResource("FastNoiseLite_fvu5l")
+modify_height = false
+heightmap_noise = SubResource("FastNoiseLite_q8vkx")
+create_water = false
+ocean_tile = ExtResource("1_bc6dd")
+ocean_noise = SubResource("FastNoiseLite_3udsx")
+ocean_height = -0.5
+ocean_treshold = 0.45
+spawn_villages = false
