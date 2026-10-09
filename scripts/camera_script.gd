@@ -23,13 +23,13 @@ func _process(delta: float) -> void:
 func move_camera(delta):
 	## Movement
 	var move_vector : Vector3 = Vector3.ZERO
-	if Input.is_action_pressed("MoveForward"):
+	if Input.is_action_pressed("ui_up"):
 		move_vector += -parent.transform.basis.z
-	if Input.is_action_pressed("MoveBackwards"):
+	if Input.is_action_pressed("ui_down"):
 		move_vector += parent.transform.basis.z
-	if Input.is_action_pressed("MoveLeft"):
+	if Input.is_action_pressed("ui_left"):
 		move_vector += -parent.transform.basis.x
-	if Input.is_action_pressed("MoveRight"):
+	if Input.is_action_pressed("ui_right"):
 		move_vector += parent.transform.basis.x
 	## Rotation
 	if Input.is_action_pressed("RotateCameraLeft"):
