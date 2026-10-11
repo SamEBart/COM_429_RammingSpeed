@@ -1,0 +1,102 @@
+[gd_scene format=3 uid="uid://bbqxpsy3vniy8"]
+
+[ext_resource type="Script" uid="uid://b28iyxlwylpa5" path="res://scripts/camera_script.gd" id="1_1xefc"]
+[ext_resource type="Texture2D" uid="uid://dvbkqw12i4obk" path="res://assets/Materials/SkyBG.png" id="2_l7mlp"]
+[ext_resource type="Script" uid="uid://bjw6prx0uxiil" path="res://scripts/WorldGen/world_gen.gd" id="3_davhy"]
+[ext_resource type="Resource" uid="uid://d2vlx6mnfatwt" path="res://Resources/GenerationSettings/Islands.tres" id="4_6pl24"]
+[ext_resource type="PackedScene" uid="uid://grijaagmqw4" path="res://scenes/Units/prototype_unit.tscn" id="8_r58of"]
+[ext_resource type="Script" uid="uid://bne86up5eweyd" path="res://scripts/WorldGen/object_placer.gd" id="9_p13dw"]
+[ext_resource type="Script" uid="uid://bdy82nphtcvus" path="res://scripts/pathfinder.gd" id="10_0b4my"]
+[ext_resource type="PackedScene" uid="uid://5hq7deseilvo" path="res://scenes/POI/VillageScene.tscn" id="10_hcqfn"]
+[ext_resource type="PackedScene" uid="uid://xm2lgya4capr" path="res://scenes/Cursors/hexagon_cursor.tscn" id="11_rshvd"]
+[ext_resource type="PackedScene" uid="uid://bb3hit25an5ti" path="res://scenes/Cursors/path_overlay.tscn" id="12_0kgq4"]
+[ext_resource type="Script" uid="uid://8c4mygj6ghrg" path="res://scripts/interaction.gd" id="12_tt8b8"]
+[ext_resource type="PackedScene" uid="uid://cqxjxq25t6wuy" path="res://scenes/Cursors/unit_cursor.tscn" id="13_ydfkh"]
+
+[sub_resource type="Environment" id="Environment_f2ci6"]
+background_mode = 3
+background_color = Color(0, 0.214146, 0.346416, 1)
+background_canvas_max_layer = -100
+reflected_light_source = 1
+tonemap_mode = 3
+tonemap_exposure = 0.8
+tonemap_white = 2.0
+ssao_enabled = true
+ssil_enabled = true
+sdfgi_enabled = true
+glow_enabled = true
+fog_enabled = true
+fog_light_color = Color(0.395135, 0.482894, 0.519378, 1)
+fog_density = 0.015
+fog_sky_affect = 0.0
+fog_height = 1.0
+
+[sub_resource type="CameraAttributesPractical" id="CameraAttributesPractical_1lvu4"]
+dof_blur_far_distance = 40.0
+dof_blur_far_transition = 45.0
+
+[node name="World" type="Node3D" unique_id=2059965356]
+
+[node name="CameraParent" type="Node3D" parent="." unique_id=196652453]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.117906, 15.1842, 10.1434)
+
+[node name="Camera3D" type="Camera3D" parent="CameraParent" unique_id=312647012 node_paths=PackedStringArray("sun")]
+transform = Transform3D(1, 0, 0, 0, 0.998537, -0.0540788, 0, 0.0540788, 0.998537, 0, 0, 0)
+script = ExtResource("1_1xefc")
+movespeed = 9
+height = Vector2(0, 60)
+rot = Vector2(-25, -80)
+sun = NodePath("../../Scene/DirectionalLight3D")
+
+[node name="Scene" type="Node3D" parent="." unique_id=509413802]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="Scene" unique_id=325201323]
+environment = SubResource("Environment_f2ci6")
+camera_attributes = SubResource("CameraAttributesPractical_1lvu4")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="Scene" unique_id=1020057044]
+transform = Transform3D(0.172923, -0.634301, 0.753499, 0.000308392, 0.765058, 0.643961, -0.984935, -0.111123, 0.132492, 0, 0, 0)
+directional_shadow_mode = 0
+sky_mode = 1
+
+[node name="TileParent" type="Node3D" parent="Scene" unique_id=1842378827]
+
+[node name="BGCanvasLayer" type="CanvasLayer" parent="." unique_id=1447310450]
+layer = -100
+
+[node name="SpaceBG_img" type="TextureRect" parent="BGCanvasLayer" unique_id=2115021890]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+texture = ExtResource("2_l7mlp")
+expand_mode = 3
+stretch_mode = 4
+
+[node name="Builder" type="Node" parent="." unique_id=522099863]
+
+[node name="WorldGenerator" type="Node" parent="Builder" unique_id=219565920 node_paths=PackedStringArray("object_placer", "tile_parent", "pfinder")]
+script = ExtResource("3_davhy")
+settings = ExtResource("4_6pl24")
+object_placer = NodePath("../ObjectPlacer")
+tile_parent = NodePath("../../Scene/TileParent")
+pfinder = NodePath("../Pathfinder")
+proto_unit = ExtResource("8_r58of")
+
+[node name="ObjectPlacer" type="Node" parent="Builder" unique_id=187523474]
+script = ExtResource("9_p13dw")
+village = ExtResource("10_hcqfn")
+
+[node name="Pathfinder" type="Node" parent="Builder" unique_id=1293894748]
+script = ExtResource("10_0b4my")
+highlight_marker = ExtResource("12_0kgq4")
+
+[node name="Interaction_tracker" type="Node3D" parent="Builder" unique_id=1231469760 node_paths=PackedStringArray("main_camera", "p_finder")]
+script = ExtResource("12_tt8b8")
+tile_cursor_scene = ExtResource("11_rshvd")
+unit_cursor_scene = ExtResource("13_ydfkh")
+main_camera = NodePath("../../CameraParent/Camera3D")
+p_finder = NodePath("../Pathfinder")
