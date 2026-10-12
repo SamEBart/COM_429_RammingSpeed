@@ -23,7 +23,7 @@ func _ready() -> void:
 
 
 func _input(event: InputEvent) -> void:
-	if event is InputEventMouseButton:
+	if event is InputEventMouseButton and event.pressed:
 		var mouse_pos = get_viewport().get_mouse_position()
 		var origin = main_camera.project_ray_origin(mouse_pos)
 		var dir = main_camera.project_ray_normal(mouse_pos)
@@ -31,10 +31,61 @@ func _input(event: InputEvent) -> void:
 		var hit_object = raycast_at_mouse(origin, end)
 		if not hit_object:
 			return
-		if Input.is_action_just_pressed("Click") and event.pressed:
-			attempt_select(hit_object)
-		elif Input.is_action_just_pressed("RightClick"):
-			attempt_move_unit(hit_object)
+		
+		#Movement
+		if Global._action == 0:
+			if Input.is_action_just_pressed("Click") and event.pressed:
+				attempt_select(hit_object)
+			elif Input.is_action_just_pressed("RightClick"):
+				attempt_move_unit(hit_object)
+		
+		#Long range firing (Archers and Ballista)
+		if Global._action == 1 and (Global._subAction == 0 or Global._subAction == 1):
+			var range = 2
+			#Ballista has more range than archers
+			if Global._subAction == 1:
+				range = 4
+			var attacker = Global._lastShipClicked
+			if hit_object is Unit and event.pressed:
+				var objOwner = hit_object._owner
+				
+				#Select who is doing the targetting
+				if Global._lastShipClicked == null and Input.is_action_just_pressed("Click"):
+					Global._lastShipClicked = hit_object
+					attacker = Global._lastShipClicked
+					attacker._owner._shipClicked = true
+					print("Clicked: ", attacker._attacker.name, " (", attacker._owner._name,") and can select LRF target!")
+					attempt_range_select(hit_object, range)
+				
+				#Don't fire on self
+				elif attacker and attacker._owner._shipClicked and attacker._owner == objOwner and Input.is_action_just_pressed("RightClick"):
+					print("Same self bozo. Select new target!")
+				
+				#Don't select ship to action that you don't own (Multiplayer)
+				
+				#Select firing target
+				elif attacker and attacker._owner._shipClicked and attacker._owner != objOwner and Input.is_action_just_pressed("RightClick"):
+					#Range Check (unit_moves is tiles)
+					for i in unit_moves.size():
+						#If so then in range
+						if unit_moves and hit_object == unit_moves[i].occupier:
+							attacker._attacker._enemyTarget = hit_object
+							print("Shooter: ", attacker._attacker.name, " is targetting: ", attacker._attacker._enemyTarget.name, "\n")
+							#Ballista damage chance is based on range value
+							if Global._subAction == 1:
+								attacker._ballistaTargetRange = unit_moves[i].range
+							#Reset
+							attacker._owner._shipClicked = false
+							Global._lastShipClicked = null
+							deselect()
+					if !unit_moves:
+						print("Target is too far away or doesn't exist!")
+			else:
+				#Reset
+				if attacker:
+					attacker._owner._shipClicked = false
+				Global._lastShipClicked = null
+				deselect()
 
 
 func raycast_at_mouse(origin, end) -> Node3D:
@@ -95,6 +146,20 @@ func highlight_tile(tile):
 func highlight_unit(unit):
 	move_cursor(unit_cursor, unit.position)
 	unit_cursor.visible = true
+
+
+func attempt_range_select(hit, range : int):
+	deselect()
+	if hit.is_in_group("tiles"):
+		highlight_tile(hit)
+	elif hit.is_in_group("units"):
+		selected_tile = null
+		selected_unit = hit
+		hide_cursor(tile_cursor)
+		if hit is Unit:
+			highlight_unit(hit)
+			unit_moves = p_finder.find_targetable_units(hit.occupied_tile, range, hit)
+			p_finder.highlight_tile(unit_moves)
 
 
 ## move cursor with optional height difference

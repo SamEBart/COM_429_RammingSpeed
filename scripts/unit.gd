@@ -21,11 +21,9 @@ func place_unit(new_position : Vector3, tile):
 	leave_tile()
 	occupy_tile(tile)
 
-
 func occupy_tile(tile : Tile):
 	occupied_tile = tile
 	tile.occupier = self
-
 
 func leave_tile():
 	if occupied_tile:

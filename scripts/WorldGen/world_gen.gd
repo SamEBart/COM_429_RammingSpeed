@@ -12,12 +12,27 @@ extends Node
 
 var allies = 2
 
+## What to create
+var myShip = preload("res://scenes/Units/prototype_unit.tscn")
+var myPlayer = preload("res://scenes/temp_player.tscn")
+@onready var cameraScriptNode = $"../Interaction_tracker"
 
 ## Starting point: Generate a random seed, create the tiles, place POI's
 func _ready() -> void:
 	init_seed()
 	generate_world()
-	create_starting_units(allies)  ## prototyping pathfinding and units
+	
+	# Manual-ish making and placing of teams and their ships
+	var playerOne = _inst_player("Chris", 1)
+	_inst_tri(playerOne, "Tri 01")
+	
+	var playerTwo = _inst_player("Bobby", 2)
+	_inst_tri(playerTwo, "Tri 02")
+	
+	var playerThree = _inst_player("Grimm", 3)
+	_inst_tri(playerThree, "Tri 03")
+	
+#	create_starting_units(allies)  ## prototyping pathfinding and units
 
 
 # Randomize if no seed has been set
@@ -48,6 +63,32 @@ func create_starting_units(count : int):
 ##		unit.occupy_tile(r_tile)
 		count -= 1
 
+## Carter's Creating Player combined with Melia's create_starting_units
+func _inst_player(name, id):
+	var playerInstance = myPlayer.instantiate()
+	playerInstance.initiate(name, id)
+	add_child(playerInstance)
+	playerInstance.add_to_group("players")
+	return playerInstance
+
+## Carter's Creating and Placing Trimeme Ships combined with Melia's create_starting_units
+func _inst_tri(owner, name):
+	var safety_count = 0 #Add safety counter in case no valid tiles
+	var done = false
+	## Test pathfinder
+	while !done and safety_count < 50:
+		var r_tile : Tile = WorldMap.map.pick_random()
+		if r_tile.mesh_data.type == Tile.biome_type.Ocean or r_tile.occupier != null:
+			safety_count += 1
+			continue
+		var unit = myShip.instantiate()
+		unit.set_script(Ship.Trireme)
+		unit._setup(owner)
+		unit.name = name
+		owner.appendShip(unit)
+		add_child(unit)
+		unit.place_unit(r_tile.position, r_tile)
+		done = true
 
 ## Start of world_generation, time each step
 func generate_world():
