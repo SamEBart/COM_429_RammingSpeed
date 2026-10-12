@@ -40,11 +40,18 @@ func _input(event: InputEvent) -> void:
 				attempt_move_unit(hit_object)
 		
 		#Long range firing (Archers and Ballista)
-		if Global._action == 1 and (Global._subAction == 0 or Global._subAction == 1):
-			var range = 2
+		if Global._action == 1 and Global._subAction >= 0 and hit_object and hit_object._boardingCount == 0:
+			#Range
+			var max_range = 1
+			var min_range = 1
 			#Ballista has more range than archers
 			if Global._subAction == 1:
-				range = 4
+				max_range = 4
+			#Catapult has more range than archers
+			if Global._subAction == 2:
+				max_range = 6
+				min_range = 2
+			
 			var attacker = Global._lastShipClicked
 			if hit_object is Unit and event.pressed:
 				var objOwner = hit_object._owner
@@ -55,7 +62,7 @@ func _input(event: InputEvent) -> void:
 					attacker = Global._lastShipClicked
 					attacker._owner._shipClicked = true
 					print("Clicked: ", attacker._attacker.name, " (", attacker._owner._name,") and can select LRF target!")
-					attempt_range_select(hit_object, range)
+					attempt_range_select(hit_object, min_range, max_range)
 				
 				#Don't fire on self
 				elif attacker and attacker._owner._shipClicked and attacker._owner == objOwner and Input.is_action_just_pressed("RightClick"):
@@ -74,12 +81,18 @@ func _input(event: InputEvent) -> void:
 							#Ballista damage chance is based on range value
 							if Global._subAction == 1:
 								attacker._ballistaTargetRange = unit_moves[i].range
+							#Catapult damage chance is based on range value (assuming)
+							if Global._subAction == 2:
+								attacker._catapultTargetRange = unit_moves[i].range
+							
 							#Reset
 							attacker._owner._shipClicked = false
 							Global._lastShipClicked = null
 							deselect()
-					if !unit_moves:
-						print("Target is too far away or doesn't exist!")
+							if hit_object._isBoarding:
+								hit_object._boardingCounter += 1
+						if unit_moves == null:
+							print("Target is too far away or doesn't exist!")
 			else:
 				#Reset
 				if attacker:
@@ -148,7 +161,7 @@ func highlight_unit(unit):
 	unit_cursor.visible = true
 
 
-func attempt_range_select(hit, range : int):
+func attempt_range_select(hit, min_range: int, max_range: int):
 	deselect()
 	if hit.is_in_group("tiles"):
 		highlight_tile(hit)
@@ -158,7 +171,7 @@ func attempt_range_select(hit, range : int):
 		hide_cursor(tile_cursor)
 		if hit is Unit:
 			highlight_unit(hit)
-			unit_moves = p_finder.find_targetable_units(hit.occupied_tile, range, hit)
+			unit_moves = p_finder.find_targetable_units(hit.occupied_tile, min_range, max_range, hit)
 			p_finder.highlight_tile(unit_moves)
 
 

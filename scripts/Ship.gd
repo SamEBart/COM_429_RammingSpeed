@@ -30,16 +30,21 @@ var _boardingTarget: Ship;
 var _isBoarding: bool;
 var _oarBanks: Array[OarBank];
 var _ballista: Ballista;
+var _catapult: Catapult;
 # TODO Catapult
 
 var _attacker = self
 var _enemyTarget: Ship
-var _ballistaTragetRange : int
+var _ballistaTargetRange: int
+var _catapultTargetRange: int
+var _boardingCounter: int = 0			#Used to determine if inn first ever boarding action for ths ship
+var _inBoarding: bool = false
 
 func _ready() -> void:
 	add_to_group("ships")
 	_attacker = self
 	_ballista = Ballista.new()
+	_catapult = Catapult.new()
 
 #region UNKNOWN IF NECESSARY
 #fighters
@@ -96,11 +101,19 @@ class Ballista:
 	var _isLoaded: bool;
 	var _reloadTimer: int;
 	var _health: int;
+	var _engineers: Array[Character.Engineer];
 	
 	func _init():
 		_isLoaded = true;
 		_reloadTimer = 0;
 		_health = 5;
+	
+	func allocateEngineer(ship: Ship):
+		for eng in ship._engineers:
+			if eng._allocatedTo == null:
+				eng._allocatedTo = ship._ballista
+				self._engineers.append(eng)
+				return
 	
 	func fire():
 		_reloadTimer = 0
@@ -108,9 +121,61 @@ class Ballista:
 	
 	func reload():
 		if (!_isLoaded):
-			_reloadTimer += 1;
+			for eng in _engineers:
+				if eng._allocatedTo == self:
+					_reloadTimer += 1;
 			
 			if (_reloadTimer >= 8):
+				_reloadTimer = 0;
+				_isLoaded = true;
+	
+	func isLoaded() -> bool:
+		return _isLoaded;
+	
+	func getHealth() -> int:
+		return _health;
+	
+	func damage(damage: int) -> int:
+		_health -= damage;
+		if (_health < 0):
+			_health = 0;
+		
+		return _health;
+	
+	func isBroken() -> bool:
+		return _health == 0;
+#endregion
+
+#region Catapult Class
+class Catapult:
+	var _isLoaded: bool;
+	var _reloadTimer: int;
+	var _health: int;
+	var _engineers: Array[Character.Engineer];
+	
+	func _init():
+		_isLoaded = true;
+		_reloadTimer = 0;
+		_health = 5;
+	
+	func allocateEngineer(ship: Ship):
+		for eng in ship._engineers:
+			if eng._allocatedTo == null:
+				eng._allocatedTo = ship._catapult
+				self._engineers.append(eng)
+				return
+	
+	func fire():
+		_reloadTimer = 0
+		_isLoaded = false
+	
+	func reload():
+		if (!_isLoaded):
+			for eng in _engineers:
+				if eng._allocatedTo == self:
+					_reloadTimer += 1;
+			
+			if (_reloadTimer >= 24):
 				_reloadTimer = 0;
 				_isLoaded = true;
 	
@@ -184,6 +249,10 @@ func hasBallista() -> bool:
 	return _ballista == null;
 func getBallista() -> Ballista:
 	return _ballista;
+func hasCatapult() -> bool:
+	return _catapult == null;
+func getCatapult() -> Catapult:
+	return _catapult;
 
 # NEEDS TESTING: NOT CONFIDENT IF THIS WILL WORK.
 # KILLING ACTIVE ROWERS NOT SUPPORTED YET.
@@ -206,43 +275,12 @@ func kill(target: Character):
 	elif (target is Character.Engineer):
 		_dead.push_back(target);
 		_engineers.erase(target);
+		_ballista._engineers.erase(target)
 	else:
 		assert(false, "Ship.kill: Function broke. Wow, such a suprise.");
 func cleanup():
 	_dead.clear();
 #endregion
-
-
-
-func _on_area_3d_input_event(camera, event, event_position, normal, shape_idx):
-	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
-		# Check if ship has archers to use
-		var clicker = get_viewport().get_camera_3d().get_parent().get_parent().get_parent().get_parent()
-#		print(clicker._name, " and ", _owner._name)
-		
-		# Select who is doing firing
-		if Global._action == 1 and Global._subAction >= 0:
-			if clicker._shipClicked == false and clicker == _owner:
-				clicker._shipClicked = true
-				clicker._attacker = self
-				print("Clicked: ", clicker._attacker.name, " (", clicker._name,") and can select LRF target!")
-			
-			#Don't fire onself
-			elif clicker._shipClicked == true and clicker == _owner:
-				print("Same self bozo. Select new target to kill")
-			
-			#Don't select ship to action that you don't own
-			elif clicker._shipClicked == false and clicker != _owner:
-				print("Not your ship to delegate!")
-			
-			#Select firing target
-			elif clicker._shipClicked == true and clicker != _owner:
-				# Once the tiles are in check if enemy target is outside firing range
-				clicker._attacker._enemyTarget = self
-				print("Shooter: ", clicker._attacker.name, " is targetting: ", clicker._attacker._enemyTarget.name)
-				# Reset
-				clicker._shipClicked = false
-				
 
 
 func shipReset():

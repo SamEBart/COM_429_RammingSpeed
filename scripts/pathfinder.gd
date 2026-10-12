@@ -80,7 +80,7 @@ func highlight_tile(selected_nodes: Array[Node3D]):
 		marker.visible = true
 
 
-func find_targetable_units(start : Tile, movement_range: int, origin_ship) -> Array[Node3D]:
+func find_targetable_units(start : Tile, min_range: int, max_range: int, origin_ship) -> Array[Node3D]:
 	var queue = []
 	var visited = []
 	var reachable_tiles : Array[Node3D]
@@ -94,7 +94,7 @@ func find_targetable_units(start : Tile, movement_range: int, origin_ship) -> Ar
 		var current_tile : Tile = current["tile"]
 		var current_distance : int = current["distance"]
 		
-		if current_distance > movement_range:
+		if current_distance > max_range:
 			continue
 		
 		# Add the current tile to the reachable list
@@ -122,8 +122,11 @@ func find_targetable_units(start : Tile, movement_range: int, origin_ship) -> Ar
 	var targetable_tiles : Array[Node3D]
 	for tile in reachable_tiles:
 		if tile.occupier != null and tile != start and tile.occupier._owner != origin_ship._owner:
-			targetable_tiles.append(tile)
+			#Check if tiles are within range
+			if tile.range <= max_range and tile.range >= min_range:
+				targetable_tiles.append(tile)
 	
+	#Returns tiles that a ship that is withing range specifications, not on the same team, and not self
 	return targetable_tiles
 
 

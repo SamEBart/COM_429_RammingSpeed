@@ -25,12 +25,13 @@ func _ready() -> void:
 	# Manual-ish making and placing of teams and their ships
 	var playerOne = _inst_player("Chris", 1)
 	_inst_tri(playerOne, "Tri 01")
+	_inst_tri(playerOne, "Tri 02")
 	
 	var playerTwo = _inst_player("Bobby", 2)
-	_inst_tri(playerTwo, "Tri 02")
+	_inst_tri(playerTwo, "Tri 03")
 	
 	var playerThree = _inst_player("Grimm", 3)
-	_inst_tri(playerThree, "Tri 03")
+	_inst_tri(playerThree, "Tri 04")
 	
 #	create_starting_units(allies)  ## prototyping pathfinding and units
 

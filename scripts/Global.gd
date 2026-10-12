@@ -31,7 +31,7 @@ func _input(event: InputEvent) -> void:
 	elif Input.is_action_just_pressed("NextSubAction"):
 		get_tree().call_group("ships", "ship_reset")
 		_subAction += 1
-		print("New Sub Action is: ", _subAction, " on Gloal: ", _action)
+		print("New Sub Action: ", _subAction, " on Global: ", _action)
 	
 	# Temporary to  induce action truns/events manually
 	elif Input.is_action_just_pressed("CtrlEnter"):
@@ -49,12 +49,43 @@ func _input(event: InputEvent) -> void:
 				if ship._ballista and !ship.getBallista().isBroken():
 					var ballista = ship.getBallista()
 					if ballista.isLoaded() and ship.getEngineers() and ship._enemyTarget:
-						LRF.ballistaFire(ship)
-						ship._ballista.fire()
-						print("Firing ", ship.name, "s Ballista!")
+						# (TEMP) If ballista does not have an eng and one is available, assign eng to ballista
+						if ballista._engineers.size() == 0:
+							ballista.allocateEngineer(ship)
+						if ballista._engineers.size() >= 1:
+							LRF.ballistaFire(ship)
+							ship._ballista.fire()
+							print("Fired ", ship.name, "s Ballista!")
 					elif !ballista.isLoaded() and ship.getEngineers():
-						ballista.reload()
-						print("Reloading ", ship.name, "s Ballista now at (", ship._ballista._reloadTimer, ")")
+						# (TEMP) If ballista does not have an eng and one is available, assign eng to ballista
+						if ballista._engineers.size() == 0:
+							ballista.allocateEngineer(ship)
+						if ballista._engineers.size() >= 1:
+							ballista.reload()
+							print("Reloading ", ship.name, "s Ballista now at (", ship._ballista._reloadTimer, ")")
+			get_tree().call_group("ships", "ship_reset")
+		
+		#If Catapult
+		elif Global._action == 1 and Global._subAction == 2:
+			var ships: Array[Node] = get_tree().get_nodes_in_group("ships")
+			for ship in ships:
+				if ship._catapult and !ship.getCatapult().isBroken():
+					var catapult = ship.getCatapult()
+					if catapult.isLoaded() and ship.getEngineers() and ship._enemyTarget:
+						# (TEMP) If catapult does not have an eng and one is available, assign eng to catapult
+						if catapult._engineers.size() == 0:
+							catapult.allocateEngineer(ship)
+						if catapult._engineers.size() >= 1:
+							LRF.catapultFire(ship)
+							ship._catapult.fire()
+							print("Fired ", ship.name, "s Catapult!")
+					elif !catapult.isLoaded() and ship.getEngineers():
+						# (TEMP) If catapult does not have an eng and one is available, assign eng to catapult
+						if catapult._engineers.size() == 0:
+							catapult.allocateEngineer(ship)
+						if catapult._engineers.size() >= 1:
+							catapult.reload()
+							print("Reloading ", ship.name, "s Catapult now at (", ship._catapult._reloadTimer, ")")
 			get_tree().call_group("ships", "ship_reset")
 
 
