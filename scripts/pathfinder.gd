@@ -6,7 +6,7 @@ var neighbor_positions = WorldMap.HEXAGONAL_NEIGHBOR_DIRECTIONS
 var markers = []
 
 
-func find_reachable_tiles(start : Tile, movement_range: int) -> Array[Node3D]:
+func find_reachable_tiles(start : Tile, movement_range: int, origin_ship) -> Array[Node3D]:
 	var queue = []
 	var visited = []
 	var reachable_tiles : Array[Node3D]
@@ -43,7 +43,14 @@ func find_reachable_tiles(start : Tile, movement_range: int) -> Array[Node3D]:
 			queue.append({"tile": neighbor_tile, "distance": current_distance + 1})
 			visited.append(neighbor_coords)
 
-	return reachable_tiles
+	#Filer out tiles that have a ship that is on the origin ships team
+	var targetable_tiles : Array[Node3D]
+	for tile in reachable_tiles:
+		#Limiting Ships per tile at 2 for now and hopefull forever
+		if tile != start and tile.occupier.size() < 2:
+			targetable_tiles.append(tile)
+	
+	return targetable_tiles
 
 
 func is_tile_valid(coords : Vector2) -> bool:
@@ -53,7 +60,7 @@ func is_tile_valid(coords : Vector2) -> bool:
 		return false
 	var tile = WorldMap.map_as_dict[coords]
 	if tile:
-		if tile.occupier == null and tile.mesh_data.type != Tile.biome_type.Ocean:
+		if tile.mesh_data.type != Tile.biome_type.Ocean:
 			valid = true
 	return valid
 
@@ -121,10 +128,11 @@ func find_targetable_units(start : Tile, min_range: int, max_range: int, origin_
 	#Get tile that are occupied and not own team
 	var targetable_tiles : Array[Node3D]
 	for tile in reachable_tiles:
-		if tile.occupier != null and tile != start and tile.occupier._owner != origin_ship._owner:
-			#Check if tiles are within range
-			if tile.range <= max_range and tile.range >= min_range:
-				targetable_tiles.append(tile)
+		for i in tile.occupier.size():
+			if tile.occupier.size() > 0 and tile != start and tile.occupier[i]._owner != origin_ship._owner:
+				#Check if tiles are within range
+				if tile.range <= max_range and tile.range >= min_range:
+					targetable_tiles.append(tile)
 	
 	#Returns tiles that a ship that is withing range specifications, not on the same team, and not self
 	return targetable_tiles

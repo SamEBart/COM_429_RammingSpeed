@@ -26,36 +26,35 @@ var _mastHP: int;
 var _beakHP: int;
 var _rowingSpeed: int;
 var _canLRF: bool;
-var _boardingTarget: Ship;
-var _isBoarding: bool;
 var _oarBanks: Array[OarBank];
 var _ballista: Ballista;
 var _catapult: Catapult;
 # TODO Catapult
 
+var _speed: int
+var _tile: Tile
 var _attacker = self
 var _enemyTarget: Ship
 var _ballistaTargetRange: int
 var _catapultTargetRange: int
+
+#region Boarding
 var _boardingCounter: int = 0			#Used to determine if inn first ever boarding action for ths ship
 var _inBoarding: bool = false
+var _boardingPrepped: bool = false
+var _boardingTarget: Ship;
+var _fighters = []
+var _boardingArchers = []
+var _boardingJavelins = []
+var _boardingMelee = []
+#endregion
 
 func _ready() -> void:
 	add_to_group("ships")
 	_attacker = self
 	_ballista = Ballista.new()
 	_catapult = Catapult.new()
-
-#region UNKNOWN IF NECESSARY
-#fighters
-#enemy_target_cell
-#enemy_target
-#boarding_action
-#boarding_prepped
-#boarding_archers
-#boarding_javelins
-#boarding_melee
-#endregion
+	_speed = randi_range(0, 8)
 
 #region OarBank Class
 class OarBank:
@@ -276,12 +275,12 @@ func kill(target: Character):
 		_dead.push_back(target);
 		_engineers.erase(target);
 		_ballista._engineers.erase(target)
+		_catapult._engineers.erase(target)
 	else:
 		assert(false, "Ship.kill: Function broke. Wow, such a suprise.");
 func cleanup():
 	_dead.clear();
 #endregion
-
 
 func shipReset():
 	_enemyTarget = null
@@ -293,7 +292,8 @@ class Trireme extends Ship:
 	func _setup(owner: Player, numOfDeckCrew: int = 10, numOfReserveRowers: int = 50,
 	numOfArchers: int = 3, numOfJavelineers: int = 3, numOfSoldiers: int = 7,
 	numOfEngineers: int = 3, numOfOarBanks: int = 50, rowersPerBank: int = 3,
-	floatationHits: int = 12, mastHP: int = 4, beakHP: int = 1, hasBallista: bool = true):
+	floatationHits: int = 12, mastHP: int = 4, beakHP: int = 1,
+	hasBallista: bool = true, hasCatapult: bool = true, type: int = 1):
 		_owner = owner;
 		
 		for i in numOfDeckCrew:
@@ -311,6 +311,12 @@ class Trireme extends Ship:
 		for i in numOfOarBanks:
 			_oarBanks.push_back(OarBank.new(owner, rowersPerBank));
 		
+		_fighters.append_array(_marineSoldiers)
+		_fighters.append_array(_marineJavelineers)
+		_fighters.append_array(_marineArchers)
+		_fighters.append_array(_engineers)
+		_fighters.append_array(_deckCrew)
+		
 		_flotationHits = floatationHits;
 		_mastHP = mastHP;
 		_beakHP = beakHP;
@@ -319,4 +325,7 @@ class Trireme extends Ship:
 		_ballista = null;
 		if (hasBallista):
 			_ballista = Ballista.new();
+		_catapult = null;
+		if (hasCatapult):
+			_catapult = Catapult.new();
 #endregion

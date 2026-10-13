@@ -9,6 +9,6 @@ var pos_data : PositionData
 var neighbors = []
 var placeable = true
 
-var occupier : Unit
+var occupier = []
 var debug_label : Label3D
 var range : int
