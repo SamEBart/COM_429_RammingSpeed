@@ -20,11 +20,22 @@ func place_unit(new_position : Vector3, tile):
 	position = new_position
 	leave_tile()
 	occupy_tile(tile)
+	for i in tile.occupier.size():
+		tile.occupier[i]._tile = tile
+	
+	#Reset Boarding Counter when moving to an empty hex
+	if self.occupied_tile.occupier.size() == 1:
+		self._boardingCounter = 0
 
 func occupy_tile(tile : Tile):
 	occupied_tile = tile
-	tile.occupier = self
+	tile.occupier.append(self)
+	#TEMP way to put multiple ships on one hex
+	if tile.occupier.size() > 1:
+		for i in tile.occupier.size() - 1:
+			self.position.y += 3;
+			tile.occupier[i]._tile = tile
 
 func leave_tile():
 	if occupied_tile:
-		occupied_tile.occupier = null
+		occupied_tile.occupier.erase(self)

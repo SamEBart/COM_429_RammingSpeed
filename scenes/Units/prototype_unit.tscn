@@ -7,7 +7,7 @@
 albedo_color = Color(0.996945, 6.23293e-06, 1.54018e-06, 1)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_10dfy"]
-size = Vector3(1, 1.98462, 1)
+size = Vector3(1, 0.544739, 0.30474854)
 
 [node name="PrototypeUnit" type="Node3D" unique_id=1945709427 groups=["units"]]
 script = ExtResource("1_spsi8")
@@ -20,7 +20,7 @@ material = SubResource("StandardMaterial3D_xvekn")
 [node name="StaticBody3D" type="StaticBody3D" parent="." unique_id=2070924757]
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D" unique_id=1321861]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.32691, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.26303664, -0.004058838)
 shape = SubResource("BoxShape3D_10dfy")
 
 [node name="test_character" parent="." unique_id=886589400 instance=ExtResource("2_g7i07")]
