@@ -73,25 +73,27 @@ func _input(event: InputEvent) -> void:
 				#Select firing target
 				elif attacker and attacker._owner._shipClicked and attacker._owner != objOwner and Input.is_action_just_pressed("RightClick"):
 					#Range Check (unit_moves is tiles)
-					for i in unit_moves.size():
-						#If so then in range
-						for j in unit_moves[i].occupier.size():
-							if unit_moves and hit_object == unit_moves[i].occupier[j]:
-								attacker._attacker._enemyTarget = hit_object
-								print("Shooter: ", attacker._attacker.name, " is targetting: ", attacker._attacker._enemyTarget.name, "\n")
-								#Ballista damage chance is based on range value
-								if Global._subAction == 1:
-									attacker._ballistaTargetRange = unit_moves[i].range
-								#Catapult damage chance is based on range value (assuming)
-								if Global._subAction == 2:
-									attacker._catapultTargetRange = unit_moves[i].range
-								
-								#Reset
-								attacker._owner._shipClicked = false
-								Global._lastShipClicked = null
-								deselect()
-							if unit_moves == null:
-								print("Target is too far away or doesn't exist!")
+					if unit_moves.size() > 0:
+						for i in unit_moves.size():
+							#If so then in range
+							if unit_moves[i].occupier.size() > 0:
+								for j in unit_moves[i].occupier.size():
+									if unit_moves and hit_object == unit_moves[i].occupier[j]:
+										attacker._attacker._enemyTarget = hit_object
+										print("Shooter: ", attacker._attacker.name, " is targetting: ", attacker._attacker._enemyTarget.name, "\n")
+										#Ballista damage chance is based on range value
+										if Global._subAction == 1:
+											attacker._ballistaTargetRange = unit_moves[i].range
+										#Catapult damage chance is based on range value (assuming)
+										if Global._subAction == 2:
+											attacker._catapultTargetRange = unit_moves[i].range
+										
+										#Reset
+										attacker._owner._shipClicked = false
+										Global._lastShipClicked = null
+										deselect()
+									if unit_moves == null:
+										print("Target is too far away or doesn't exist!")
 			else:
 				#Reset
 				if attacker:

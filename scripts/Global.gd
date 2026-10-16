@@ -41,7 +41,12 @@ func _input(event: InputEvent) -> void:
 			for ship in ships:
 				if ship._boardingCounter == 0:
 					LRF.archerFire(ship)
-			get_tree().call_group("ships", "ship_reset")
+			#Reset Ship
+			for ship in ships:
+				ship._enemyTarget = null
+				ship._owner._shipClicked = false
+				if ship._dead.size() > 0:
+					purgeTheDead(ship)
 		
 		#If Ballista
 		if Global._action == 1 and Global._subAction == 1:
@@ -64,7 +69,12 @@ func _input(event: InputEvent) -> void:
 						if ballista._engineers.size() >= 1:
 							ballista.reload()
 							print("Reloading ", ship.name, "s Ballista now at (", ship._ballista._reloadTimer, ")")
-			get_tree().call_group("ships", "ship_reset")
+			#Reset Ship
+			for ship in ships:
+				ship._enemyTarget = null
+				ship._owner._shipClicked = false
+				if ship._dead.size() > 0:
+					purgeTheDead(ship)
 		
 		#If Catapult
 		elif Global._action == 1 and Global._subAction == 2:
@@ -87,7 +97,12 @@ func _input(event: InputEvent) -> void:
 						if catapult._engineers.size() >= 1:
 							catapult.reload()
 							print("Reloading ", ship.name, "s Catapult now at (", ship._catapult._reloadTimer, ")")
-			get_tree().call_group("ships", "ship_reset")
+			#Reset Ship
+			for ship in ships:
+				ship._enemyTarget = null
+				ship._owner._shipClicked = false
+				if ship._dead.size() > 0:
+					purgeTheDead(ship)
 		
 		#Boarding Action Fighting Determinating
 		elif Global._action == 2 and Global._subAction == 0:
@@ -103,21 +118,59 @@ func _input(event: InputEvent) -> void:
 			for ship in ships:
 				if !ship._boardingPrepped and ship._enemyTarget:
 					BoardingActions.determineFighting(ship)
+			for ship in ships:
+				if ship._boardingPrepped:
+					ship._boardingPrepped = false
 		
 		#Boarding Action Archery
 		elif Global._action == 2 and Global._subAction == 1:
 			var ships: Array[Node] = get_tree().get_nodes_in_group("ships")
 			#Determine which ships are boarding eachother
 			for ship in ships:
-				if ship._boardingCounter == 0:
-					BoardingActions.boardingArcherFire(ship)
+				if ship._enemyTarget and ship._boardingArchers.size() > 0 and ship._boardingCounter == 0 and ship._boardingPrepped == false:
+					var thread1: Thread = Thread.new()
+					thread1.start(BoardingActions.boardingArcherFire.bind(ship))
+					var thread2: Thread = Thread.new()
+					thread2.start(BoardingActions.boardingArcherFire.bind(ship._enemyTarget))
+					if thread1.is_started():
+						thread1.wait_to_finish()
+					if thread2.is_started():
+						thread2.wait_to_finish()
+			for ship in ships:
+				ship._boardingPepped = false
+				if ship._dead.size() > 0:
+					purgeTheDead(ship)
 		
 		#Boarding Action Javelins
 		elif Global._action == 2 and Global._subAction == 2:
 			var ships: Array[Node] = get_tree().get_nodes_in_group("ships")
 			#Determine which ships are boarding eachother
 			for ship in ships:
-				BoardingActions.boardingJavelineFire(ship)
+				if ship._enemyTarget and ship._boardingJavelins.size() > 0 and ship._boardingCounter == 0 and ship._boardingPrepped == false:
+					var thread1: Thread = Thread.new()
+					thread1.start(BoardingActions.boardingJavelineFireFire.bind(ship))
+					var thread2: Thread = Thread.new()
+					thread2.start(BoardingActions.boardingJavelineFire.bind(ship._enemyTarget))
+					if thread1.is_started():
+						thread1.wait_to_finish()
+					if thread2.is_started():
+						thread2.wait_to_finish()
+			for ship in ships:
+				ship._boardingPepped = false
+				if ship._dead.size() > 0:
+					purgeTheDead(ship)
+		
+		#Boarding Action Melee
+		elif Global._action == 2 and Global._subAction == 3:
+			var ships: Array[Node] = get_tree().get_nodes_in_group("ships")
+			#Determine which ships are boarding eachother
+			for ship in ships:
+				pass
+#				BoardingActions.boardingJavelineFire(ship)
+			for ship in ships:
+				ship._boardingPepped = false
+				if ship._dead.size() > 0:
+					purgeTheDead(ship)
 
 
 func compare_ship_initiatives(a: Ship, b: Ship):
@@ -139,6 +192,24 @@ func compare_ship_initiatives(a: Ship, b: Ship):
 			return rollOne > rollTwo
 			rolling = false
 
+#region Parent Functions
+func addToDead(ship, deadGuys):
+	var guy = deadGuys.pick_random()
+	guy._isDead = true
+	ship._dead.append(guy)
+
+func purgeTheDead(ship):
+	print(ship.name, "s Dead: ", ship._dead.size())
+	print("Before: ", ship.name, " has A: ", ship._marineArchers.size(), ", J: ", ship._marineJavelineers.size(), ", S: ", ship._marineSoldiers.size(), 
+	", E: ", ship._engineers.size(), ", D: ", ship._deckCrew.size() )
+	for i in ship._dead.size():
+		ship.kill(ship._dead[i])
+		if ship._fighters.has(ship._dead[i]):
+			ship._fighters.erase(ship._dead[i])
+	ship._dead.clear()
+	print("After: ", ship.name, " has A: ", ship._marineArchers.size(), ", J: ", ship._marineJavelineers.size(), ", S: ", ship._marineSoldiers.size(), 
+	", E: ", ship._engineers.size(), ", D: ", ship._deckCrew.size() )
+#endregion
 
 func action_reset():
 	_subAction = 0

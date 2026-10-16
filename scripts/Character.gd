@@ -2,6 +2,7 @@ class_name Character;
 
 var _owner: Player;
 var _allocatedTo
+var _isDead: bool = false
 
 func setOwner(owner: Player):
 	self._owner = owner;

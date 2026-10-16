@@ -282,11 +282,6 @@ func cleanup():
 	_dead.clear();
 #endregion
 
-func shipReset():
-	_enemyTarget = null
-	_owner._shipClicked = false
-
-
 #region Trireme Class
 class Trireme extends Ship:
 	func _setup(owner: Player, numOfDeckCrew: int = 10, numOfReserveRowers: int = 50,
