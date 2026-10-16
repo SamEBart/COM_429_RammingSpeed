@@ -24,11 +24,6 @@ func _init(name: String, playerId: int):
 func _ready() -> void:
 	self.add_to_group("players")
 
-func initiate(name: String, playerId: int):
-	_name = name;
-	_playerId = playerId;
-	_isSpectator = false;
-
 func setName(name: String):
 	_name = name;
 
