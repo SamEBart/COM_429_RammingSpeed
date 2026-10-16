@@ -30,7 +30,7 @@ func getName() -> String:
 func getPlayerId() -> int:
 	return _playerId;
 
-func getOwnedShips() -> Array[Object]:
+func getOwnedShips() -> Array[Ship]:
 	return _ships;
 
 func appendShip(ship: Object):
