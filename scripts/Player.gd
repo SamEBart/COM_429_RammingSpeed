@@ -5,7 +5,7 @@ class_name Player;
 var _name: String;
 var _playerId: int;
 # TYPE WILL CHANGE
-var _ships: Array[Object];
+var _ships: Array[Ship];
 var _isSpectator: bool;
 
 #Carter WIP
