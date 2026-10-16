@@ -5,21 +5,24 @@ class_name Player;
 var _name: String;
 var _playerId: int;
 # TYPE WILL CHANGE
-var _ships: Array[Object];
+var _ships: Array[Ship];
 var _isSpectator: bool;
 
 #Carter WIP
-var _shipClicked = false				#Know when Player has a ship selected for an action
-var _attacker							#Know who Player has selected for thier action, i.e. who is doing the firing in LRF
-var _isReady = false					#Know when player is done with their turn/ready to start turn
+var _shipClicked: bool;					#Know when Player has a ship selected for an action
+var _attacker: Player;					#Know who Player has selected for thier action, i.e. who is doing the firing in LRF
+var _isReady: bool;						#Know when player is done with their turn/ready to start turn
+
+func _init(name: String, playerId: int):
+	_name = name;
+	_playerId = playerId;
+	_ships = [];
+	_isSpectator = false;
+	_shipClicked = false;
+	_isReady = false;
 
 func _ready() -> void:
 	self.add_to_group("players")
-
-func initiate(name: String, playerId: int):
-	_name = name;
-	_playerId = playerId;
-	_isSpectator = false;
 
 func setName(name: String):
 	_name = name;
@@ -30,7 +33,7 @@ func getName() -> String:
 func getPlayerId() -> int:
 	return _playerId;
 
-func getOwnedShips() -> Array[Object]:
+func getOwnedShips() -> Array[Ship]:
 	return _ships;
 
 func appendShip(ship: Object):
