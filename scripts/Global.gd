@@ -137,7 +137,7 @@ func _input(event: InputEvent) -> void:
 					if thread2.is_started():
 						thread2.wait_to_finish()
 			for ship in ships:
-				ship._boardingPepped = false
+				ship._boardingPrepped = false
 				if ship._dead.size() > 0:
 					purgeTheDead(ship)
 		
@@ -156,7 +156,7 @@ func _input(event: InputEvent) -> void:
 					if thread2.is_started():
 						thread2.wait_to_finish()
 			for ship in ships:
-				ship._boardingPepped = false
+				ship._boardingPrepped = false
 				if ship._dead.size() > 0:
 					purgeTheDead(ship)
 		
@@ -165,10 +165,10 @@ func _input(event: InputEvent) -> void:
 			var ships: Array[Node] = get_tree().get_nodes_in_group("ships")
 			#Determine which ships are boarding eachother
 			for ship in ships:
-				pass
-#				BoardingActions.boardingJavelineFire(ship)
+				if ship:
+					BoardingActions.preBoardingMelee(ship)
 			for ship in ships:
-				ship._boardingPepped = false
+				ship._boardingPrepped = false
 				if ship._dead.size() > 0:
 					purgeTheDead(ship)
 

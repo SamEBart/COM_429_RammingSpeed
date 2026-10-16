@@ -76,7 +76,7 @@ func _input(event: InputEvent) -> void:
 					if unit_moves.size() > 0:
 						for i in unit_moves.size():
 							#If so then in range
-							if unit_moves[i].occupier.size() > 0:
+							if unit_moves[i].occupier:
 								for j in unit_moves[i].occupier.size():
 									if unit_moves and hit_object == unit_moves[i].occupier[j]:
 										attacker._attacker._enemyTarget = hit_object

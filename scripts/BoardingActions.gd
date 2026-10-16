@@ -82,9 +82,7 @@ func boardingArcherFire(ship):
 	print("Attempting BAF")
 	var target = ship._enemyTarget
 	ship._boardingPrepped = true
-	var roll = randi_range(1, 6)
-	if roll == 6:
-		roll = randi_range(2, 12)
+	if randi_range(1, 6) == 6:
 		match randi_range(2, 12):
 			#Engineer Killed
 			2:
@@ -122,9 +120,7 @@ func boardingJavelineFire(ship):
 	print("Attempting BJF")
 	var target = ship._enemyTarget
 	ship._boardingPrepped = true
-	var roll = randi_range(1, 6)
-	if roll >= 5:
-		roll = randi_range(2, 12)
+	if randi_range(1, 6) >= 5:
 		match randi_range(2, 12):
 			#Engineer Killed
 			2:
@@ -162,71 +158,122 @@ func preBoardingMelee(ship):
 	var target = ship._enemyTarget
 	var myRoll
 	var targetRoll
-	var total = returnLarget(ship._boardingMelee.size(), target._boardingMelee.size())
-	for num in total:
-		#If Ship Melee is Soldier
-		if ship._boardingMelee[num] is Character.Marine.Soldier:
-			myRoll = randi_range(1, 6)
-			#If Soldier v Soldier
-			if target._boardingMelee[num] is Character.Marine.Soldier:
-				targetRoll = randi_range(1, 6)
-				#Ship Hits
-				if myRoll == 6:
-					#If both hit then skip
-					if targetRoll == 6:
-						continue
-					#Ship hits only
-				
-				#Target Hits Only
-				elif targetRoll == 6:
-					pass
-				
-			#Else Soldier v Aux
-			else:
-				targetRoll = randi_range(1, 8)
-				#Ship Hits
-				if myRoll >= 5:
-					#If both hit then skip
-					if targetRoll == 8:
-						continue
-					#Ship hits only
-				
-				#Target Hits Only
-				elif targetRoll == 8:
-					pass
-		
-		#Else Ship Melee is Aux
-		else:
-			myRoll = randi_range(1, 8)
-			#If Aux v Soldier
-			if target._boardingMelee[num] is Character.Marine.Soldier:
-				targetRoll = randi_range(1, 6)
-				#Ship Hits
-				if myRoll == 8:
-					#If both hit then skip
-					if targetRoll >= 5:
-						continue
-					#Ship hits only
-				
-				#Target Hits Only
-				elif targetRoll >= 5:
-					pass
+	if target:
+		var total = returnLarget(ship._boardingMelee.size(), target._boardingMelee.size())
+		for num in total:
+			#If Ship Melee is Soldier
+			if ship._boardingMelee[num] is Character.Marine.Soldier:
+				myRoll = randi_range(1, 6)
+				#If Soldier v Soldier
+				if target._boardingMelee[num] is Character.Marine.Soldier:
+					targetRoll = randi_range(1, 6)
+					#Ship Hits
+					if myRoll == 6:
+						#If both hit then skip
+						if targetRoll == 6:
+							continue
+						#Ship hits only
+						boardingMelee(ship)
+					
+					#Target Hits Only
+					elif targetRoll == 6:
+						boardingMelee(ship)
+					
+				#Else Soldier v Aux
+				else:
+					targetRoll = randi_range(1, 8)
+					#Ship Hits
+					if myRoll >= 5:
+						#If both hit then skip
+						if targetRoll == 8:
+							continue
+						#Ship hits only
+						boardingMelee(ship)
+					
+					#Target Hits Only
+					elif targetRoll == 8:
+						boardingMelee(ship)
 			
-			#Else Aux v Aux
+			#Else Ship Melee is Aux
 			else:
-				targetRoll = randi_range(1, 8)
-				#Ship Hits
-				if myRoll >= 7:
-					#If both hit then skip
-					if targetRoll >= 7:
-						continue
-					#Ship hits only
+				myRoll = randi_range(1, 8)
+				#If Aux v Soldier
+				if target._boardingMelee[num] is Character.Marine.Soldier:
+					targetRoll = randi_range(1, 6)
+					#Ship Hits
+					if myRoll == 8:
+						#If both hit then skip
+						if targetRoll >= 5:
+							continue
+						#Ship hits only
+						boardingMelee(ship)
+					
+					#Target Hits Only
+					elif targetRoll >= 5:
+						boardingMelee(ship)
 				
-				#Target Hits Only
-				elif targetRoll >= 7:
-					pass
-			
+				#Else Aux v Aux
+				else:
+					targetRoll = randi_range(1, 8)
+					#Ship Hits
+					if myRoll >= 7:
+						#If both hit then skip
+						if targetRoll >= 7:
+							continue
+						#Ship hits only
+						boardingMelee(ship)
+					
+					#Target Hits Only
+					elif targetRoll >= 7:
+						boardingMelee(ship)
+				
 
+func boardingMelee(ship):
+	var target = ship._enemyTarget
+	match randi_range(2, 12):
+		#Engineer Killed
+		2:
+			if target.getEngineers():
+				Global.addToDead(target, target.getEngineers())
+		
+		#Deck Crew Killed (2)
+		3:
+			for i in 2:
+				if target.getDeckCrew():
+					Global.addToDead(target, target.getDeckCrew())
+		
+		#Random Marine Killed
+		4,5:
+			match randi_range(1, 3):
+				1:
+					if target.getArchers():
+						Global.addToDead(target, target.getArchers())
+				2:
+					if target.getJavelineers():
+						Global.addToDead(target, target.getJavelineers())
+				3:
+					if target.getSoldiers():
+						Global.addToDead(target, target.getSoldiers())
+		
+		#Rower Killed (2)
+		6,8:
+			for i in 2:
+				if target.getReserveRowers():
+					Global.addToDead(target, target.getReserveRowers())
+				elif target.getActiveRowers():
+					Global.addToDead(target, target.getActiveRowers())
+				
+		#Rower Killed
+		7:
+			if target.getReserveRowers():
+				Global.addToDead(target, target.getReserveRowers())
+			elif target.getActiveRowers():
+				Global.addToDead(target, target.getActiveRowers())
+				
+		#Deck Crew Killed
+		9,10,11:
+			if target.getDeckCrew():
+				Global.addToDead(target, target.getDeckCrew())
 
 func returnLarget(a, b):
 	return a if a > b else b
