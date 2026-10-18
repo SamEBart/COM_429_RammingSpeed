@@ -37,16 +37,7 @@ func _input(event: InputEvent) -> void:
 	elif Input.is_action_just_pressed("CtrlEnter"):
 		#If Archery
 		if Global._action == 1 and Global._subAction == 0:
-			var ships: Array[Node] = get_tree().get_nodes_in_group("ships")
-			for ship in ships:
-				if ship._boardingCounter == 0:
-					LRF.archerFire(ship)
-			#Reset Ship
-			for ship in ships:
-				ship._enemyTarget = null
-				ship._owner._shipClicked = false
-				if ship._dead.size() > 0:
-					purgeTheDead(ship)
+			resolve_long_range_fire()
 		
 		#If Ballista
 		if Global._action == 1 and Global._subAction == 1:
@@ -106,21 +97,7 @@ func _input(event: InputEvent) -> void:
 		
 		#Boarding Action Fighting Determinating
 		elif Global._action == 2 and Global._subAction == 0:
-			var ships: Array[Node] = get_tree().get_nodes_in_group("ships")
-			#Determine which ships are boarding eachother
-			for ship in ships:
-				for boat in ships:
-					if ship._tile == boat._tile and ship != boat and ship._enemyTarget == null and boat._enemyTarget == null:
-						ship._enemyTarget = boat
-						boat._enemyTarget = ship
-			
-			#
-			for ship in ships:
-				if !ship._boardingPrepped and ship._enemyTarget:
-					BoardingActions.determineFighting(ship)
-			for ship in ships:
-				if ship._boardingPrepped:
-					ship._boardingPrepped = false
+			resolve_boarding()
 		
 		#Boarding Action Archery
 		elif Global._action == 2 and Global._subAction == 1:
@@ -213,3 +190,37 @@ func purgeTheDead(ship):
 
 func action_reset():
 	_subAction = 0
+
+
+## The phase sequence sets this so clicks match the current step.
+## 0 is Move, 1 is Long Range Fire, 2 is Boarding. Any other value ignores those clicks.
+func set_turn_action(action: int) -> void:
+	_action = action
+	action_reset()
+
+
+func resolve_long_range_fire() -> void:
+	var ships: Array[Node] = get_tree().get_nodes_in_group("ships")
+	for ship in ships:
+		if ship._boardingCounter == 0:
+			LRF.archerFire(ship)
+	for ship in ships:
+		ship._enemyTarget = null
+		ship._owner._shipClicked = false
+		if ship._dead.size() > 0:
+			purgeTheDead(ship)
+
+
+func resolve_boarding() -> void:
+	var ships: Array[Node] = get_tree().get_nodes_in_group("ships")
+	for ship in ships:
+		for boat in ships:
+			if ship._tile == boat._tile and ship != boat and ship._enemyTarget == null and boat._enemyTarget == null:
+				ship._enemyTarget = boat
+				boat._enemyTarget = ship
+	for ship in ships:
+		if !ship._boardingPrepped and ship._enemyTarget:
+			BoardingActions.determineFighting(ship)
+	for ship in ships:
+		if ship._boardingPrepped:
+			ship._boardingPrepped = false

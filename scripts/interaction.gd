@@ -1,5 +1,7 @@
 extends Node3D
 
+const _Log = preload("res://scripts/turn/game_log.gd")
+
 @export var tile_cursor_scene : PackedScene
 @export var unit_cursor_scene : PackedScene
 @export var main_camera : Camera3D
@@ -13,6 +15,7 @@ var unit_cursor : Node3D
 
 
 func _ready() -> void:
+	add_to_group("interaction")
 	if not tile_cursor or tile_cursor == null:
 		tile_cursor = tile_cursor_scene.instantiate()
 		add_child(tile_cursor)
@@ -24,6 +27,9 @@ func _ready() -> void:
 
 func _input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.pressed:
+		# A click inside the phase panel or the ship stats panel is a menu click.
+		if _pointer_is_over_menu():
+			return
 		var mouse_pos = get_viewport().get_mouse_position()
 		var origin = main_camera.project_ray_origin(mouse_pos)
 		var dir = main_camera.project_ray_normal(mouse_pos)
@@ -31,6 +37,10 @@ func _input(event: InputEvent) -> void:
 		var hit_object = raycast_at_mouse(origin, end)
 		if not hit_object:
 			return
+		if Input.is_action_just_pressed("Click") and hit_object.is_in_group("units"):
+			get_tree().call_group("ship_stats", "show_ship", hit_object)
+			if TurnController.use_phase_movement and Global._action != 0 and Global._action != 1 and Global._action != 2:
+				preview_phase_step(hit_object)
 		
 		#Movement
 		if Global._action == 0:
@@ -102,6 +112,14 @@ func _input(event: InputEvent) -> void:
 				deselect()
 
 
+func _pointer_is_over_menu() -> bool:
+	var mouse := get_viewport().get_mouse_position()
+	for node in get_tree().get_nodes_in_group("screen_menu"):
+		if node is Control and node.get_global_rect().has_point(mouse):
+			return true
+	return false
+
+
 func raycast_at_mouse(origin, end) -> Node3D:
 		var query = PhysicsRayQueryParameters3D.create(origin, end)
 		var collision = get_world_3d().direct_space_state.intersect_ray(query)
@@ -119,6 +137,7 @@ func deselect():
 	unit_moves.clear()
 	selected_unit = null
 	p_finder.clear_highlight()
+	get_tree().call_group("ship_stats", "clear_ship")
 
 
 func attempt_select(hit):
@@ -130,11 +149,16 @@ func attempt_select(hit):
 
 
 func attempt_move_unit(hit):
-	if not selected_unit or not hit.is_in_group("tiles") or hit is not Tile or not unit_moves.has(hit):
-		print("Attempted to move to invalid tile")
+	if TurnController.use_phase_movement:
+		_Log.push("Phase movement is on. Finish Move steps the ships.")
 		return
-	selected_unit.place_unit(hit.position, hit)
-	deselect()
+	if not selected_unit or not hit.is_in_group("tiles") or hit is not Tile or not unit_moves.has(hit):
+		_Log.push("Attempted to move to invalid tile")
+		return
+	var moved := selected_unit
+	moved.place_unit(hit.position, hit)
+	follow_selected_ship(moved)
+	get_tree().call_group("ship_stats", "show_ship", moved)
 
 
 func select_unit(unit):
@@ -143,8 +167,38 @@ func select_unit(unit):
 	hide_cursor(tile_cursor)
 	if unit is Unit:
 		highlight_unit(unit)
-		unit_moves = p_finder.find_reachable_tiles(unit.occupied_tile, unit.movement_range, unit)
+		if TurnController.use_phase_movement and unit is Ship:
+			unit.aim_at_facing()
+			unit_moves = PhaseMovement.command_preview(unit)
+		else:
+			unit_moves = p_finder.find_reachable_tiles(unit.occupied_tile, unit.movement_range, unit)
 		p_finder.highlight_tile(unit_moves)
+		get_tree().call_group("ship_stats", "show_ship", unit)
+
+
+func follow_selected_ship(unit: Node) -> void:
+	if unit is not Ship or not is_instance_valid(unit):
+		return
+	selected_tile = null
+	selected_unit = unit
+	hide_cursor(tile_cursor)
+	unit.aim_at_facing()
+	highlight_unit(unit)
+	p_finder.clear_highlight()
+	unit_moves = PhaseMovement.command_preview(unit)
+	p_finder.highlight_tile(unit_moves)
+
+
+func preview_phase_step(unit: Node) -> void:
+	if unit is not Ship:
+		return
+	p_finder.clear_highlight()
+	unit_moves.clear()
+	selected_unit = unit
+	unit.aim_at_facing()
+	highlight_unit(unit)
+	unit_moves = PhaseMovement.command_preview(unit)
+	p_finder.highlight_tile(unit_moves)
 
 
 func highlight_tile(tile):
