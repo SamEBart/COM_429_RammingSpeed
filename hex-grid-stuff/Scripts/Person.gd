@@ -4,7 +4,6 @@ class_name Person
 var can_boarding_action : bool
 var act_as_auxiliary = false
 var is_alive = true
-var used = false
 
 func chnage_boarding_participation(answer : bool):
 	can_boarding_action = answer
