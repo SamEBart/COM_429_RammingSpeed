@@ -24,7 +24,9 @@ var _owner: Player;
 var _flotationHits: int;
 var _mastHP: int;
 var _beakHP: int;
-var _rowingSpeed: int;
+var _rowingSpeed: int = 0
+## True while the mast is lowered. Adds 2 to overall speed, up to 6.
+var _mastDown: bool = false
 var _canLRF: bool;
 var _oarBanks: Array[OarBank];
 var _ballista: Ballista;
@@ -48,6 +50,29 @@ var _boardingArchers = []
 var _boardingJavelins = []
 var _boardingMelee = []
 #endregion
+
+## Quadrireme speed changes are +1 or -1.
+func get_ship_kind() -> SpeedCalculator.ShipKind:
+	return SpeedCalculator.ShipKind.QUADRIREME
+
+
+## Changes rowing speed when the change is legal for this ship.
+## A Quadrireme may change by +1 or -1. A Trireme may change by +1 or -2.
+func adjust_rowing_speed(delta: int) -> bool:
+	if not SpeedCalculator.adjustment_allowed(delta, get_ship_kind()):
+		return false
+	_rowingSpeed = SpeedCalculator.apply_rowing_adjustment(_rowingSpeed, delta, get_ship_kind())
+	return true
+
+
+func set_mast_down(down: bool) -> void:
+	_mastDown = down
+
+
+## Oar speed capped at 4. Mast down can raise overall speed to 6.
+func get_overall_speed() -> int:
+	return SpeedCalculator.overall_speed(_rowingSpeed, _mastDown)
+
 
 func _ready() -> void:
 	add_to_group("ships")
@@ -284,6 +309,11 @@ func cleanup():
 
 #region Trireme Class
 class Trireme extends Ship:
+	## Trireme speed changes are +1 or -2.
+	func get_ship_kind() -> SpeedCalculator.ShipKind:
+		return SpeedCalculator.ShipKind.TRIREME
+
+
 	func _setup(owner: Player, numOfDeckCrew: int = 10, numOfReserveRowers: int = 50,
 	numOfArchers: int = 3, numOfJavelineers: int = 3, numOfSoldiers: int = 7,
 	numOfEngineers: int = 3, numOfOarBanks: int = 50, rowersPerBank: int = 3,
