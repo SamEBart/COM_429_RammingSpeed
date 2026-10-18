@@ -1,0 +1,78 @@
+[gd_scene format=3 uid="uid://t0cqs0th22qe"]
+
+[ext_resource type="Script" uid="uid://csnjevllpg05x" path="res://Scripts/test/turn_controller_test_window.gd" id="1_test_window"]
+
+[node name="TurnControllerTestWindow" type="Control" unique_id=875294488]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_test_window")
+
+[node name="Margin" type="MarginContainer" parent="." unique_id=1584635217]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 24
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 24
+
+[node name="Layout" type="VBoxContainer" parent="Margin" unique_id=809033114]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Title" type="Label" parent="Margin/Layout" unique_id=487945794]
+layout_mode = 2
+theme_override_font_sizes/font_size = 28
+text = "TurnController Test Window"
+
+[node name="Note" type="Label" parent="Margin/Layout" unique_id=2139433921]
+layout_mode = 2
+text = "This window is only a tester. The turn system runs without it. These buttons call TurnController until the real menus exist."
+autowrap_mode = 3
+
+[node name="Status" type="Label" parent="Margin/Layout" unique_id=1299114411]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Setup"
+
+[node name="Hint" type="Label" parent="Margin/Layout" unique_id=959252657]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Begin Match leaves setup and opens Command Phase. Secret planning will happen in that phase later."
+autowrap_mode = 3
+
+[node name="BeginMatch" type="Button" parent="Margin/Layout" unique_id=758323060]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Begin Match"
+
+[node name="LockCommand" type="Button" parent="Margin/Layout" unique_id=1054359263]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Lock Command"
+
+[node name="CompleteExecution" type="Button" parent="Margin/Layout" unique_id=1556259867]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Complete execution phase"
+
+[node name="EndMatch" type="Button" parent="Margin/Layout" unique_id=1799112313]
+unique_name_in_owner = true
+layout_mode = 2
+text = "End Match"
+
+[node name="HistoryLabel" type="Label" parent="Margin/Layout" unique_id=654945707]
+layout_mode = 2
+text = "History"
+
+[node name="Log" type="Label" parent="Margin/Layout" unique_id=1130104752]
+unique_name_in_owner = true
+layout_mode = 2
