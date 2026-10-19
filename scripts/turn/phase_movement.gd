@@ -13,13 +13,17 @@ static func apply(tree: SceneTree, phase: int) -> bool:
 	return entered_occupied
 
 
-## During Command, highlight only the hex the ship is facing.
+## During Command, highlight the hex this order will step into.
+## Speed -1 paints the hex behind the bow. Every other speed paints the hex in front.
 static func command_preview(ship: Ship) -> Array[Node3D]:
 	var shown: Array[Node3D] = []
 	if ship.occupied_tile == null:
 		return shown
-	var ahead := _neighbor_tile(ship.occupied_tile, ship._facing)
-	if ahead:
+	var facing := ship._facing
+	if ship.get_overall_speed() < 0:
+		facing += 3
+	var ahead := _neighbor_tile(ship.occupied_tile, facing)
+	if ahead and _is_sailable(ahead):
 		shown.append(ahead)
 	return shown
 
@@ -48,9 +52,10 @@ const _Log = preload("res://scripts/turn/game_log.gd")
 static func _step(ship: Ship, phase: int, pass_index: int) -> bool:
 	if ship._phase_move_stopped or ship.occupied_tile == null:
 		return false
-	if _shares_hex_with_enemy(ship):
-		ship._phase_move_stopped = true
-		_Log.push("Phase %d: %s is already in contact. Movement stops." % [phase, ship.name])
+	var sharing := _other_ship_here(ship)
+	if sharing != null:
+		_stop_pair(ship, sharing)
+		_Log.push("Phase %d: %s is sharing a hex with %s. Both stop for the rest of the turn." % [phase, ship.name, sharing.name])
 		return false
 	var speed := ship.get_overall_speed()
 	if pass_index >= PhaseSpeedChart.hex_count(speed, phase):
@@ -63,9 +68,17 @@ static func _step(ship: Ship, phase: int, pass_index: int) -> bool:
 	else:
 		dest = _step_tile(ship, speed)
 	if dest == null:
-		_Log.push("Phase %d: %s stayed. The next hex is blocked." % [phase, ship.name])
+		var blocked := _neighbor_tile(ship.occupied_tile, ship._facing if speed >= 0 else ship._facing + 3)
+		if blocked and not _is_sailable(blocked):
+			_Log.push("Phase %d: %s stayed. The next hex is land." % [phase, ship.name])
+		else:
+			_Log.push("Phase %d: %s stayed. The next hex is blocked." % [phase, ship.name])
 		return false
-	var entered_occupied := dest.occupier.size() > 0
+	var already_there: Ship = null
+	for occ in dest.occupier:
+		if occ is Ship:
+			already_there = occ
+			break
 	ship.place_unit(dest.position, dest)
 	var verb := "forward"
 	if speed < 0:
@@ -73,11 +86,26 @@ static func _step(ship: Ship, phase: int, pass_index: int) -> bool:
 	elif speed == 0:
 		verb = "adrift"
 	_Log.push("Phase %d: %s moved %s onto %s." % [phase, ship.name, verb, dest.biome])
-	if entered_occupied:
-		ship._phase_move_stopped = true
-		_Log.push("Phase %d: %s entered an occupied hex. Movement stops for the turn." % [phase, ship.name])
-		return true
-	return false
+	if already_there == null:
+		return false
+	_stop_pair(ship, already_there)
+	_Log.push("Phase %d: %s and %s collided. Both stop for the rest of the turn." % [phase, ship.name, already_there.name])
+	_call_boarding(ship, already_there)
+	return true
+
+
+static func _stop_pair(ship: Ship, other: Ship) -> void:
+	ship._phase_move_stopped = true
+	other._phase_move_stopped = true
+
+
+static func _call_boarding(ship: Ship, other: Ship) -> void:
+	ship._enemyTarget = other
+	other._enemyTarget = ship
+	_Log.push("%s calls BoardingActions.determineFighting on %s." % [ship.name, other.name])
+	# Ramming is not written yet. Develop that function next to determineFighting in
+	# BoardingActions.gd, and call it here before the boarding setup.
+	BoardingActions.determineFighting(ship)
 
 
 static func _step_tile(ship: Ship, speed: int) -> Tile:
@@ -153,21 +181,23 @@ static func _open_neighbors(origin: Tile) -> Array[Tile]:
 	return open
 
 
+static func _is_sailable(tile: Tile) -> bool:
+	return tile != null and tile.mesh_data != null and tile.mesh_data.type == Tile.biome_type.Ocean
+
+
 static func _can_enter(tile: Tile) -> bool:
-	if tile.mesh_data == null or tile.mesh_data.type == Tile.biome_type.Ocean:
+	if not _is_sailable(tile):
 		return false
 	return tile.occupier.size() < 2
 
 
-static func _shares_hex_with_enemy(ship: Ship) -> bool:
+static func _other_ship_here(ship: Ship) -> Ship:
 	if ship.occupied_tile == null:
-		return false
+		return null
 	for occ in ship.occupied_tile.occupier:
-		if occ == ship or occ is not Ship:
-			continue
-		if occ._owner != ship._owner:
-			return true
-	return false
+		if occ != ship and occ is Ship:
+			return occ
+	return null
 
 
 static func _dirs_for(tile: Tile) -> Array:

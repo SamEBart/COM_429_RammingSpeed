@@ -59,9 +59,8 @@ func is_tile_valid(coords : Vector2) -> bool:
 		push_warning("Tile not in map!")
 		return false
 	var tile = WorldMap.map_as_dict[coords]
-	if tile:
-		if tile.mesh_data.type != Tile.biome_type.Ocean:
-			valid = true
+	if tile and tile.mesh_data and tile.mesh_data.type == Tile.biome_type.Ocean:
+		valid = true
 	return valid
 
 
@@ -144,6 +143,6 @@ func is_tile_valid_range(coords : Vector2) -> bool:
 		push_warning("Tile not in map!")
 		return false
 	var tile = WorldMap.map_as_dict[coords]
-	if tile and tile.mesh_data.type != Tile.biome_type.Ocean:
+	if tile and tile.mesh_data and tile.mesh_data.type == Tile.biome_type.Ocean:
 		valid = true
 	return valid

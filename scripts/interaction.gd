@@ -23,6 +23,7 @@ func _ready() -> void:
 		unit_cursor = unit_cursor_scene.instantiate()
 		add_child(unit_cursor)
 	deselect()
+	TurnController.phase_changed.connect(_on_phase_changed)
 
 
 func _input(event: InputEvent) -> void:
@@ -36,6 +37,12 @@ func _input(event: InputEvent) -> void:
 		var end = origin + dir * 1000
 		var hit_object = raycast_at_mouse(origin, end)
 		if not hit_object:
+			return
+		if not TurnController.use_phase_movement:
+			if Input.is_action_just_pressed("Click"):
+				attempt_select(hit_object)
+			elif Input.is_action_just_pressed("RightClick"):
+				attempt_move_unit(hit_object)
 			return
 		if Input.is_action_just_pressed("Click") and hit_object.is_in_group("units"):
 			get_tree().call_group("ship_stats", "show_ship", hit_object)
@@ -71,12 +78,12 @@ func _input(event: InputEvent) -> void:
 					Global._lastShipClicked = hit_object
 					attacker = Global._lastShipClicked
 					attacker._owner._shipClicked = true
-					print("Clicked: ", attacker._attacker.name, " (", attacker._owner._name,") and can select LRF target!")
+					_Log.push("Selected: %s (%s) and can select LRF target!" % [attacker._attacker.name, attacker._owner._name])
 					attempt_range_select(hit_object, min_range, max_range)
 				
 				#Don't fire on self
 				elif attacker and attacker._owner._shipClicked and attacker._owner == objOwner and Input.is_action_just_pressed("RightClick"):
-					print("Same self bozo. Select new target!")
+					_Log.push("Same self bozo. Select new target!")
 				
 				#Don't select ship to action that you don't own (Multiplayer)
 				
@@ -90,7 +97,7 @@ func _input(event: InputEvent) -> void:
 								for j in unit_moves[i].occupier.size():
 									if unit_moves and hit_object == unit_moves[i].occupier[j]:
 										attacker._attacker._enemyTarget = hit_object
-										print("Shooter: ", attacker._attacker.name, " is targetting: ", attacker._attacker._enemyTarget.name, "\n")
+										_Log.push("Shooter: %s is targetting: %s" % [attacker._attacker.name, attacker._attacker._enemyTarget.name])
 										#Ballista damage chance is based on range value
 										if Global._subAction == 1:
 											attacker._ballistaTargetRange = unit_moves[i].range
@@ -103,9 +110,11 @@ func _input(event: InputEvent) -> void:
 										Global._lastShipClicked = null
 										deselect()
 									if unit_moves == null:
-										print("Target is too far away or doesn't exist!")
+										_Log.push("Target is too far away or doesn't exist!")
 			else:
 				#Reset
+				if attacker or selected_unit != null:
+					_Log.push("LRF Cancelled")
 				if attacker:
 					attacker._owner._shipClicked = false
 				Global._lastShipClicked = null
@@ -115,9 +124,21 @@ func _input(event: InputEvent) -> void:
 func _pointer_is_over_menu() -> bool:
 	var mouse := get_viewport().get_mouse_position()
 	for node in get_tree().get_nodes_in_group("screen_menu"):
-		if node is Control and node.get_global_rect().has_point(mouse):
+		if node is Control and _scaled_rect_has_point(node, mouse):
 			return true
 	return false
+
+
+func _scaled_rect_has_point(control: Control, point: Vector2) -> bool:
+	var xform := control.get_global_transform()
+	var card_size := control.size
+	var min_point: Vector2 = xform * Vector2.ZERO
+	var max_point := min_point
+	for corner in [Vector2(card_size.x, 0), Vector2(0, card_size.y), card_size]:
+		var placed: Vector2 = xform * corner
+		min_point = min_point.min(placed)
+		max_point = max_point.max(placed)
+	return Rect2(min_point, max_point - min_point).has_point(point)
 
 
 func raycast_at_mouse(origin, end) -> Node3D:
@@ -127,6 +148,12 @@ func raycast_at_mouse(origin, end) -> Node3D:
 			var hit = collision.collider.get_parent()
 			return hit
 		else:
+			if Global._action == 1 and (Global._lastShipClicked != null or selected_unit != null):
+				var attacker = Global._lastShipClicked
+				if attacker:
+					attacker._owner._shipClicked = false
+				Global._lastShipClicked = null
+				_Log.push("LRF Cancelled")
 			deselect()
 			return null
 
@@ -138,6 +165,14 @@ func deselect():
 	selected_unit = null
 	p_finder.clear_highlight()
 	get_tree().call_group("ship_stats", "clear_ship")
+
+
+func _on_phase_changed(_phase: TurnController.Phase, _execution_step: int, _turn_number: int) -> void:
+	if TurnController.action_step != TurnController.ActionStep.LONG_RANGE_FIRE:
+		return
+	if selected_unit == null or not is_instance_valid(selected_unit) or selected_unit is not Ship:
+		return
+	_Log.push("Selected: %s (%s). Select a target." % [selected_unit._attacker.name, selected_unit._owner._name])
 
 
 func attempt_select(hit):
@@ -157,7 +192,7 @@ func attempt_move_unit(hit):
 		return
 	var moved := selected_unit
 	moved.place_unit(hit.position, hit)
-	follow_selected_ship(moved)
+	_highlight_creative_range(moved)
 	get_tree().call_group("ship_stats", "show_ship", moved)
 
 
@@ -170,9 +205,9 @@ func select_unit(unit):
 		if TurnController.use_phase_movement and unit is Ship:
 			unit.aim_at_facing()
 			unit_moves = PhaseMovement.command_preview(unit)
+			p_finder.highlight_tile(unit_moves)
 		else:
-			unit_moves = p_finder.find_reachable_tiles(unit.occupied_tile, unit.movement_range, unit)
-		p_finder.highlight_tile(unit_moves)
+			_highlight_creative_range(unit)
 		get_tree().call_group("ship_stats", "show_ship", unit)
 
 
@@ -182,10 +217,23 @@ func follow_selected_ship(unit: Node) -> void:
 	selected_tile = null
 	selected_unit = unit
 	hide_cursor(tile_cursor)
+	if not TurnController.use_phase_movement:
+		_highlight_creative_range(unit)
+		return
 	unit.aim_at_facing()
 	highlight_unit(unit)
 	p_finder.clear_highlight()
 	unit_moves = PhaseMovement.command_preview(unit)
+	p_finder.highlight_tile(unit_moves)
+
+
+func _highlight_creative_range(unit: Unit) -> void:
+	if unit.occupied_tile == null:
+		return
+	selected_unit = unit
+	highlight_unit(unit)
+	p_finder.clear_highlight()
+	unit_moves = p_finder.find_reachable_tiles(unit.occupied_tile, 2, unit)
 	p_finder.highlight_tile(unit_moves)
 
 
@@ -208,11 +256,19 @@ func highlight_tile(tile):
 	move_cursor(tile_cursor, tile.global_position)
 	tile_cursor.visible = true
 	animate_cursor(tile_cursor)
-	print(tile.biome)
+	_Log.push(tile.biome)
+
+
+func _process(_delta: float) -> void:
+	if unit_cursor == null or not unit_cursor.visible:
+		return
+	if selected_unit == null or not is_instance_valid(selected_unit):
+		return
+	unit_cursor.global_position = selected_unit.global_position
 
 
 func highlight_unit(unit):
-	move_cursor(unit_cursor, unit.position)
+	unit_cursor.global_position = unit.global_position
 	unit_cursor.visible = true
 
 

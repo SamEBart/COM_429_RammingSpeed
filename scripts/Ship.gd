@@ -31,6 +31,9 @@ var _mastDown: bool = false
 var _facing: int = 0
 ## Set when this ship shares a hex with an enemy. Later phases do not move it.
 var _phase_move_stopped: bool = false
+var _slide: Tween
+var _slide_goals: Array[Vector3] = []
+var _sliding: bool = false
 var _canLRF: bool;
 var _oarBanks: Array[OarBank];
 var _ballista: Ballista;
@@ -89,8 +92,30 @@ func turn_facing(steps: int) -> void:
 
 
 func place_unit(new_position : Vector3, tile):
+	var start := global_position
+	var first_drop := occupied_tile == null
 	super.place_unit(new_position, tile)
+	var goal := global_position
+	if first_drop or start.distance_squared_to(goal) < 0.01:
+		aim_at_facing()
+		return
+	global_position = start
 	aim_at_facing()
+	_slide_goals.append(goal)
+	if _sliding:
+		return
+	_sliding = true
+	_play_slide()
+
+
+func _play_slide() -> void:
+	if _slide_goals.is_empty():
+		_sliding = false
+		return
+	var goal: Vector3 = _slide_goals.pop_front()
+	_slide = create_tween()
+	_slide.tween_property(self, "global_position", goal, 0.45).set_trans(Tween.TRANS_LINEAR)
+	_slide.finished.connect(_play_slide)
 
 
 ## The hull's bow is the ship's local +X. look_at aims local -Z, then a quarter turn brings the bow onto that hex.
