@@ -25,6 +25,8 @@ var _crew_label: Label
 var _engineer_label: Label
 var _marine_label: Label
 var _crew_buttons: Array[Button] = []
+var _weapon_row: HBoxContainer
+var _weapon_label: Label
 
 
 func _ready() -> void:
@@ -110,6 +112,16 @@ func _ready() -> void:
 	facing_row.add_child(_face_left)
 	facing_row.add_child(_face_right)
 
+	_weapon_row = HBoxContainer.new()
+	_weapon_row.add_theme_constant_override("separation", 4)
+	_weapon_row.visible = false
+	box.add_child(_weapon_row)
+	_weapon_label = Label.new()
+	_weapon_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_weapon_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	_weapon_row.add_child(_weapon_label)
+	_weapon_row.add_child(_small_button("Shuffle", _cycle_weapon, 52))
+
 	_crew_label = Label.new()
 	_crew_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_crew_label.add_theme_font_size_override("font_size", 8)
@@ -154,6 +166,30 @@ func _ready() -> void:
 			get_tree().call_group("interaction", "follow_selected_ship", _ship)
 	)
 	clear_ship()
+
+
+func _cycle_weapon() -> void:
+	if _ship == null:
+		return
+	Global._subAction = posmod(Global._subAction + 1, 3)
+	_refresh_weapon_line()
+	get_tree().call_group("interaction", "preview_lrf_range", _ship)
+
+
+func _weapon_name() -> String:
+	if Global._subAction == 1:
+		return "Ballista"
+	if Global._subAction == 2:
+		return "Catapult"
+	return "Archers"
+
+
+func _refresh_weapon_line() -> void:
+	var show_weapon := _ship != null and TurnController.phase == TurnController.Phase.EXECUTION and TurnController.action_step == TurnController.ActionStep.LONG_RANGE_FIRE
+	_weapon_row.visible = show_weapon
+	if show_weapon:
+		Global._subAction = posmod(Global._subAction, 3)
+		_weapon_label.text = "Weapon: %s" % _weapon_name()
 
 
 func _fit_stats_host(host: Control, panel: Control) -> void:
@@ -388,6 +424,7 @@ func _show_current() -> void:
 		_crew_label.text = "Crew: Rowing 0  Boarding 0  Inactive 0\nTotal 0  Max 0"
 		_engineer_label.text = "Engineers: Inactive 0  Total 0"
 		_marine_label.text = "Marines: Soldier 0  Javeline 0  Archers 0  Total 0"
+		_refresh_weapon_line()
 		return
 
 	_owner_label.text = _owner_name()
@@ -401,6 +438,7 @@ func _show_current() -> void:
 		mast = "Down"
 	_mast.text = "Mast: %s" % mast
 	_fill_crew_text()
+	_refresh_weapon_line()
 
 
 func _fill_crew_text() -> void:

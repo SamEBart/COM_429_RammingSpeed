@@ -45,7 +45,9 @@ func _input(event: InputEvent) -> void:
 				attempt_move_unit(hit_object)
 			return
 		if Input.is_action_just_pressed("Click") and hit_object.is_in_group("units"):
-			get_tree().call_group("ship_stats", "show_ship", hit_object)
+			var shooter_locked := Global._action == 1 and Global._lastShipClicked != null
+			if not shooter_locked:
+				get_tree().call_group("ship_stats", "show_ship", hit_object)
 			if TurnController.use_phase_movement and Global._action != 0 and Global._action != 1 and Global._action != 2:
 				preview_phase_step(hit_object)
 		
@@ -80,6 +82,7 @@ func _input(event: InputEvent) -> void:
 					attacker._owner._shipClicked = true
 					_Log.push("Selected: %s (%s) and can select LRF target!" % [attacker._attacker.name, attacker._owner._name])
 					attempt_range_select(hit_object, min_range, max_range)
+					get_tree().call_group("ship_stats", "show_ship", hit_object)
 				
 				#Don't fire on self
 				elif attacker and attacker._owner._shipClicked and attacker._owner == objOwner and Input.is_action_just_pressed("RightClick"):
@@ -220,6 +223,9 @@ func follow_selected_ship(unit: Node) -> void:
 	if not TurnController.use_phase_movement:
 		_highlight_creative_range(unit)
 		return
+	if _in_long_range_fire():
+		preview_lrf_range(unit)
+		return
 	unit.aim_at_facing()
 	highlight_unit(unit)
 	p_finder.clear_highlight()
@@ -270,6 +276,34 @@ func _process(_delta: float) -> void:
 func highlight_unit(unit):
 	unit_cursor.global_position = unit.global_position
 	unit_cursor.visible = true
+
+
+func _lrf_range() -> Vector2i:
+	var min_range := 1
+	var max_range := 1
+	if Global._subAction == 1:
+		max_range = 4
+	elif Global._subAction == 2:
+		max_range = 6
+		min_range = 2
+	return Vector2i(min_range, max_range)
+
+
+func _in_long_range_fire() -> bool:
+	return TurnController.phase == TurnController.Phase.EXECUTION and TurnController.action_step == TurnController.ActionStep.LONG_RANGE_FIRE
+
+
+func preview_lrf_range(unit: Node) -> void:
+	if unit is not Ship or not is_instance_valid(unit) or unit.occupied_tile == null:
+		return
+	selected_tile = null
+	selected_unit = unit
+	hide_cursor(tile_cursor)
+	highlight_unit(unit)
+	var ranges := _lrf_range()
+	p_finder.clear_highlight()
+	unit_moves = p_finder.find_targetable_units(unit.occupied_tile, ranges.x, ranges.y, unit)
+	p_finder.highlight_tile(unit_moves)
 
 
 func attempt_range_select(hit, min_range: int, max_range: int):
