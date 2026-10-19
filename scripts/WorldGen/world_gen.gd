@@ -55,7 +55,7 @@ func create_starting_units(count : int):
 	## Test pathfinder
 	while count > 0 and safety_count < 50:
 		var r_tile : Tile = WorldMap.map.pick_random()
-		if r_tile.mesh_data.type == Tile.biome_type.Ocean or r_tile.occupier != null:
+		if r_tile.mesh_data.type != Tile.biome_type.Ocean or r_tile.occupier != null:
 			safety_count += 1
 			continue
 		var unit : Unit = proto_unit.instantiate()
@@ -79,7 +79,7 @@ func _inst_tri(owner, name):
 	## Test pathfinder
 	while !done and safety_count < 50:
 		var r_tile : Tile = WorldMap.map.pick_random()
-		if r_tile.mesh_data.type == Tile.biome_type.Ocean or r_tile.occupier.size() > 0:
+		if r_tile.mesh_data.type != Tile.biome_type.Ocean or r_tile.occupier.size() > 0:
 			safety_count += 1
 			continue
 		var unit = myShip.instantiate()

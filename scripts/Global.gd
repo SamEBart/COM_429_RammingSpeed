@@ -1,5 +1,7 @@
 extends Node3D
 
+const _Log = preload("res://scripts/turn/game_log.gd")
+
 var _action = 0
 var _subAction = 0
 var threads: Array[Thread] = []
@@ -14,16 +16,16 @@ func _input(event: InputEvent) -> void:
 		match _action:
 			0:
 				action_reset()
-				print("Now on Move Ships ", _action)
+				_Log.push("Now on Move Ships %d" % _action)
 			1:
 				action_reset()
-				print("Now on Long Range Firing ", _action)
+				_Log.push("Now on Long Range Firing %d" % _action)
 			2:
 				action_reset()
-				print("Now on Boarding Actions ", _action)
+				_Log.push("Now on Boarding Actions %d" % _action)
 			3:
 				action_reset()
-				print("Reset ", _action)
+				_Log.push("Reset %d" % _action)
 				_action = -1
 				return
 	
@@ -31,22 +33,13 @@ func _input(event: InputEvent) -> void:
 	elif Input.is_action_just_pressed("NextSubAction"):
 		get_tree().call_group("ships", "ship_reset")
 		_subAction += 1
-		print("New Sub Action: ", _subAction, " on Global: ", _action)
+		_Log.push("New Sub Action: %d on Global: %d" % [_subAction, _action])
 	
 	# Temporary to  induce action truns/events manually
 	elif Input.is_action_just_pressed("CtrlEnter"):
 		#If Archery
 		if Global._action == 1 and Global._subAction == 0:
-			var ships: Array[Node] = get_tree().get_nodes_in_group("ships")
-			for ship in ships:
-				if ship._boardingCounter == 0:
-					LRF.archerFire(ship)
-			#Reset Ship
-			for ship in ships:
-				ship._enemyTarget = null
-				ship._owner._shipClicked = false
-				if ship._dead.size() > 0:
-					purgeTheDead(ship)
+			resolve_long_range_fire()
 		
 		#If Ballista
 		if Global._action == 1 and Global._subAction == 1:
@@ -61,14 +54,14 @@ func _input(event: InputEvent) -> void:
 						if ballista._engineers.size() >= 1:
 							LRF.ballistaFire(ship)
 							ship._ballista.fire()
-							print("Fired ", ship.name, "s Ballista!")
+							_Log.push("Fired %s's Ballista!" % ship.name)
 					elif !ballista.isLoaded() and ship.getEngineers():
 						# (TEMP) If ballista does not have an eng and one is available, assign eng to ballista
 						if ballista._engineers.size() == 0:
 							ballista.allocateEngineer(ship)
 						if ballista._engineers.size() >= 1:
 							ballista.reload()
-							print("Reloading ", ship.name, "s Ballista now at (", ship._ballista._reloadTimer, ")")
+							_Log.push("Reloading %s's Ballista now at (%s)" % [ship.name, ship._ballista._reloadTimer])
 			#Reset Ship
 			for ship in ships:
 				ship._enemyTarget = null
@@ -89,14 +82,14 @@ func _input(event: InputEvent) -> void:
 						if catapult._engineers.size() >= 1:
 							LRF.catapultFire(ship)
 							ship._catapult.fire()
-							print("Fired ", ship.name, "s Catapult!")
+							_Log.push("Fired %s's Catapult!" % ship.name)
 					elif !catapult.isLoaded() and ship.getEngineers():
 						# (TEMP) If catapult does not have an eng and one is available, assign eng to catapult
 						if catapult._engineers.size() == 0:
 							catapult.allocateEngineer(ship)
 						if catapult._engineers.size() >= 1:
 							catapult.reload()
-							print("Reloading ", ship.name, "s Catapult now at (", ship._catapult._reloadTimer, ")")
+							_Log.push("Reloading %s's Catapult now at (%s)" % [ship.name, ship._catapult._reloadTimer])
 			#Reset Ship
 			for ship in ships:
 				ship._enemyTarget = null
@@ -106,21 +99,7 @@ func _input(event: InputEvent) -> void:
 		
 		#Boarding Action Fighting Determinating
 		elif Global._action == 2 and Global._subAction == 0:
-			var ships: Array[Node] = get_tree().get_nodes_in_group("ships")
-			#Determine which ships are boarding eachother
-			for ship in ships:
-				for boat in ships:
-					if ship._tile == boat._tile and ship != boat and ship._enemyTarget == null and boat._enemyTarget == null:
-						ship._enemyTarget = boat
-						boat._enemyTarget = ship
-			
-			#
-			for ship in ships:
-				if !ship._boardingPrepped and ship._enemyTarget:
-					BoardingActions.determineFighting(ship)
-			for ship in ships:
-				if ship._boardingPrepped:
-					ship._boardingPrepped = false
+			resolve_boarding()
 		
 		#Boarding Action Archery
 		elif Global._action == 2 and Global._subAction == 1:
@@ -199,17 +178,49 @@ func addToDead(ship, deadGuys):
 	ship._dead.append(guy)
 
 func purgeTheDead(ship):
-	print(ship.name, "s Dead: ", ship._dead.size())
-	print("Before: ", ship.name, " has A: ", ship._marineArchers.size(), ", J: ", ship._marineJavelineers.size(), ", S: ", ship._marineSoldiers.size(), 
-	", E: ", ship._engineers.size(), ", D: ", ship._deckCrew.size() )
+	_Log.push("%s's Dead: %d" % [ship.name, ship._dead.size()])
+	_Log.push("Before: %s has A: %d, J: %d, S: %d, E: %d, D: %d" % [ship.name, ship._marineArchers.size(), ship._marineJavelineers.size(), ship._marineSoldiers.size(), ship._engineers.size(), ship._deckCrew.size()])
 	for i in ship._dead.size():
 		ship.kill(ship._dead[i])
 		if ship._fighters.has(ship._dead[i]):
 			ship._fighters.erase(ship._dead[i])
 	ship._dead.clear()
-	print("After: ", ship.name, " has A: ", ship._marineArchers.size(), ", J: ", ship._marineJavelineers.size(), ", S: ", ship._marineSoldiers.size(), 
-	", E: ", ship._engineers.size(), ", D: ", ship._deckCrew.size() )
+	_Log.push("After: %s has A: %d, J: %d, S: %d, E: %d, D: %d" % [ship.name, ship._marineArchers.size(), ship._marineJavelineers.size(), ship._marineSoldiers.size(), ship._engineers.size(), ship._deckCrew.size()])
 #endregion
 
 func action_reset():
 	_subAction = 0
+
+
+## The phase sequence sets this so clicks match the current step.
+## 0 is Move, 1 is Long Range Fire, 2 is Boarding. Any other value ignores those clicks.
+func set_turn_action(action: int) -> void:
+	_action = action
+	action_reset()
+
+
+func resolve_long_range_fire() -> void:
+	var ships: Array[Node] = get_tree().get_nodes_in_group("ships")
+	for ship in ships:
+		if ship._boardingCounter == 0:
+			LRF.archerFire(ship)
+	for ship in ships:
+		ship._enemyTarget = null
+		ship._owner._shipClicked = false
+		if ship._dead.size() > 0:
+			purgeTheDead(ship)
+
+
+func resolve_boarding() -> void:
+	var ships: Array[Node] = get_tree().get_nodes_in_group("ships")
+	for ship in ships:
+		for boat in ships:
+			if ship._tile == boat._tile and ship != boat and ship._enemyTarget == null and boat._enemyTarget == null:
+				ship._enemyTarget = boat
+				boat._enemyTarget = ship
+	for ship in ships:
+		if !ship._boardingPrepped and ship._enemyTarget:
+			BoardingActions.determineFighting(ship)
+	for ship in ships:
+		if ship._boardingPrepped:
+			ship._boardingPrepped = false

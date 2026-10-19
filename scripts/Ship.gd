@@ -3,12 +3,12 @@ extends Unit
 class_name Ship;
 
 const HEX_DIR = [
-	"up",			# ~0 deg
-	"right_up",		# ~60 deg
-	"right_down",	# ~120 deg
-	"down",			# ~180 deg
-	"left_down",	# ~240 deg
-	"left_up"		# ~300 deg
+	"Southeast",
+	"Northeast",
+	"North",
+	"Northwest",
+	"Southwest",
+	"South",
 ];
 
 var _deckCrew: Array[Character.DeckCrew];
@@ -24,7 +24,16 @@ var _owner: Player;
 var _flotationHits: int;
 var _mastHP: int;
 var _beakHP: int;
-var _rowingSpeed: int;
+var _rowingSpeed: int = 0
+## True while the mast is lowered. Adds 2 to overall speed, up to 6.
+var _mastDown: bool = false
+## Index into HEX_DIR and the map's neighbor list. 0 is the first neighbor direction.
+var _facing: int = 0
+## Set when this ship shares a hex with an enemy. Later phases do not move it.
+var _phase_move_stopped: bool = false
+var _slide: Tween
+var _slide_goals: Array[Vector3] = []
+var _sliding: bool = false
 var _canLRF: bool;
 var _oarBanks: Array[OarBank];
 var _ballista: Ballista;
@@ -48,6 +57,83 @@ var _boardingArchers = []
 var _boardingJavelins = []
 var _boardingMelee = []
 #endregion
+
+## Quadrireme speed changes are +1 or -1.
+func get_ship_kind() -> SpeedCalculator.ShipKind:
+	return SpeedCalculator.ShipKind.QUADRIREME
+
+
+## Changes rowing speed when the change is legal for this ship.
+## A Quadrireme may change by +1 or -1. A Trireme may change by +1 or -2.
+func adjust_rowing_speed(delta: int) -> bool:
+	if not SpeedCalculator.adjustment_allowed(delta, get_ship_kind()):
+		return false
+	_rowingSpeed = SpeedCalculator.apply_rowing_adjustment(_rowingSpeed, delta, get_ship_kind())
+	return true
+
+
+func set_mast_down(down: bool) -> void:
+	_mastDown = down
+
+
+## Oar speed capped at 4. Mast down can raise overall speed to 6.
+func get_overall_speed() -> int:
+	return SpeedCalculator.overall_speed(_rowingSpeed, _mastDown)
+
+
+func get_facing_name() -> String:
+	return HEX_DIR[posmod(_facing, HEX_DIR.size())]
+
+
+## Steps facing by one hex side. Positive turns left. North turns toward Northwest.
+func turn_facing(steps: int) -> void:
+	_facing = posmod(_facing + steps, HEX_DIR.size())
+	aim_at_facing()
+
+
+func place_unit(new_position : Vector3, tile):
+	var start := global_position
+	var first_drop := occupied_tile == null
+	super.place_unit(new_position, tile)
+	var goal := global_position
+	if first_drop or start.distance_squared_to(goal) < 0.01:
+		aim_at_facing()
+		return
+	global_position = start
+	aim_at_facing()
+	_slide_goals.append(goal)
+	if _sliding:
+		return
+	_sliding = true
+	_play_slide()
+
+
+func _play_slide() -> void:
+	if _slide_goals.is_empty():
+		_sliding = false
+		return
+	var goal: Vector3 = _slide_goals.pop_front()
+	_slide = create_tween()
+	_slide.tween_property(self, "global_position", goal, 0.45).set_trans(Tween.TRANS_LINEAR)
+	_slide.finished.connect(_play_slide)
+
+
+## The hull's bow is the ship's local +X. look_at aims local -Z, then a quarter turn brings the bow onto that hex.
+func aim_at_facing() -> void:
+	if occupied_tile == null:
+		return
+	var ahead := PhaseMovement.facing_world_delta(occupied_tile, _facing)
+	if ahead.length_squared() < 0.001:
+		return
+	var target := global_position + ahead
+	target.y = global_position.y
+	look_at(target, Vector3.UP)
+	rotate_object_local(Vector3.UP, PI * 0.5)
+
+
+func clear_phase_move_stop() -> void:
+	_phase_move_stopped = false
+
 
 func _ready() -> void:
 	add_to_group("ships")
@@ -284,6 +370,11 @@ func cleanup():
 
 #region Trireme Class
 class Trireme extends Ship:
+	## Trireme speed changes are +1 or -2.
+	func get_ship_kind() -> SpeedCalculator.ShipKind:
+		return SpeedCalculator.ShipKind.TRIREME
+
+
 	func _setup(owner: Player, numOfDeckCrew: int = 10, numOfReserveRowers: int = 50,
 	numOfArchers: int = 3, numOfJavelineers: int = 3, numOfSoldiers: int = 7,
 	numOfEngineers: int = 3, numOfOarBanks: int = 50, rowersPerBank: int = 3,

@@ -1,11 +1,13 @@
 extends Node
 
+const _Log = preload("res://scripts/turn/game_log.gd")
+
 
 func determineFighting(ship: Ship):
 	var target = ship._enemyTarget
 	#Can't boarding action same team
 	if ship._owner == target._owner:
-		print("Boarding Target is same team!")
+		_Log.push("Boarding Target is same team!")
 		return
 	
 	ship._boardingPrepped = true
@@ -75,11 +77,11 @@ func determineFighting(ship: Ship):
 	#Get Javelins that are left
 	ship._boardingJavelins.append_array(my_new_fighters.filter(func(guy): return guy is Character.Marine.Javelineer))
 	target._boardingJavelins.append_array(enemy_new_fighters.filter(func(guy): return guy is Character.Marine.Javelineer))
-	print("Boarding Determination Done")
+	_Log.push("Boarding Determination Done")
 
 
 func boardingArcherFire(ship):
-	print("Attempting BAF")
+	_Log.push("Attempting BAF")
 	var target = ship._enemyTarget
 	ship._boardingPrepped = true
 	if randi_range(1, 6) == 6:
@@ -117,7 +119,7 @@ func boardingArcherFire(ship):
 		ship._boardingCounter += 1
 
 func boardingJavelineFire(ship):
-	print("Attempting BJF")
+	_Log.push("Attempting BJF")
 	var target = ship._enemyTarget
 	ship._boardingPrepped = true
 	if randi_range(1, 6) >= 5:

@@ -1,10 +1,12 @@
 extends Node
 
+const _Log = preload("res://scripts/turn/game_log.gd")
+
 func archerFire(ship: Ship):
 	if ship.getArchers() and ship._enemyTarget:
 		var target = ship._enemyTarget
 		var archers = ship.getArchers()
-		print("Ship: ", ship.name, " attacks: ", ship._enemyTarget.name)
+		_Log.push("Ship: %s attacks: %s" % [ship.name, ship._enemyTarget.name])
 		for i in archers.size():
 			if randi_range(1, 6) == 6:
 				match randi_range(2, 12):
