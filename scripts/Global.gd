@@ -4,6 +4,14 @@ var _action = 0
 var _subAction = 0
 var threads: Array[Thread] = []
 
+## Currently setup for prototype_unit rotation (block part as head)
+var _hexUp: int = 270
+var _hexUpRight: int = 210
+var _hexDownRight: int = 150
+var _hexDown: int = 90
+var _hexDownLeft: int = 30
+var _hexUpLeft: int = 330
+
 ## TEMPORARAY until we figure out multiplayer
 var _lastShipClicked = null
 

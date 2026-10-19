@@ -82,75 +82,77 @@ func boardingArcherFire(ship):
 	print("Attempting BAF")
 	var target = ship._enemyTarget
 	ship._boardingPrepped = true
-	if randi_range(1, 6) == 6:
-		match randi_range(2, 12):
-			#Engineer Killed
-			2:
-				if target.getEngineers():
-					Global.addToDead(target, target.getEngineers())
+	for i in ship._baordingArchers.size():
+		if randi_range(1, 6) == 6:
+			match randi_range(2, 12):
+				#Engineer Killed
+				2:
+					if target.getEngineers():
+						Global.addToDead(target, target.getEngineers())
+				
+				#Deck Crew Killed
+				3,9,10,11:
+					if target.getDeckCrew():
+						Global.addToDead(target, target.getDeckCrew())
+				
+				#Random Marine Killed
+				4,5:
+					match randi_range(1, 3):
+						1:
+							if target.getArchers():
+								Global.addToDead(target, target.getArchers())
+						2:
+							if target.getJavelineers():
+								Global.addToDead(target, target.getJavelineers())
+						3:
+							if target.getSoldiers():
+								Global.addToDead(target, target.getSoldiers())
+				
+				#Rower Killed
+				6,7,8:
+					if target.getReserveRowers():
+						Global.addToDead(target, target.getReserveRowers())
+					elif target.getActiveRowers():
+						Global.addToDead(target, target.getActiveRowers())
 			
-			#Deck Crew Killed
-			3,9,10,11:
-				if target.getDeckCrew():
-					Global.addToDead(target, target.getDeckCrew())
-			
-			#Random Marine Killed
-			4,5:
-				match randi_range(1, 3):
-					1:
-						if target.getArchers():
-							Global.addToDead(target, target.getArchers())
-					2:
-						if target.getJavelineers():
-							Global.addToDead(target, target.getJavelineers())
-					3:
-						if target.getSoldiers():
-							Global.addToDead(target, target.getSoldiers())
-			
-			#Rower Killed
-			6,7,8:
-				if target.getReserveRowers():
-					Global.addToDead(target, target.getReserveRowers())
-				elif target.getActiveRowers():
-					Global.addToDead(target, target.getActiveRowers())
-		
 		ship._boardingCounter += 1
 
 func boardingJavelineFire(ship):
 	print("Attempting BJF")
 	var target = ship._enemyTarget
 	ship._boardingPrepped = true
-	if randi_range(1, 6) >= 5:
-		match randi_range(2, 12):
-			#Engineer Killed
-			2:
-				if target.getEngineers():
-					Global.addToDead(target, target.getEngineers())
-			
-			#Deck Crew Killed
-			3,9,10,11:
-				if target.getDeckCrew():
-					Global.addToDead(target, target.getDeckCrew())
-			
-			#Random Marine Killed
-			4,5:
-				match randi_range(1, 3):
-					1:
-						if target.getArchers():
-							Global.addToDead(target, target.getArchers())
-					2:
-						if target.getJavelineers():
-							Global.addToDead(target, target.getJavelineers())
-					3:
-						if target.getSoldiers():
-							Global.addToDead(target, target.getSoldiers())
-			
-			#Rower Killed
-			6,7,8:
-				if target.getReserveRowers():
-					Global.addToDead(target, target.getReserveRowers())
-				elif target.getActiveRowers():
-					Global.addToDead(target, target.getActiveRowers())
+	for i in ship._boardingJavelins.size():
+		if randi_range(1, 6) >= 5:
+			match randi_range(2, 12):
+				#Engineer Killed
+				2:
+					if target.getEngineers():
+						Global.addToDead(target, target.getEngineers())
+				
+				#Deck Crew Killed
+				3,9,10,11:
+					if target.getDeckCrew():
+						Global.addToDead(target, target.getDeckCrew())
+				
+				#Random Marine Killed
+				4,5:
+					match randi_range(1, 3):
+						1:
+							if target.getArchers():
+								Global.addToDead(target, target.getArchers())
+						2:
+							if target.getJavelineers():
+								Global.addToDead(target, target.getJavelineers())
+						3:
+							if target.getSoldiers():
+								Global.addToDead(target, target.getSoldiers())
+				
+				#Rower Killed
+				6,7,8:
+					if target.getReserveRowers():
+						Global.addToDead(target, target.getReserveRowers())
+					elif target.getActiveRowers():
+						Global.addToDead(target, target.getActiveRowers())
 		
 		ship._boardingCounter += 1
 

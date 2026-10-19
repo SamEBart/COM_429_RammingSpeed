@@ -4,7 +4,7 @@ class_name Ship;
 
 const HEX_DIR = [
 	"up",			# ~0 deg
-	"right_up",		# ~60 deg
+	"right_up",		# ~60deg
 	"right_down",	# ~120 deg
 	"down",			# ~180 deg
 	"left_down",	# ~240 deg
@@ -37,6 +37,7 @@ var _attacker = self
 var _enemyTarget: Ship
 var _ballistaTargetRange: int
 var _catapultTargetRange: int
+var _inCollision: bool = false
 
 #region Boarding
 var _boardingCounter: int = 0			#Used to determine if inn first ever boarding action for ths ship
@@ -55,6 +56,7 @@ func _ready() -> void:
 	_ballista = Ballista.new()
 	_catapult = Catapult.new()
 	_speed = randi_range(0, 8)
+	rotation_degrees = Vector3(0, Global._hexUpRight, 0)
 
 #region OarBank Class
 class OarBank:
