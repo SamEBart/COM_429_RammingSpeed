@@ -19,17 +19,14 @@ var _marineJavelineers: Array[Character.Marine.Javelineer];
 var _marineSoldiers: Array[Character.Marine.Soldier];
 var _engineers: Array[Character.Engineer];
 var _dead: Array[Character];
+var _deadOars: Array[OarBank];
 
 var _owner: Player;
-var _flotationHits: int;
-var _mastHP: int;
-var _beakHP: int;
 var _rowingSpeed: int;
 var _canLRF: bool;
 var _oarBanks: Array[OarBank];
 var _ballista: Ballista;
 var _catapult: Catapult;
-# TODO Catapult
 
 var _speed: int
 var _tile: Tile
@@ -38,6 +35,17 @@ var _enemyTarget: Ship
 var _ballistaTargetRange: int
 var _catapultTargetRange: int
 var _inCollision: bool = false
+
+#region Float, Mast, Beak, Ram, and Hole
+var _flotationHits: int;
+var _mastHP: int;
+var _isMastUp: bool = false
+var _isMastDown: bool = false
+var _mastTimer: int = 0
+var _beakHP: int;
+var _holes: int
+var _ramAction: int = 0					#1 if ram, 2 is avoid
+#endregion
 
 #region Boarding
 var _boardingCounter: int = 0			#Used to determine if inn first ever boarding action for ths ship
@@ -64,6 +72,7 @@ class OarBank:
 	var _activeRowers: Array[Character.Rower];
 	var _health: int;
 	var _owner: Player;
+	var _isDead: bool = false
 	
 	func _init(owner: Player, maxRowers: int):
 		_owner = owner;
@@ -95,6 +104,14 @@ class OarBank:
 	
 	func isFull() -> bool:
 		return _activeRowers.size() == _maxRowers;
+	
+	func removeBank(target: Ship):
+		if !_isDead:
+			_isDead = true
+			for j in _activeRowers.size():
+				var guy = _activeRowers[j]
+				guy._isDead = true
+				target._dead.append(guy)
 #endregion
 
 #region Ballista Class

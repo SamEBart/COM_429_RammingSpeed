@@ -59,11 +59,31 @@ func _on_detection_area_area_entered(area):
 				#If they succeeed the other ship may not take that action
 					#If ship is an enemy go directly to Boarding Actions
 				#If Shearing fails the other ship executes it's declared action from Ramming Results
+			
 			## Temp auto rng, replace!!
 			match randi_range(1, 3):
 				#Shear Opponent Oars
 				1:
-					pass
+					#Get a roll for first ship
+					var roll = randi_range(2, 12)
+					#If roll above shearers speed then fail
+					if roll > self._speed:
+						#Prompt secondShip for decision
+						pass
+					
+					elif roll == self.speed:
+						#Half reaming oar banks + rowers equal to those banks are lost
+						var banks = target.getBanks()
+						for i in int(ceil(banks.size() / 2)):
+							banks[i].removeBank(target)
+						
+					elif roll < self._speed:
+						#Collision
+						pass
+					
+					#Both ships are now in a BA
+					self._inBoarding = true
+					target._inBoarding = true
 				
 				#Attempt to Ram
 				2:
@@ -85,7 +105,6 @@ func _on_detection_area_area_entered(area):
 			#Only the ship facing the other can declare Ram or Avoid.
 			#Other auto declares avoid action
 #			pass
-
 
 func sort_initiative(a, b) -> bool:
 	#Set order of attack by checking speed, then ship type, deck crew size, then dice roll
