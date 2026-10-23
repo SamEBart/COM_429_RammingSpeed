@@ -1,10 +1,10 @@
 [gd_scene format=3 uid="uid://b0g5eih7e1iht"]
 
-[ext_resource type="Script" uid="uid://c8fharbdvdbxw" path="res://scripts/Classes/Player.gd" id="1_smlvt"]
+[ext_resource type="Script" uid="uid://cmij1ruhs6kmc" path="res://scripts/PlayerUnit.gd" id="1_qc3fp"]
 
 [node name="CharacterBody3D" type="CharacterBody3D" unique_id=1588948566]
 transform = Transform3D(1, 0, 0, 0, -0.0035249358, 0.9999938, 0, -0.9999938, -0.0035249358, 0, 0, 0)
-script = ExtResource("1_smlvt")
+script = ExtResource("1_qc3fp")
 
 [node name="Camera3D" type="Camera3D" parent="." unique_id=416539585]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.079578, 9.702246)

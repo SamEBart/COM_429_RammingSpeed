@@ -13,16 +13,13 @@ var _shipClicked: bool;					#Know when Player has a ship selected for an action
 var _attacker: Player;					#Know who Player has selected for thier action, i.e. who is doing the firing in LRF
 var _isReady: bool;						#Know when player is done with their turn/ready to start turn
 
-func initiate(name: String, playerId: int):
+func _init(name: String, playerId: int):
 	_name = name;
 	_playerId = playerId;
 	_ships = [];
 	_isSpectator = false;
 	_shipClicked = false;
 	_isReady = false;
-
-func _ready() -> void:
-	self.add_to_group("players")
 
 func setName(name: String):
 	_name = name;
