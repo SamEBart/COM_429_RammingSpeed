@@ -9,11 +9,7 @@ albedo_color = Color(0.996945, 6.23293e-06, 1.54018e-06, 1)
 [sub_resource type="BoxShape3D" id="BoxShape3D_10dfy"]
 size = Vector3(1, 0.544739, 0.30474854)
 
-[sub_resource type="SphereShape3D" id="SphereShape3D_5gjpb"]
-radius = 0.71869093
-
 [node name="PrototypeUnit" type="Node3D" unique_id=1945709427 groups=["units"]]
-transform = Transform3D(1, 0, -3.4078956e-05, 0, 1, 0, 3.4078956e-05, 0, 1, 0, 0, 0)
 script = ExtResource("1_spsi8")
 
 [node name="CSGCylinder3D" type="CSGCylinder3D" parent="." unique_id=868774495]
@@ -29,11 +25,3 @@ shape = SubResource("BoxShape3D_10dfy")
 
 [node name="test_character" parent="." unique_id=886589400 instance=ExtResource("2_g7i07")]
 transform = Transform3D(-0.008812595, -0.9999612, 0, 0.9999612, -0.008812595, 0, 0, 0, 1, 0.62496746, 0.2768054, 0)
-
-[node name="DetectionArea" type="Area3D" parent="." unique_id=654224249]
-
-[node name="DetectionShape" type="CollisionShape3D" parent="DetectionArea" unique_id=959693999]
-shape = SubResource("SphereShape3D_5gjpb")
-
-[connection signal="area_entered" from="DetectionArea" to="." method="_on_detection_area_area_entered"]
-[connection signal="area_exited" from="DetectionArea" to="." method="_on_detection_area_area_exited"]
