@@ -37,6 +37,7 @@ var _catapultTargetRange: int
 var _inCollision: bool = false
 
 #region Float, Mast, Beak, Ram, and Hole
+var _type: int
 var _flotationHits: int;
 var _mastHP: int;
 var _isMastUp: bool = false
@@ -64,7 +65,7 @@ func _ready() -> void:
 	_ballista = Ballista.new()
 	_catapult = Catapult.new()
 	_speed = randi_range(0, 8)
-	rotation_degrees = Vector3(0, Global._hexUpRight, 0)
+	rotation_degrees.y = Global._hexUp
 
 #region OarBank Class
 class OarBank:
@@ -307,7 +308,7 @@ class Trireme extends Ship:
 	numOfArchers: int = 3, numOfJavelineers: int = 3, numOfSoldiers: int = 7,
 	numOfEngineers: int = 3, numOfOarBanks: int = 50, rowersPerBank: int = 3,
 	floatationHits: int = 12, mastHP: int = 4, beakHP: int = 1,
-	hasBallista: bool = true, hasCatapult: bool = true, type: int = 1):
+	hasBallista: bool = true, hasCatapult: bool = true, _type: int = 1):
 		_owner = owner;
 		
 		for i in numOfDeckCrew:

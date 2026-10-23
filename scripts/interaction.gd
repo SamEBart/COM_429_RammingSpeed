@@ -32,6 +32,12 @@ func _input(event: InputEvent) -> void:
 		if not hit_object:
 			return
 		
+		#Temp rotate ship left and right
+		if Input.is_action_just_pressed("rotateShipLeft"):
+			hit_object.rotation_degrees.y = fposmod(hit_object.rotation_degrees.y + 60, 360)
+		if Input.is_action_just_pressed("rotateShipRight"):
+			hit_object.rotation_degrees.y = fposmod(hit_object.rotation_degrees.y - 60, 360)
+		
 		#Movement
 		if Global._action == 0:
 			if Input.is_action_just_pressed("Click") and event.pressed:

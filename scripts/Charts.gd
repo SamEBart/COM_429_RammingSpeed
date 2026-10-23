@@ -139,12 +139,12 @@ func catapultHit(target: Ship):
 			target._holes += 1
 			repairHole(target)
 
-func collisionCriticalHit(target: Ship, isRamming: bool):
+func collisionCriticalHit(target: Ship, isRamming: bool, damageModifier: int):
 	match randi_range(2, 12):
 		#Destroy Beak if Ramming, else Suffer 2 flotation damage
 		2:
 			if isRamming: target._beakHP = 0
-			else: flotationDamage(target, 2)
+			else: flotationDamage(target, 2 * damageModifier)
 		
 		#If ship has a catapult destroy it, else suffer 2 flotation damage
 		3:
@@ -152,7 +152,7 @@ func collisionCriticalHit(target: Ship, isRamming: bool):
 				for j in target._ballista._engineers.size():
 					target._ballista._engineers[j]._target = null
 				target._ballista = null
-			else: flotationDamage(target, 2)
+			else: flotationDamage(target, 2 * damageModifier)
 		
 		#If ship has a ballista destroy it, else suffer 2 flotation damage
 		4:
@@ -160,11 +160,11 @@ func collisionCriticalHit(target: Ship, isRamming: bool):
 				for j in target._catapult._engineers.size():
 					target._catapult._engineers[j]._target = null
 				target._catapult = null
-			else: flotationDamage(target, 2)
+			else: flotationDamage(target, 2 * damageModifier)
 		
 		#Suffer 1 additional flotation damage
 		5:
-			flotationDamage(target, 1)
+			flotationDamage(target, 1 * damageModifier)
 		
 		#Roll Crew Causalties Chart
 		6:
@@ -202,7 +202,7 @@ func collisionCriticalHit(target: Ship, isRamming: bool):
 
 func flotationDamage(ship: Ship, amount: int):
 	while ship._flotationHits > 0:
-		for i in amount:
+		for i in ceil(amount):		#Excutive decision to round up
 			ship._flotationHits -= 1
 
 func repairHole(target: Ship):
@@ -223,20 +223,117 @@ func repairHole(target: Ship):
 		target._holes -= 1
 		flotationDamage(target, 1)
 
-func ramming(rammer: Ship, avoider: Ship):
-	var bothSpeed
-	
-	#Beak to Beak
-	if fposmod(rammer.rotation_degrees.y + 180, 360) == avoider.rotation_degrees.y or fposmod(rammer.rotation_degrees.y - 180, 360) == avoider.rotation_degrees.y:
-		#Both Beak to Beak
-		if rammer._ramAction == 1 and avoider._ramAction == 1:
-			bothSpeed = rammer._speed + avoider._speed
+func rammingResults(rammer: Ship, avoider: Ship):
+	if rammer._speed <= randi_range(2, 12):
+		var bothSpeed = 0
+		var avSpeed = avoider._speed
+		var damageModifier = 1
+		if avSpeed < 0:
+			avSpeed = 1
+			rammer._ramAction = 1
 		
-		#One Beak to Beak
-		if rammer._ramAction != 0 and avoider._ramAction != 0 and rammer._ramAction != avoider._ramAction:
+		#Beak to Beak
+		if ceil(fposmod(rammer.rotation_degrees.y + 180, 360)) == ceil(avoider.rotation_degrees.y):
+			#Both Beak to Beak
+			if rammer._ramAction == 1 and avoider._ramAction == 1:
+				bothSpeed = rammer._speed + avSpeed
+			
+			#One is attempting Beak to Beak
+			if rammer._ramAction != 0 and avoider._ramAction != 0 and rammer._ramAction != avoider._ramAction:
+				if avoider._speed != 0:
+					bothSpeed = rammer._speed + (avSpeed / 2)
+				else:
+					bothSpeed = rammer._speed
+		
+		#Both are attempting to Ram opponents Front 1/4th
+		#If rammer ramming avoider in front 1/4th
+		if ceil(fposmod(rammer.rotation_degrees.y + 180, 360)) == ceil(fposmod(avoider.rotation_degrees.y + 60 ,360)) or ceil(fposmod(rammer.rotation_degrees.y + 180, 360)) == ceil(fposmod(avoider.rotation_degrees.y - 60 ,360)):
+			var temp = BoardingActions.returnSmallest(rammer._speed, avSpeed)
+			if temp != 0:
+				bothSpeed = BoardingActions.returnLarget(rammer._speed, avSpeed) + (BoardingActions.returnSmallest(rammer._speed, avSpeed) / 2)
+			else:
+				bothSpeed = BoardingActions.returnLarget(rammer._speed, avSpeed)
+			damageModifier = 2
+		
+		#Attenpting to Ram opponents Rear 1/4th
+		#If rammer ramming avoider in rear 1/4th
+		if ceil(fposmod(rammer.rotation_degrees.y + 180, 360)) == ceil(fposmod(avoider.rotation_degrees.y + 120 ,360)) or ceil(fposmod(rammer.rotation_degrees.y + 180, 360)) == ceil(fposmod(avoider.rotation_degrees.y - 120 ,360)):
 			if avoider._speed != 0:
-				bothSpeed = rammer._speed + (avoider._speed / 2)
+				bothSpeed = rammer._speed + (avSpeed / 2)
 			else:
 				bothSpeed = rammer._speed
+		
+		#Attenpting to Ram opponents Stern
+		if ceil(rammer.rotation_degrees.y) == ceil(fposmod(avoider.rotation_degrees.y + 180 ,360)):
+			if avoider._speed != 0:
+				bothSpeed = rammer._speed + (avSpeed / 4)
+			else:
+				bothSpeed = rammer._speed
+		
+		#Ram Effects
+		var roll = randi_range(1, 6)
+		
+		#If a ship has it's mast UP at the time of the ram or collision it auto suffers another roll
+		if rammer._isMastUp:
+			collisionCriticalHit(rammer, true, damageModifier)
+		if avoider._isMastUp:
+			collisionCriticalHit(avoider, true, damageModifier)
+		
+		#Successful Ram
+		if roll < bothSpeed:
+			#Rammed ship gains a hole
+			avoider._holes += 1		#Might need to change to both ships depending on roll
+			
+			#Flotation Damage
+			flotationDamage(avoider, rammer._speed)
+			
+			#Roll
+			if roll >= 5:
+				collisionCriticalHit(avoider, true, damageModifier)
+			elif roll == 1:
+				collisionCriticalHit(rammer, true, damageModifier)
+			
+			#Set both ship speeds to 0
+			rammer._speed = 0
+			avoider._speed = 0
+		
+		#Partial Ram
+		if roll == bothSpeed:
+			#Flotation Damage
+			flotationDamage(avoider, rammer._speed / 2)
+			
+			#Roll
+			if roll == 6:
+				collisionCriticalHit(avoider, true, damageModifier)
+			elif roll == 1:
+				collisionCriticalHit(rammer, true, damageModifier)
+			
+			#Set both ship speeds to 1/2 speed
+			rammer._speed = ceil(rammer._speed / 2)
+			if avoider._speed > 0:
+				avoider._speed = ceil(avoider._speed / 2)
+			else: avoider._speed = 0
+		
+		#Collision
+		if roll > bothSpeed:
+			collision(roll, rammer, avoider, damageModifier)
 	
-	#One is attempting Bow to Bow
+	print("Get Rammed!")
+
+func collision(roll: int, rammer: Ship, avoider: Ship, damageModifier: int):
+	#Roll
+	if roll == 6:
+		collisionCriticalHit(avoider, true, damageModifier)
+	elif roll == 1:
+		collisionCriticalHit(rammer, true, damageModifier)
+	
+	#Set both ship speeds to 1/4 speed
+	rammer._speed = ceil(rammer._speed / 4)
+	if avoider._speed > 0:
+		avoider._speed = ceil(avoider._speed / 4)
+	else: avoider._speed = 0
+	
+	#If enemies set both to boariding
+	if rammer._owner != avoider._owner:
+		rammer._inBoarding = true
+		avoider._inBoarding = true

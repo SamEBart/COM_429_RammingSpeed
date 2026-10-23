@@ -175,3 +175,6 @@ func boardingMelee(ship):
 
 func returnLarget(a, b):
 	return a if a > b else b
+
+func returnSmallest(a, b):
+	return a if a < b else b
