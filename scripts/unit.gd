@@ -26,6 +26,8 @@ func place_unit(new_position : Vector3, tile):
 	#Reset Boarding Counter when moving to an empty hex
 	if self.occupied_tile.occupier.size() == 1:
 		self._boardingCounter = 0
+		self._inBoarding = false
+		self._inCollision = false
 
 func occupy_tile(tile : Tile):
 	occupied_tile = tile
@@ -149,6 +151,7 @@ func _on_detection_area_area_entered(area):
 		target._inCollision = true
 	print("Close\n")
 
+
 func sort_initiative(a: Ship, b: Ship) -> bool:
 	#Set order of attack by checking speed, then ship type, deck crew size, then dice roll
 	#Speed
@@ -182,3 +185,11 @@ func sort_initiative(a: Ship, b: Ship) -> bool:
 		return true
 	else:
 		return false
+
+
+func _on_detection_area_area_exited(area: Area3D) -> void:
+	#Reset Boarding Counter when moving to an empty hex
+	if self.occupied_tile.occupier.size() == 1:
+		self._boardingCounter = 0
+		self._inBoarding = false
+		self._inCollision = false

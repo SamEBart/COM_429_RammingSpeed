@@ -36,3 +36,4 @@ transform = Transform3D(-0.008812595, -0.9999612, 0, 0.9999612, -0.008812595, 0,
 shape = SubResource("SphereShape3D_5gjpb")
 
 [connection signal="area_entered" from="DetectionArea" to="." method="_on_detection_area_area_entered"]
+[connection signal="area_exited" from="DetectionArea" to="." method="_on_detection_area_area_exited"]

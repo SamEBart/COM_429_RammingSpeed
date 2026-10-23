@@ -44,6 +44,7 @@ var _isMastUp: bool = false
 var _isMastDown: bool = false
 var _mastTimer: int = 0
 var _beakHP: int;
+var _beakHPMax: int
 var _holes: int
 var _ramAction: int = 0					#1 if ram, 2 is avoid
 #endregion
@@ -307,7 +308,7 @@ class Trireme extends Ship:
 	func _setup(owner: Player, numOfDeckCrew: int = 10, numOfReserveRowers: int = 50,
 	numOfArchers: int = 3, numOfJavelineers: int = 3, numOfSoldiers: int = 7,
 	numOfEngineers: int = 3, numOfOarBanks: int = 50, rowersPerBank: int = 3,
-	floatationHits: int = 12, mastHP: int = 4, beakHP: int = 1,
+	floatationHits: int = 12, mastHP: int = 4, beakHP: int = 1, beakHPMax: int = 1,
 	hasBallista: bool = true, hasCatapult: bool = true, _type: int = 1):
 		_owner = owner;
 		

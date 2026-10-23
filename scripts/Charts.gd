@@ -232,6 +232,9 @@ func rammingResults(rammer: Ship, avoider: Ship):
 			avSpeed = 1
 			rammer._ramAction = 1
 		
+		if rammer._beakHP < rammer._beakHPMax:
+			damageModifier = .5
+		
 		#Beak to Beak
 		if ceil(fposmod(rammer.rotation_degrees.y + 180, 360)) == ceil(avoider.rotation_degrees.y):
 			#Both Beak to Beak
@@ -300,7 +303,7 @@ func rammingResults(rammer: Ship, avoider: Ship):
 		#Partial Ram
 		if roll == bothSpeed:
 			#Flotation Damage
-			flotationDamage(avoider, rammer._speed / 2)
+			flotationDamage(avoider, (rammer._speed / 2) * damageModifier )
 			
 			#Roll
 			if roll == 6:
