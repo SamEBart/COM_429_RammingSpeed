@@ -1,5 +1,7 @@
 extends Node
 
+class_name PlayerUnit;
+
 var object: Player;
 
 func _ready() -> void:

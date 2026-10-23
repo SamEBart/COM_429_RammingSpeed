@@ -16,7 +16,7 @@ func _ready() -> void:
 
 
 ## Put this unit on a tile at position
-func place_unit(new_position : Vector3, tile):
+func place_unit(new_position : Vector3, tile: Tile):
 	position = new_position
 	leave_tile()
 	occupy_tile(tile)

@@ -8,7 +8,7 @@ static func apply(tree: SceneTree, phase: int) -> bool:
 	var entered_occupied := false
 	for pass_index in PhaseSpeedChart.MAX_HEXES_PER_PHASE:
 		for node in tree.get_nodes_in_group("ships"):
-			if node is Ship and _step(node, phase, pass_index):
+			if node.object is Ship and _step(node, phase, pass_index):
 				entered_occupied = true
 	return entered_occupied
 

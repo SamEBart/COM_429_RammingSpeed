@@ -7,7 +7,7 @@ const _Log = preload("res://scripts/turn/game_log.gd")
 @export var main_camera : Camera3D
 @export var p_finder : Pathfinder
 var selected_tile : Node3D
-var selected_unit : Unit
+var selected_unit : ShipUnit
 var unit_moves : Array[Node3D]
 # Cursors
 var tile_cursor : Node3D
@@ -173,7 +173,7 @@ func deselect():
 func _on_phase_changed(_phase: TurnController.Phase, _execution_step: int, _turn_number: int) -> void:
 	if TurnController.action_step != TurnController.ActionStep.LONG_RANGE_FIRE:
 		return
-	if selected_unit == null or not is_instance_valid(selected_unit) or selected_unit is not Ship:
+	if selected_unit == null or not is_instance_valid(selected_unit):
 		return
 	_Log.push("Selected: %s (%s). Select a target." % [selected_unit._attacker.name, selected_unit._owner._name])
 
@@ -203,10 +203,10 @@ func select_unit(unit):
 	selected_tile = null
 	selected_unit = unit
 	hide_cursor(tile_cursor)
-	if unit is Unit:
+	if unit.object is Unit:
 		highlight_unit(unit)
 		if TurnController.use_phase_movement and unit is Ship:
-			unit.aim_at_facing()
+			unit.object.aim_at_facing()
 			unit_moves = PhaseMovement.command_preview(unit)
 			p_finder.highlight_tile(unit_moves)
 		else:
@@ -233,13 +233,13 @@ func follow_selected_ship(unit: Node) -> void:
 	p_finder.highlight_tile(unit_moves)
 
 
-func _highlight_creative_range(unit: Unit) -> void:
-	if unit.occupied_tile == null:
+func _highlight_creative_range(unit: ShipUnit) -> void:
+	if unit.object.occupied_tile == null:
 		return
 	selected_unit = unit
 	highlight_unit(unit)
 	p_finder.clear_highlight()
-	unit_moves = p_finder.find_reachable_tiles(unit.occupied_tile, 2, unit)
+	unit_moves = p_finder.find_reachable_tiles(unit.object.occupied_tile, 2, unit)
 	p_finder.highlight_tile(unit_moves)
 
 

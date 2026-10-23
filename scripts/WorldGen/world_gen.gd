@@ -83,10 +83,9 @@ func _inst_tri(owner, name):
 			safety_count += 1
 			continue
 		var unit = myShip.instantiate()
-		unit.set_script(Ship.Trireme)
-		unit._setup(owner)
+		unit.initialize(owner)
 		unit.name = name
-		owner.appendShip(unit)
+		owner.appendShip(unit.object)
 		add_child(unit)
 		unit.place_unit(r_tile.position, r_tile)
 		done = true

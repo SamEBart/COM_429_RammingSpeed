@@ -31,9 +31,6 @@ var _mastDown: bool = false
 var _facing: int = 0
 ## Set when this ship shares a hex with an enemy. Later phases do not move it.
 var _phase_move_stopped: bool = false
-var _slide: Tween
-var _slide_goals: Array[Vector3] = []
-var _sliding: bool = false
 var _canLRF: bool;
 var _oarBanks: Array[OarBank];
 var _ballista: Ballista;
@@ -91,33 +88,6 @@ func turn_facing(steps: int) -> void:
 	aim_at_facing()
 
 
-func place_unit(new_position : Vector3, tile):
-	var start := global_position
-	var first_drop := occupied_tile == null
-	super.place_unit(new_position, tile)
-	var goal := global_position
-	if first_drop or start.distance_squared_to(goal) < 0.01:
-		aim_at_facing()
-		return
-	global_position = start
-	aim_at_facing()
-	_slide_goals.append(goal)
-	if _sliding:
-		return
-	_sliding = true
-	_play_slide()
-
-
-func _play_slide() -> void:
-	if _slide_goals.is_empty():
-		_sliding = false
-		return
-	var goal: Vector3 = _slide_goals.pop_front()
-	_slide = create_tween()
-	_slide.tween_property(self, "global_position", goal, 0.45).set_trans(Tween.TRANS_LINEAR)
-	_slide.finished.connect(_play_slide)
-
-
 ## The hull's bow is the ship's local +X. look_at aims local -Z, then a quarter turn brings the bow onto that hex.
 func aim_at_facing() -> void:
 	if occupied_tile == null:
@@ -133,14 +103,6 @@ func aim_at_facing() -> void:
 
 func clear_phase_move_stop() -> void:
 	_phase_move_stopped = false
-
-
-func _ready() -> void:
-	add_to_group("ships")
-	_attacker = self
-	_ballista = Ballista.new()
-	_catapult = Catapult.new()
-	_speed = randi_range(0, 8)
 
 #region OarBank Class
 class OarBank:
@@ -375,7 +337,7 @@ class Trireme extends Ship:
 		return SpeedCalculator.ShipKind.TRIREME
 
 
-	func _setup(owner: Player, numOfDeckCrew: int = 10, numOfReserveRowers: int = 50,
+	func _init(owner: Player, numOfDeckCrew: int = 10, numOfReserveRowers: int = 50,
 	numOfArchers: int = 3, numOfJavelineers: int = 3, numOfSoldiers: int = 7,
 	numOfEngineers: int = 3, numOfOarBanks: int = 50, rowersPerBank: int = 3,
 	floatationHits: int = 12, mastHP: int = 4, beakHP: int = 1,
