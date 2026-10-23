@@ -33,6 +33,7 @@ func occupy_tile(tile : Tile):
 	occupied_tile = tile
 	tile.occupier.append(self)
 	#TEMP way to put multiple ships on one hex
+	#temp comment
 	if tile.occupier.size() > 1:
 		for i in tile.occupier.size() - 1:
 			self.position.y += 1;
