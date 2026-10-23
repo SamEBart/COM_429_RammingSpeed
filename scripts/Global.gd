@@ -6,6 +6,14 @@ var _action = 0
 var _subAction = 0
 var threads: Array[Thread] = []
 
+## Currently setup for prototype_unit rotation (block part as head)
+var _hexUp: int = 270
+var _hexUpRight: int = 210
+var _hexDownRight: int = 150
+var _hexDown: int = 90
+var _hexDownLeft: int = 30
+var _hexUpLeft: int = 330
+
 ## TEMPORARAY until we figure out multiplayer
 var _lastShipClicked = null
 
@@ -171,7 +179,7 @@ func compare_ship_initiatives(a: Ship, b: Ship):
 			return rollOne > rollTwo
 			rolling = false
 
-#region Parent Functions
+#region Dead Functions
 func addToDead(ship, deadGuys):
 	var guy = deadGuys.pick_random()
 	guy._isDead = true
