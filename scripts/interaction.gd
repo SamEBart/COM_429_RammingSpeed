@@ -329,6 +329,7 @@ func move_cursor(cursor : Node3D, pos : Vector3, height : float = 0):
 
 func animate_cursor(cursor : Node3D):
 	var tween = get_tree().create_tween()
+	cursor.scale = Vector3(1,1,1)
 	var initial_scale = cursor.scale
 	var target_scale = initial_scale * 1.15
 	tween.set_trans(Tween.TRANS_SPRING)
