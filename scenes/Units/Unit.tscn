@@ -1,11 +1,14 @@
 [gd_scene format=3 uid="uid://obg7bgin1n7a"]
 
-[ext_resource type="Script" uid="uid://bejhw7haeenog" path="res://scripts/Ship.gd" id="1_6w71s"]
+[ext_resource type="Script" uid="uid://bejhw7haeenog" path="res://scripts/Classes/Ship.gd" id="1_6w71s"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_bgxm2"]
 
 [node name="Unit" type="Node3D" unique_id=1316956638]
 script = ExtResource("1_6w71s")
+unit_name = null
+max_health = null
+movement_range = null
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=448087414]
 
