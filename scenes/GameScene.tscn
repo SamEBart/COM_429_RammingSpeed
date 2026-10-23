@@ -49,8 +49,8 @@ script = ExtResource("15_shipstats")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.117906, 15.1842, 10.1434)
 
 [node name="Camera3D" type="Camera3D" parent="CameraParent" unique_id=312647012 node_paths=PackedStringArray("sun")]
-transform = Transform3D(1, 0, 0, 0, 0.998537, -0.0540788, 0, 0.0540788, 0.998537, 0, 0, 0)
-fov = 33.0
+transform = Transform3D(1, 0, 0, 0, 0.9985367, -0.054078784, 0, 0.054078784, 0.9985367, 0, 0, 19.26615)
+fov = 28.0
 script = ExtResource("1_1xefc")
 movespeed = 9
 rot = Vector2(-25, -80)
