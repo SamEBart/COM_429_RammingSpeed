@@ -50,9 +50,9 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.117906, 15.1842, 10.1434)
 
 [node name="Camera3D" type="Camera3D" parent="CameraParent" unique_id=312647012 node_paths=PackedStringArray("sun")]
 transform = Transform3D(1, 0, 0, 0, 0.998537, -0.0540788, 0, 0.0540788, 0.998537, 0, 0, 0)
+fov = 33.0
 script = ExtResource("1_1xefc")
 movespeed = 9
-height = Vector2(0, 60)
 rot = Vector2(-25, -80)
 sun = NodePath("../../Scene/DirectionalLight3D")
 
