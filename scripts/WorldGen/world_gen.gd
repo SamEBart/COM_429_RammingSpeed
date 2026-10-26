@@ -33,6 +33,10 @@ func _ready() -> void:
 	var playerThree = _inst_player("Grimm", 3)
 	_inst_tri(playerThree, "Tri 04")
 	
+	# CPU player
+	var playerFour = _inst_player("CPU", 4, true)
+	_inst_tri(playerFour, "Tri 05")
+	
 #	create_starting_units(allies)  ## prototyping pathfinding and units
 
 
@@ -65,9 +69,9 @@ func create_starting_units(count : int):
 		count -= 1
 
 ## Carter's Creating Player combined with Melia's create_starting_units
-func _inst_player(name, id):
+func _inst_player(name, id, isCPU=false):
 	var playerInstance = myPlayer.instantiate()
-	playerInstance.initiate(name, id)
+	playerInstance.initiate(name, id, isCPU)
 	add_child(playerInstance)
 	playerInstance.add_to_group("players")
 	return playerInstance
