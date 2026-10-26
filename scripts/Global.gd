@@ -171,7 +171,7 @@ func compare_ship_initiatives(a: Ship, b: Ship):
 			return rollOne > rollTwo
 			rolling = false
 
-#region Parent Functions
+#region Dead Functions
 func addToDead(ship, deadGuys):
 	var guy = deadGuys.pick_random()
 	guy._isDead = true

@@ -1,13 +1,11 @@
 extends Node
 
-const _Log = preload("res://scripts/turn/game_log.gd")
-
 
 func determineFighting(ship: Ship):
 	var target = ship._enemyTarget
 	#Can't boarding action same team
 	if ship._owner == target._owner:
-		_Log.push("Boarding Target is same team!")
+		print("Boarding Target is same team!")
 		return
 	
 	ship._boardingPrepped = true
@@ -77,83 +75,25 @@ func determineFighting(ship: Ship):
 	#Get Javelins that are left
 	ship._boardingJavelins.append_array(my_new_fighters.filter(func(guy): return guy is Character.Marine.Javelineer))
 	target._boardingJavelins.append_array(enemy_new_fighters.filter(func(guy): return guy is Character.Marine.Javelineer))
-	_Log.push("Boarding Determination Done")
+	print("Boarding Determination Done")
 
 
 func boardingArcherFire(ship):
-	_Log.push("Attempting BAF")
+	print("Attempting BAF")
 	var target = ship._enemyTarget
 	ship._boardingPrepped = true
-	if randi_range(1, 6) == 6:
-		match randi_range(2, 12):
-			#Engineer Killed
-			2:
-				if target.getEngineers():
-					Global.addToDead(target, target.getEngineers())
-			
-			#Deck Crew Killed
-			3,9,10,11:
-				if target.getDeckCrew():
-					Global.addToDead(target, target.getDeckCrew())
-			
-			#Random Marine Killed
-			4,5:
-				match randi_range(1, 3):
-					1:
-						if target.getArchers():
-							Global.addToDead(target, target.getArchers())
-					2:
-						if target.getJavelineers():
-							Global.addToDead(target, target.getJavelineers())
-					3:
-						if target.getSoldiers():
-							Global.addToDead(target, target.getSoldiers())
-			
-			#Rower Killed
-			6,7,8:
-				if target.getReserveRowers():
-					Global.addToDead(target, target.getReserveRowers())
-				elif target.getActiveRowers():
-					Global.addToDead(target, target.getActiveRowers())
-		
+	for i in ship._baordingArchers.size():
+		if randi_range(1, 6) == 6:
+			Charts.singleCrewCasualty(target)
 		ship._boardingCounter += 1
 
 func boardingJavelineFire(ship):
-	_Log.push("Attempting BJF")
+	print("Attempting BJF")
 	var target = ship._enemyTarget
 	ship._boardingPrepped = true
-	if randi_range(1, 6) >= 5:
-		match randi_range(2, 12):
-			#Engineer Killed
-			2:
-				if target.getEngineers():
-					Global.addToDead(target, target.getEngineers())
-			
-			#Deck Crew Killed
-			3,9,10,11:
-				if target.getDeckCrew():
-					Global.addToDead(target, target.getDeckCrew())
-			
-			#Random Marine Killed
-			4,5:
-				match randi_range(1, 3):
-					1:
-						if target.getArchers():
-							Global.addToDead(target, target.getArchers())
-					2:
-						if target.getJavelineers():
-							Global.addToDead(target, target.getJavelineers())
-					3:
-						if target.getSoldiers():
-							Global.addToDead(target, target.getSoldiers())
-			
-			#Rower Killed
-			6,7,8:
-				if target.getReserveRowers():
-					Global.addToDead(target, target.getReserveRowers())
-				elif target.getActiveRowers():
-					Global.addToDead(target, target.getActiveRowers())
-		
+	for i in ship._boardingJavelins.size():
+		if randi_range(1, 6) >= 5:
+			Charts.singleCrewCasualty(target)
 		ship._boardingCounter += 1
 
 func preBoardingMelee(ship):
@@ -228,54 +168,13 @@ func preBoardingMelee(ship):
 					#Target Hits Only
 					elif targetRoll >= 7:
 						boardingMelee(ship)
-				
 
 func boardingMelee(ship):
 	var target = ship._enemyTarget
-	match randi_range(2, 12):
-		#Engineer Killed
-		2:
-			if target.getEngineers():
-				Global.addToDead(target, target.getEngineers())
-		
-		#Deck Crew Killed (2)
-		3:
-			for i in 2:
-				if target.getDeckCrew():
-					Global.addToDead(target, target.getDeckCrew())
-		
-		#Random Marine Killed
-		4,5:
-			match randi_range(1, 3):
-				1:
-					if target.getArchers():
-						Global.addToDead(target, target.getArchers())
-				2:
-					if target.getJavelineers():
-						Global.addToDead(target, target.getJavelineers())
-				3:
-					if target.getSoldiers():
-						Global.addToDead(target, target.getSoldiers())
-		
-		#Rower Killed (2)
-		6,8:
-			for i in 2:
-				if target.getReserveRowers():
-					Global.addToDead(target, target.getReserveRowers())
-				elif target.getActiveRowers():
-					Global.addToDead(target, target.getActiveRowers())
-				
-		#Rower Killed
-		7:
-			if target.getReserveRowers():
-				Global.addToDead(target, target.getReserveRowers())
-			elif target.getActiveRowers():
-				Global.addToDead(target, target.getActiveRowers())
-				
-		#Deck Crew Killed
-		9,10,11:
-			if target.getDeckCrew():
-				Global.addToDead(target, target.getDeckCrew())
+	Charts.multiCrewCasualty(target)
 
 func returnLarget(a, b):
 	return a if a > b else b
+
+func returnSmallest(a, b):
+	return a if a < b else b
