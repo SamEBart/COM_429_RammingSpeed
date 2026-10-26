@@ -292,7 +292,7 @@ func _turn(steps: int) -> void:
 func _toggle_mast() -> void:
 	if _ship == null or not _orders_editable():
 		return
-	_ship.set_mast_down(not _ship._mastDown)
+	_ship.set_mast_down(not _ship._isMastDown)
 	_show_current()
 
 
@@ -434,7 +434,7 @@ func _show_current() -> void:
 	_hp_text.text = "%d/%d" % [_ship._flotationHits, _hp_cap()]
 	_speed_label.text = "Speed %d" % _ship.get_overall_speed()
 	var mast := "Up"
-	if _ship._mastDown:
+	if _ship._isMastDown:
 		mast = "Down"
 	_mast.text = "Mast: %s" % mast
 	_fill_crew_text()
