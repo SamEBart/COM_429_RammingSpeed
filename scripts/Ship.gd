@@ -34,7 +34,6 @@ var _attacker = self
 var _enemyTarget: Ship
 var _ballistaTargetRange: int
 var _catapultTargetRange: int
-var _inCollision: bool = false
 
 ## Index into HEX_DIR and the map's neighbor list. 0 is the first neighbor direction.
 var _facing: int = 0
@@ -66,6 +65,7 @@ var _fighters = []
 var _boardingArchers = []
 var _boardingJavelins = []
 var _boardingMelee = []
+var _inCollision: bool = false
 #endregion
 
 ## Quadrireme speed changes are +1 or -1.

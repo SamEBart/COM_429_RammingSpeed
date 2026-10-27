@@ -100,19 +100,19 @@ func _input(event: InputEvent) -> void:
 				elif attacker and attacker._owner._shipClicked and attacker._owner != objOwner and Input.is_action_just_pressed("RightClick"):
 					#Range Check (unit_moves is tiles)
 					if unit_moves.size() > 0:
-						for i in unit_moves.size():
+						for spot in unit_moves:
 							#If so then in range
-							if unit_moves[i].occupier:
-								for j in unit_moves[i].occupier.size():
-									if unit_moves and hit_object == unit_moves[i].occupier[j]:
+							if spot.occupier:
+								for occupied in spot.occupier:
+									if unit_moves and hit_object == occupied:
 										attacker._attacker._enemyTarget = hit_object
 										_Log.push("Shooter: %s is targetting: %s" % [attacker._attacker.name, attacker._attacker._enemyTarget.name])
 										#Ballista damage chance is based on range value
 										if Global._subAction == 1:
-											attacker._ballistaTargetRange = unit_moves[i].range
+											attacker._ballistaTargetRange = spot.range
 										#Catapult damage chance is based on range value (assuming)
 										if Global._subAction == 2:
-											attacker._catapultTargetRange = unit_moves[i].range
+											attacker._catapultTargetRange = spot.range
 										
 										#Reset
 										attacker._owner._shipClicked = false

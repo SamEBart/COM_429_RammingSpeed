@@ -1,5 +1,6 @@
 extends Node
 
+var neighbor_positions = WorldMap.HEXAGONAL_NEIGHBOR_DIRECTIONS
 
 func determineFighting(ship: Ship):
 	var target = ship._enemyTarget
@@ -172,6 +173,91 @@ func preBoardingMelee(ship):
 func boardingMelee(ship):
 	var target = ship._enemyTarget
 	Charts.multiCrewCasualty(target)
+
+func boardingWithdrawing(ship):
+	var target = ship._enemyTarget
+	## Temp rng for player input, 1 is withdrawal
+	var roll = randi_range(1, 2)
+	#Ship Withdrawls
+	if roll == 1:
+		#Get available tiles that are not occupied by a ship and move there
+		var avialableTiles = find_reachable_tiles(ship._tile, 1, ship)
+		if avialableTiles.size() > 0:
+			#Remove ship from tile occupier list
+			var jndex = ship._tile.occupier.find(ship)
+			ship._tile.occupier.remove_at(jndex)
+			
+			#Move Ship to new Tile
+			var index = randi_range(1, avialableTiles.size()) - 1
+			ship._tile = avialableTiles[index]
+			ship._tile.occupier.append(ship)
+			ship.position = ship._tile.position
+			ship.occupied_tile = ship._tile
+			
+			#Rest Ship Varuiables
+			ship._enemyTarget = null
+			ship._inBoarding = false
+			ship._inCollision = false
+			ship._boardingCounter = 0
+			ship._boardingPrepped = false
+
+
+func find_reachable_tiles(start : Tile, movement_range: int, origin_ship) -> Array[Node3D]:
+	var queue = []
+	var visited = []
+	var reachable_tiles : Array[Node3D]
+
+	# Start from the initial tile
+	queue.append({"tile": start, "distance": 0})
+	visited.append(Vector2(start.pos_data.grid_position.x, start.pos_data.grid_position.y))
+
+	while queue.size() > 0:
+		var current = queue.pop_front()
+		var current_tile : Tile = current["tile"]
+		var current_distance : int = current["distance"]
+		
+		if current_distance > movement_range:
+			continue
+		
+		# Add the current tile to the reachable list
+		reachable_tiles.append(current_tile)
+		current_tile.range = current_distance
+
+		var current_pos = current_tile.pos_data.grid_position
+		
+		if WorldMap.is_map_staggered:
+			if current_pos.x % 2 == 0:
+				neighbor_positions = WorldMap.NEIGHBOR_DIRECTIONS_EVEN
+			else:
+				neighbor_positions = WorldMap.NEIGHBOR_DIRECTIONS_ODD
+		
+		# Explore neighbors
+		for direction in neighbor_positions:
+			var neighbor_coords = Vector2(current_pos.x + int(direction.x), current_pos.y + int(direction.y))
+			if not is_tile_valid(neighbor_coords) or visited.has(neighbor_coords):
+				continue
+			var neighbor_tile = WorldMap.map_as_dict[neighbor_coords]
+			queue.append({"tile": neighbor_tile, "distance": current_distance + 1})
+			visited.append(neighbor_coords)
+
+	#Filer out tiles that have a ship on them
+	var targetable_tiles : Array[Node3D]
+	for tile in reachable_tiles:
+		if tile != start and tile.occupier.size() == 0 and tile.range == movement_range:
+			targetable_tiles.append(tile)
+	
+	return targetable_tiles
+
+func is_tile_valid(coords : Vector2) -> bool:
+	var valid = false
+	if not WorldMap.map_as_dict.has(coords):
+		push_warning("Tile not in map!")
+		return false
+	var tile = WorldMap.map_as_dict[coords]
+	if tile and tile.mesh_data and tile.mesh_data.type == Tile.biome_type.Ocean:
+		valid = true
+	return valid
+
 
 func returnLarget(a, b):
 	return a if a > b else b
