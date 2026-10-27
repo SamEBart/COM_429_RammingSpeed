@@ -86,13 +86,15 @@ stretch_mode = 4
 
 [node name="Builder" type="Node" parent="." unique_id=522099863]
 
-[node name="WorldGenerator" type="Node" parent="Builder" unique_id=219565920 node_paths=PackedStringArray("object_placer", "tile_parent", "pfinder")]
+[node name="WorldGenerator" type="Node" parent="Builder" unique_id=219565920 node_paths=PackedStringArray("object_placer", "tile_parent", "pfinder", "camera_rig")]
 script = ExtResource("3_davhy")
 settings = ExtResource("4_6pl24")
 object_placer = NodePath("../ObjectPlacer")
 tile_parent = NodePath("../../Scene/TileParent")
 pfinder = NodePath("../Pathfinder")
 proto_unit = ExtResource("8_r58of")
+test_spawn_gap = 8
+camera_rig = NodePath("../../CameraParent")
 
 [node name="ObjectPlacer" type="Node" parent="Builder" unique_id=187523474]
 script = ExtResource("9_p13dw")

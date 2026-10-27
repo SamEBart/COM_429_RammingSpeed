@@ -13,6 +13,9 @@ enum shape {HEXAGONAL, RECTANGULAR, DIAMOND, CIRCLE}
 @export var map_seed : int
 @export var map_shape : shape = shape.HEXAGONAL
 @export_range(0, 99, 1) var radius: int = 5
+## Rectangular maps only. Hexes across (columns) and hexes top to bottom (rows). The GDD's normal map is 30 x 40.
+@export_range(1, 200, 1) var map_width: int = 30
+@export_range(1, 200, 1) var map_length: int = 40
 @export var biome_noise : FastNoiseLite
 
 @export_category("Hills")

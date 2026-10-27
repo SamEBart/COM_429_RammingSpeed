@@ -3,7 +3,8 @@ extends CanvasLayer
 
 const _DESERT_TILE := preload("res://Resources/Tiles/Desert.tres")
 const _WATER_MATERIAL := preload("res://assets/Materials/Shaders/water_shader.tres")
-const _ScaleHandle := preload("res://scripts/turn/menu_scale_handle.gd")
+const _MenuFrame := preload("res://scripts/turn/menu_frame.gd")
+const _TurnPathPreview := preload("res://scripts/turn/turn_path_preview.gd")
 
 var _panel: PanelContainer
 var _status: Label
@@ -11,6 +12,8 @@ var _hint: Label
 var _advance: Button
 var _end_match: Button
 var _legacy: CheckButton
+var _legacy_row: HBoxContainer
+var _mode: Label
 var _flat_tiles: StandardMaterial3D
 
 
@@ -19,7 +22,6 @@ func _ready() -> void:
 	_flat_tiles.albedo_color = _DESERT_TILE.color
 
 	var host := Control.new()
-	host.position = Vector2(16, 16)
 	host.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	host.add_to_group("screen_menu")
 	add_child(host)
@@ -29,7 +31,6 @@ func _ready() -> void:
 	_panel.add_theme_constant_override("margin_right", 6)
 	_panel.add_theme_constant_override("margin_bottom", 16)
 	host.add_child(_panel)
-	_panel.resized.connect(func(): host.size = _panel.size)
 
 	var box := VBoxContainer.new()
 	box.add_theme_constant_override("separation", 8)
@@ -38,6 +39,10 @@ func _ready() -> void:
 	var title := Label.new()
 	title.text = "Phase Sequence"
 	box.add_child(title)
+
+	_mode = Label.new()
+	_mode.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	box.add_child(_mode)
 
 	_status = Label.new()
 	_status.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
@@ -60,7 +65,8 @@ func _ready() -> void:
 	_legacy.text = "Test Movement"
 	_legacy.button_pressed = not TurnController.use_phase_movement
 	_legacy.toggled.connect(_on_legacy_toggled)
-	box.add_child(_toggle_row(_legacy))
+	_legacy_row = _toggle_row(_legacy)
+	box.add_child(_legacy_row)
 
 	var water := CheckButton.new()
 	water.text = "Water toggle"
@@ -68,16 +74,11 @@ func _ready() -> void:
 	water.toggled.connect(_on_water_toggled)
 	box.add_child(_toggle_row(water))
 
-	var handle = _ScaleHandle.new()
-	handle.pivot_corner = Vector2.ZERO
-	handle.set_anchors_preset(Control.PRESET_BOTTOM_RIGHT)
-	handle.offset_left = -14
-	handle.offset_top = -14
-	handle.offset_right = 0
-	handle.offset_bottom = 0
-	host.add_child(handle)
+	_MenuFrame.new().setup(host, _panel, Vector2.ZERO, 16.0)
 
+	get_tree().root.add_child.call_deferred(_TurnPathPreview.new())
 	TurnController.phase_changed.connect(_refresh)
+	TurnController.mode_changed.connect(_on_mode_changed)
 	_refresh(TurnController.phase, TurnController.execution_step, TurnController.turn_number)
 	_lock_layout.call_deferred()
 
@@ -87,6 +88,9 @@ func _lock_layout() -> void:
 	_panel.custom_minimum_size.x = width
 	var inner := width - 28.0
 	_status.custom_minimum_size = Vector2(inner, _wrapped_height(_status, "Execution 6 of 6 - Long Range Fire - turn 999", inner))
+	var mode_height := maxf(_wrapped_height(_mode, _mode_text(false), inner), _wrapped_height(_mode, _mode_text(true), inner))
+	_mode.custom_minimum_size = Vector2(inner, mode_height)
+	_mode.text = _mode_text(TurnController.test_mode)
 	var hint_height := 0.0
 	for text in _every_hint():
 		hint_height = maxf(hint_height, _wrapped_height(_hint, text, inner))
@@ -97,7 +101,7 @@ func _widest_button() -> float:
 	var font := _advance.get_theme_font("font")
 	var font_size := _advance.get_theme_font_size("font_size")
 	var widest := 0.0
-	for label in ["Begin Match", "Lock Command", "Finish Move", "Finish Long Range Fire", "Finish Boarding", "End Match"]:
+	for label in ["Begin Match", "Lock Command", "Ready", "Finish Move", "Finish Long Range Fire", "Finish Boarding", "End Match"]:
 		widest = maxf(widest, font.get_string_size(label, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size).x)
 	return widest
 
@@ -113,6 +117,8 @@ func _every_hint() -> Array[String]:
 		"Test Movement: left click a ship, then right click any highlighted hex within 2 tiles.",
 		"Begin Match opens Command. Set speed and facing on a ship before locking.",
 		"Lock Command starts execution phase 1 at the Move step.",
+		"Set each ship's crew, speed, mast, and facing. Ready locks your orders until next turn.",
+		"Orders locked. Waiting for the other players.",
 		"Begin Match starts a new match.",
 		"Finish Move steps every ship the chart allows. Entering an occupied hex opens Boarding before Long Range Fire.",
 		"Test Movement: left click a ship and right click a highlighted hex.",
@@ -127,7 +133,28 @@ func _refresh(_phase: TurnController.Phase, _execution_step: int, _turn_number: 
 	_status.text = TurnController.get_phase_label()
 	_advance.text = TurnController.get_advance_button_text()
 	_end_match.disabled = TurnController.phase == TurnController.Phase.GAME_OVER
+	_advance.disabled = TurnController.phase == TurnController.Phase.COMMAND and TurnController.local_ready
 	_hint.text = _hint_for(TurnController.phase, TurnController.action_step)
+	_mode.text = _mode_text(TurnController.test_mode)
+	_legacy_row.visible = TurnController.test_mode
+	_legacy.set_pressed_no_signal(not TurnController.use_phase_movement)
+
+
+func _on_mode_changed(_test_mode: bool) -> void:
+	_refresh(TurnController.phase, TurnController.execution_step, TurnController.turn_number)
+
+
+func _mode_text(test_mode: bool) -> String:
+	if test_mode:
+		return "Mode: Test. Shift+T to switch."
+	return "Mode: Normal (%s). Shift+T to switch." % _local_player_name()
+
+
+func _local_player_name() -> String:
+	for node in get_tree().get_nodes_in_group("players"):
+		if node is Player and node.getPlayerId() == TurnController.local_player_id:
+			return node.getName()
+	return "Player %d" % TurnController.local_player_id
 
 
 func _toggle_row(check: CheckButton) -> HBoxContainer:
@@ -161,7 +188,11 @@ func _hint_for(phase: TurnController.Phase, step: TurnController.ActionStep) -> 
 	if phase == TurnController.Phase.SETUP:
 		return "Begin Match opens Command. Set speed and facing on a ship before locking."
 	if phase == TurnController.Phase.COMMAND:
-		return "Lock Command starts execution phase 1 at the Move step."
+		if TurnController.test_mode:
+			return "Lock Command starts execution phase 1 at the Move step."
+		if TurnController.local_ready:
+			return "Orders locked. Waiting for the other players."
+		return "Set each ship's crew, speed, mast, and facing. Ready locks your orders until next turn."
 	if phase == TurnController.Phase.GAME_OVER:
 		return "Begin Match starts a new match."
 	match step:

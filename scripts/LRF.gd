@@ -14,10 +14,8 @@ func archerFire(ship: Ship):
 func ballistaFire(ship: Ship):
 	if ship._ballista and ship._enemyTarget and !ship._inBoarding:
 		var target = ship._enemyTarget
-		var temp = true
-		while temp:
-			if randi_range(1, 4) <= ship._ballistaTargetRange:
-				Charts.singleCrewCasualty(target)
+		if randi_range(1, 4) <= ship._ballistaTargetRange:
+			Charts.singleCrewCasualty(target)
 
 func catapultFire(ship: Ship):
 	if ship._catapult and ship._enemyTarget and !ship._inBoarding:

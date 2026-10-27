@@ -39,35 +39,3 @@ static func hex_count(overall_speed: int, phase: int) -> int:
 	if overall_speed == 0 and phase == DRIFT_PHASE:
 		return 1
 	return 0
-
-
-## One row of the chart for the stats panel.
-static func describe(overall_speed: int) -> String:
-	if overall_speed < 0:
-		return "Backing: 1 hex backward on phase %d" % _single_step_phase(1)
-	if overall_speed == 0:
-		return "Drifting: 1 random hex on phase %d" % DRIFT_PHASE
-	var cells: PackedStringArray = []
-	for phase in range(1, PHASE_COUNT + 1):
-		cells.append(str(hexes_on_phase(overall_speed, phase)))
-	return "Phases 1-6: %s" % ", ".join(cells)
-
-
-static func describe_phase(overall_speed: int, phase: int) -> String:
-	var count := hex_count(overall_speed, phase)
-	if count == 0:
-		return "This phase: stays"
-	if overall_speed < 0:
-		return "This phase: 1 hex back"
-	if overall_speed == 0:
-		return "This phase: drift 1 hex"
-	if count == 1:
-		return "This phase: 1 hex forward"
-	return "This phase: %d hexes forward" % count
-
-
-static func _single_step_phase(speed: int) -> int:
-	for phase in range(1, PHASE_COUNT + 1):
-		if hexes_on_phase(speed, phase) > 0:
-			return phase
-	return PHASE_COUNT
