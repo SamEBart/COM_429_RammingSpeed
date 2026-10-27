@@ -18,7 +18,7 @@ func calculate_map_positions(in_settings: GenerationSettings) -> MappingData:
 			positions = generate_map(hexagonal_bounds(), stagger, hexagonal_buffer_filter)
 		1:
 			stagger = true
-			positions = generate_map(rectangle_bounds(), stagger, rectangular_buffer_filter)
+			positions = generate_map(width_length_bounds(), stagger, width_length_buffer_filter)
 		2:
 			stagger = true
 			positions = generate_map(rectangle_bounds(), stagger, diamond_buffer_filter, diamond_shape_filter)
@@ -111,6 +111,16 @@ func rectangle_bounds() -> Callable:
 		return range(-settings.radius, settings.radius + 1)
 
 
+## map_width columns by map_length rows, centered on 0. A width of 30 gives columns -15 to 14.
+func width_length_bounds() -> Callable:
+	var first_col := -int(settings.map_width / 2.0)
+	var first_row := -int(settings.map_length / 2.0)
+	return func(col = null):
+		if col == null:
+			return range(first_col, first_col + settings.map_width)
+		return range(first_row, first_row + settings.map_length)
+
+
 ### Filters
 ### # Filters positions to keep only tiles inside a shape
 
@@ -135,6 +145,15 @@ func hexagonal_buffer_filter(col: int, row: int, limit: int) -> bool:
 
 func rectangular_buffer_filter(col: int, row: int, limit: int) -> bool:
 	return abs(col) > limit or abs(row) > limit
+
+
+## Marks tiles within map_edge_buffer of the rectangle's edge. The limit argument is ignored.
+func width_length_buffer_filter(col: int, row: int, _limit: int) -> bool:
+	var buffer: int = settings.map_edge_buffer
+	var first_col := -int(settings.map_width / 2.0)
+	var first_row := -int(settings.map_length / 2.0)
+	return col < first_col + buffer or col >= first_col + settings.map_width - buffer \
+		or row < first_row + buffer or row >= first_row + settings.map_length - buffer
 
 
 func diamond_buffer_filter(col: int, row: int, limit: int) -> bool:

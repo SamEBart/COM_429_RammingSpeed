@@ -1,7 +1,7 @@
 extends CanvasLayer
 ## Short copy of the turn and movement lines that also go to the Godot output.
 
-const _ScaleHandle := preload("res://scripts/turn/menu_scale_handle.gd")
+const _MenuFrame := preload("res://scripts/turn/menu_frame.gd")
 
 static var _view
 var _lines: PackedStringArray = []
@@ -14,9 +14,6 @@ func _ready() -> void:
 	_view = self
 	layer = 10
 	var host := Control.new()
-	host.set_anchors_preset(Control.PRESET_BOTTOM_LEFT)
-	host.grow_horizontal = Control.GROW_DIRECTION_END
-	host.grow_vertical = Control.GROW_DIRECTION_BEGIN
 	host.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	host.add_to_group("screen_menu")
 	add_child(host)
@@ -25,7 +22,6 @@ func _ready() -> void:
 	panel.add_theme_constant_override("margin_top", 4)
 	panel.add_theme_constant_override("margin_right", 18)
 	host.add_child(panel)
-	panel.resized.connect(_fit_output_host.bind(host, panel))
 
 	var box := VBoxContainer.new()
 	box.add_theme_constant_override("separation", 2)
@@ -48,22 +44,7 @@ func _ready() -> void:
 	_body.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_scroll.add_child(_body)
 
-	var handle = _ScaleHandle.new()
-	handle.pivot_corner = Vector2(0, 1)
-	handle.set_anchors_preset(Control.PRESET_TOP_RIGHT)
-	handle.offset_left = -14
-	handle.offset_top = 0
-	handle.offset_right = 0
-	handle.offset_bottom = 14
-	host.add_child(handle)
-
-
-func _fit_output_host(host: Control, panel: Control) -> void:
-	var card_size := panel.size
-	host.offset_left = 16.0
-	host.offset_bottom = -16.0
-	host.offset_right = 16.0 + card_size.x
-	host.offset_top = -16.0 - card_size.y
+	_MenuFrame.new().setup(host, panel, Vector2.ONE, 16.0)
 
 
 static func push(text: String) -> void:

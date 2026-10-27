@@ -9,9 +9,6 @@ extends Node
 ##   Game Over --begin_match--> Command (a new match)
 ##
 ## This script is the whole turn system. It does not need a scene.
-## The TurnController Test Window (scenes/test/turn_controller_test_window.tscn)
-## is a separate button panel for clicking through phases before the real menus
-## exist. Removing that window does not change how this script runs.
 ##
 ## Local only. Ready checks, the turn timer, and victory plug into these methods later.
 ## Phase movement is the main move. Old click-to-hex movement stays available.
@@ -19,13 +16,44 @@ extends Node
 
 signal phase_changed(phase: Phase, execution_step: int, turn_number: int)
 signal match_ended(turn_number: int)
+signal mode_changed(test_mode: bool)
 
 
 const _Log = preload("res://scripts/turn/game_log.gd")
 
+## False is normal mode: only the local player's ships can be selected, and steering crew limit turns.
+## True is test mode: every ship can be selected and the old test controls come back. Shift+T switches.
+var test_mode: bool = false
+## The player sitting at this computer. Player 1 is Chris.
+var local_player_id: int = 1
+## True after the local player presses Ready in Command. Their orders stay locked until the next Command.
+var local_ready: bool = false
+
 
 func _ready() -> void:
 	get_tree().root.add_child.call_deferred(_Log.new())
+
+
+func _unhandled_input(event: InputEvent) -> void:
+	var key := event as InputEventKey
+	if key and key.pressed and not key.echo and key.shift_pressed and key.keycode == KEY_T:
+		set_test_mode(not test_mode)
+		get_viewport().set_input_as_handled()
+
+
+func set_test_mode(on: bool) -> void:
+	test_mode = on
+	if not test_mode:
+		use_phase_movement = true
+	_Log.push("Mode: %s" % ("Test" if test_mode else "Normal"))
+	mode_changed.emit(test_mode)
+
+
+## True in test mode, or when the ship belongs to the local player.
+func is_local_ship(ship: Ship) -> bool:
+	if test_mode:
+		return true
+	return ship != null and ship._owner != null and ship._owner.getPlayerId() == local_player_id
 
 enum Phase {
 	SETUP,
@@ -86,6 +114,24 @@ func lock_command() -> bool:
 	return true
 
 
+## Normal-mode Ready. Locks the local player's orders, then starts the turn once every player is ready.
+## Other players count as ready until the LAN code reports their real state.
+func press_ready() -> bool:
+	if phase != Phase.COMMAND or local_ready:
+		return false
+	local_ready = true
+	_Log.push("Orders locked. Waiting for the other players.")
+	if all_players_ready():
+		return lock_command()
+	phase_changed.emit(phase, execution_step, turn_number)
+	return true
+
+
+## Hook for the LAN code. Only the local player is tracked for now.
+func all_players_ready() -> bool:
+	return local_ready
+
+
 ## Finishes the current execution phase. After phase 6, opens the next Command phase.
 func complete_execution_phase() -> bool:
 	if phase != Phase.EXECUTION:
@@ -144,7 +190,9 @@ func advance() -> bool:
 	if phase == Phase.SETUP or phase == Phase.GAME_OVER:
 		return begin_match()
 	if phase == Phase.COMMAND:
-		return lock_command()
+		if test_mode:
+			return lock_command()
+		return press_ready()
 	if phase != Phase.EXECUTION:
 		return false
 	var entered_occupied := _resolve_current_action()
@@ -193,7 +241,9 @@ func get_advance_button_text() -> String:
 		Phase.SETUP, Phase.GAME_OVER:
 			return "Begin Match"
 		Phase.COMMAND:
-			return "Lock Command"
+			if test_mode:
+				return "Lock Command"
+			return "Ready"
 		Phase.EXECUTION:
 			match action_step:
 				ActionStep.MOVE:
@@ -244,5 +294,10 @@ func _apply_action_to_game() -> void:
 
 func _enter(next: Phase) -> void:
 	phase = next
+	if phase == Phase.COMMAND:
+		local_ready = false
+		for node in get_tree().get_nodes_in_group("ships"):
+			if node is Ship:
+				node.begin_command()
 	_Log.push("TurnController: %s" % get_phase_label())
 	phase_changed.emit(phase, execution_step, turn_number)

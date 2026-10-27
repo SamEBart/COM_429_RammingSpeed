@@ -24,6 +24,14 @@ func _ready() -> void:
 		add_child(unit_cursor)
 	deselect()
 	TurnController.phase_changed.connect(_on_phase_changed)
+	TurnController.mode_changed.connect(_on_mode_changed)
+
+
+func _on_mode_changed(_test_mode: bool) -> void:
+	if selected_unit is Ship and is_instance_valid(selected_unit) and not TurnController.is_local_ship(selected_unit):
+		if Global._lastShipClicked == selected_unit:
+			Global._lastShipClicked = null
+		deselect()
 
 
 func _input(event: InputEvent) -> void:
@@ -37,6 +45,9 @@ func _input(event: InputEvent) -> void:
 		var end = origin + dir * 1000
 		var hit_object = raycast_at_mouse(origin, end)
 		if not hit_object:
+			return
+		if Input.is_action_just_pressed("Click") and hit_object is Ship and not TurnController.is_local_ship(hit_object):
+			get_tree().call_group("ship_stats", "show_ship", hit_object)
 			return
 		if not TurnController.use_phase_movement:
 			if Input.is_action_just_pressed("Click"):
