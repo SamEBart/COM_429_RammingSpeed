@@ -43,8 +43,10 @@ func leave_tile():
 	if occupied_tile:
 		occupied_tile.occupier.erase(self)
 
+#When two ships eneter the same hex collide
 func _on_detection_area_area_entered(area):
 	var target: Ship = area.get_parent()
+	self._boardingTarget = target
 	if true:
 		#Get Ship that goes first
 		var firstShip: Ship; var secondShip: Ship
@@ -53,10 +55,11 @@ func _on_detection_area_area_entered(area):
 			firstShip = self; secondShip = target
 		else:
 			firstShip = target; secondShip = self
+		var direction = 0
 		
 		#Check if Ships are Beak to Beak
 		print("Enetred!")
-		if ceil(fposmod(firstShip.rotation_degrees.y + 180, 360)) == ceil(secondShip.rotation_degrees.y) or ceil(fposmod(firstShip.rotation_degrees.y - 180, 360)) == ceil(secondShip.rotation_degrees.y):
+		if ceil(fposmod(firstShip.rotation_degrees.y + 180, 360)) == ceil(fposmod(secondShip.rotation_degrees.y, 360)) or ceil(fposmod(firstShip.rotation_degrees.y - 180, 360)) == ceil(fposmod(secondShip.rotation_degrees.y, 360)):
 			#Give first ship a choice of Shear Oppnents Oars, Attempt to Run, Attemp to avoid a ram
 			#Allow other ship to Attempt to Ram or Avoid
 			#If Shear then immediately do that instead of the above allowed.
@@ -127,22 +130,41 @@ func _on_detection_area_area_entered(area):
 			if secondShip._ramAction == 1:
 				Charts.rammingResults(secondShip, firstShip)
 		
-		#Any other direction combo
+		#If Ship 1 is at Ship 2s back left
+		elif ceil(fposmod(firstShip.rotation_degrees.y, 360)) >= ceil(fposmod(secondShip.rotation_degrees.y - 65 ,360)) and ceil(fposmod(firstShip.rotation_degrees.y, 360)) <= ceil(fposmod(secondShip.rotation_degrees.y - 55 ,360)):
+			direction = 1
+		#If Ship 1 is at Ship 2s back right
+		elif ceil(fposmod(firstShip.rotation_degrees.y, 360)) >= ceil(fposmod(secondShip.rotation_degrees.y + 55 ,360)) and ceil(fposmod(firstShip.rotation_degrees.y, 360)) <= ceil(fposmod(secondShip.rotation_degrees.y + 65 ,360)):
+			direction = 1
+		#If Ship 1 is at Ships 2s back
+		elif ceil(fposmod(firstShip.rotation_degrees.y, 360)) >= ceil(fposmod(secondShip.rotation_degrees.y + 5 ,360)) and ceil(fposmod(firstShip.rotation_degrees.y, 360)) <= ceil(fposmod(secondShip.rotation_degrees.y - 5 ,360)):
+			direction = 1
+		#If Ship 2 is at Ship 1s back left
+		elif ceil(fposmod(secondShip.rotation_degrees.y, 360)) >= ceil(fposmod(firstShip.rotation_degrees.y - 65 ,360)) and ceil(fposmod(secondShip.rotation_degrees.y, 360)) <= ceil(fposmod(firstShip.rotation_degrees.y - 55 ,360)):
+			direction = 2
+		#If Ship 2 is at Ship 1s back right
+		elif ceil(fposmod(secondShip.rotation_degrees.y, 360)) >= ceil(fposmod(firstShip.rotation_degrees.y + 55 ,360)) and ceil(fposmod(secondShip.rotation_degrees.y, 360)) <= ceil(fposmod(firstShip.rotation_degrees.y + 65 ,360)):
+			direction = 2
+		#If Ship 2 is at Ship 1s back
+		elif ceil(fposmod(secondShip.rotation_degrees.y, 360)) >= ceil(fposmod(firstShip.rotation_degrees.y - 5 ,360)) and ceil(fposmod(secondShip.rotation_degrees.y, 360)) <= ceil(fposmod(firstShip.rotation_degrees.y + 5 ,360)):
+			direction = 2
+		
+		
 		#If ship 1 is between ship 2s back left and back right
-		elif ceil(firstShip.rotation_degrees.y) <= ceil(fposmod(secondShip.rotation_degrees.y - 120, 360)) and ceil(firstShip.rotation_degrees.y) >= ceil(fposmod(secondShip.rotation_degrees.y + 120, 360)):
+		if direction == 1:
 			#Only the ship facing the other can declare Ram or Avoid.
 			#Other auto declares avoid action
-			print("Other Direction A")
+			print("Back A")
 			firstShip._ramAction = randi_range(1, 2)
 			secondShip._ramAction = 2
 			if firstShip._ramAction == 1:
 				Charts.rammingResults(firstShip, secondShip)
 		
 		#If ship 2 is between ship 1s back left and back right
-		elif ceil(secondShip.rotation_degrees.y) <= ceil(fposmod(firstShip.rotation_degrees.y - 120, 360)) and ceil(secondShip.rotation_degrees.y) >= ceil(fposmod(firstShip.rotation_degrees.y + 120, 360)):
+		if direction == 2:
 			#Only the ship facing the other can declare Ram or Avoid.
 			#Other auto declares avoid action
-			print("Other Direction B")
+			print("Back B")
 			secondShip._ramAction = randi_range(1, 2)
 			firstShip._ramAction = 2
 			if secondShip._ramAction == 1:
@@ -158,7 +180,8 @@ func _on_detection_area_area_entered(area):
 			if ships[j]._fighters.size() == 0:
 				Global.baRemoveShip(ships[j])
 				print("Ship removed")
-		
+	
+		print(firstShip._speed, " | ", secondShip._speed)
 	print("Close\n")
 
 

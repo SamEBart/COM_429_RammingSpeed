@@ -146,7 +146,7 @@ func _input(event: InputEvent) -> void:
 				if ship._dead.size() > 0:
 					purgeTheDead(ship)
 		
-		#Boarding Action Melee
+		#Boarding Action Melee/Victory
 		elif Global._action == 2 and Global._subAction == 3:
 			var ships: Array[Node] = get_tree().get_nodes_in_group("ships")
 			#Determine which ships are boarding eachother
@@ -163,6 +163,15 @@ func _input(event: InputEvent) -> void:
 				if ships[j]._fighters.size() == 0:
 					baRemoveShip(ships[j])
 					print("Ship removed")
+		
+		#Boarding Withdrawing
+		elif Global._action == 2 and Global._subAction == 4:
+			var ships: Array[Node] = get_tree().get_nodes_in_group("ships")
+			for ship in ships:
+				print(ship._boardingTarget)
+				if ship._boardingTarget != null:
+					BoardingActions.boardingWithdrawing(ship)
+
 
 func compare_ship_initiatives(a: Ship, b: Ship):
 	#Highest Speed (Highest Wins)
@@ -210,9 +219,13 @@ func baRemoveShip(ship):
 	for boat in boats:
 		if boat._enemyTarget == ship:
 			boat._enemyTarget = null
+			boat._inBoarding = false
+			boat._inCollision = false
 		#Remove from ship boarding target
 		if boat._boardingTarget == ship:
 			boat._boardingTarget = null
+			boat._inBoarding = false
+			boat._inCollision = false
 	
 	#Remove Ship from Owner
 	for boat in ship._owner._ships:
