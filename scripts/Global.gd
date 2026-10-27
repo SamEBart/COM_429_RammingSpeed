@@ -153,11 +153,16 @@ func _input(event: InputEvent) -> void:
 			for ship in ships:
 				if ship:
 					BoardingActions.preBoardingMelee(ship)
+			#Reset Ships
 			for ship in ships:
 				ship._boardingPrepped = false
 				if ship._dead.size() > 0:
 					purgeTheDead(ship)
-
+			#Remove Dead Ships that has no Aux or Soldiers
+			for j in range(ships.size() - 1, -1, -1):
+				if ships[j]._fighters.size() == 0:
+					baRemoveShip(ships[j])
+					print("Ship removed")
 
 func compare_ship_initiatives(a: Ship, b: Ship):
 	#Highest Speed (Highest Wins)
@@ -193,6 +198,33 @@ func purgeTheDead(ship):
 			ship._fighters.erase(ship._dead[i])
 	ship._dead.clear()
 	_Log.push("After: %s has A: %d, J: %d, S: %d, E: %d, D: %d" % [ship.name, ship._marineArchers.size(), ship._marineJavelineers.size(), ship._marineSoldiers.size(), ship._engineers.size(), ship._deckCrew.size()])
+
+func baRemoveShip(ship):
+	#Remove Ship from Tile Occupir List
+	for boat in ship._tile.occupier:
+		if boat == ship:
+			ship._tile.occupier.erase(boat)
+	
+	#Remove Ship from other Ships Target variable(s)
+	var boats: Array[Node] = get_tree().get_nodes_in_group("ships")
+	for boat in boats:
+		if boat._enemyTarget == ship:
+			boat._enemyTarget = null
+		#Remove from ship boarding target
+		if boat._boardingTarget == ship:
+			boat._boardingTarget = null
+	
+	#Remove Ship from Owner
+	for boat in ship._owner._ships:
+		if boat == ship:
+			ship._owner._ships.erase(boat)
+			break
+	
+	#Remove Ship from Ships list
+	ship.remove_from_group("ships")
+	
+	#Remove Ship
+	ship.queue_free()
 #endregion
 
 func action_reset():
