@@ -59,3 +59,6 @@ func isSpectator() -> bool:
 
 func becomeSpectator():
 	_isSpectator = true;
+	
+func isCPU() -> bool:
+	return _isCPU

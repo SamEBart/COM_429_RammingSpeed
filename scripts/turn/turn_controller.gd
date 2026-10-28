@@ -80,6 +80,7 @@ func lock_command() -> bool:
 	execution_step = 1
 	action_step = ActionStep.MOVE
 	boarding_before_fire = false
+	get_AI_moves()
 	_clear_move_stops()
 	_enter(Phase.EXECUTION)
 	_apply_action_to_game()
@@ -203,7 +204,14 @@ func get_advance_button_text() -> String:
 				_:
 					return "Finish Boarding"
 	return "Next"
+	
 
+func get_AI_moves() -> void:
+	for player in get_tree().get_nodes_in_group("players"):
+		if player.isCPU():
+			for child in player.get_children():
+				if child.has_method("choose_action"):
+					child.choose_action()
 
 func _finish_execution_phase() -> bool:
 	var finished_phase_six := execution_step >= EXECUTION_PHASE_COUNT
