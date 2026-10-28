@@ -7,7 +7,11 @@ var _playerId: int;
 # TYPE WILL CHANGE
 var _ships: Array[Ship];
 var _isSpectator: bool;
+
+# for AI
 var _isCPU: bool;
+#@export var cpu: PackedScene;
+var cpu = load("res://scenes/scn_cpu.tscn");
 
 #Carter WIP
 var _shipClicked: bool;					#Know when Player has a ship selected for an action
@@ -27,6 +31,10 @@ func initiate(name: String, playerId: int, isCPU: bool):
 
 func _ready() -> void:
 	self.add_to_group("players")
+	
+	if(_isCPU):
+		var CPUManager = cpu.instantiate();
+		add_child(CPUManager)
 
 func setName(name: String):
 	_name = name;

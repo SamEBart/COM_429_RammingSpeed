@@ -1,12 +1,14 @@
 extends Node
+class_name CPU_Manager
 
 @export var p_finder : Pathfinder
 
 var player : Node3D
-var owned_ships = player.getOwnedShips()
+var owned_ships
 
 func _ready() -> void:
 	player = get_parent()
+	owned_ships = player.getOwnedShips()
 
 func choose_action():
 	var chosen_moves = []
@@ -14,14 +16,9 @@ func choose_action():
 		var valid_moves = get_valid_moves(ship)
 		#TODO add logic instead of placeholder random
 		var move = valid_moves.pick_random()
-		chosen_moves.append([ship, move])
-	return chosen_moves
-	
-func execute_action():
-	var actions = choose_action()
-	#debug
-	print("Chosen moves:", actions)
+		ship.selected_tile = move
 	return
+	
 
 
 func get_valid_moves(ship : Ship):
