@@ -161,6 +161,7 @@ func end_match() -> bool:
 	execution_step = 0
 	action_step = ActionStep.NONE
 	boarding_before_fire = false
+	Global.determineWinner(2)
 	_enter(Phase.GAME_OVER)
 	_apply_action_to_game()
 	match_ended.emit(turn_number)
