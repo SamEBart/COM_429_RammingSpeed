@@ -78,6 +78,18 @@ func determineFighting(ship: Ship):
 	target._boardingJavelins.append_array(enemy_new_fighters.filter(func(guy): return guy is Character.Marine.Javelineer))
 	print("Boarding Determination Done")
 
+#region Archery
+func doBoardingArchery(ship):
+	#Call two threads so that each ship is doing firing at the same time
+	var thread1: Thread = Thread.new()
+	thread1.start(boardingArcherFire.bind(ship))
+	var thread2: Thread = Thread.new()
+	thread2.start(boardingArcherFire.bind(ship._enemyTarget))
+	#Wait for each to finish before continuing
+	if thread1.is_started():
+		thread1.wait_to_finish()
+	if thread2.is_started():
+		thread2.wait_to_finish()
 
 func boardingArcherFire(ship):
 	print("Attempting BAF")
@@ -87,6 +99,20 @@ func boardingArcherFire(ship):
 		if randi_range(1, 6) == 6:
 			Charts.singleCrewCasualty(target)
 		ship._boardingCounter += 1
+#endregion
+
+#region Javeline
+func doBoardingJaveline(ship):
+	#Call two threads so that each ship is doing firing at the same time
+	var thread1: Thread = Thread.new()
+	thread1.start(boardingJavelineFire.bind(ship))
+	var thread2: Thread = Thread.new()
+	thread2.start(boardingJavelineFire.bind(ship._enemyTarget))
+	#Wait for each to finish before continuing
+	if thread1.is_started():
+		thread1.wait_to_finish()
+	if thread2.is_started():
+		thread2.wait_to_finish()
 
 func boardingJavelineFire(ship):
 	print("Attempting BJF")
@@ -96,7 +122,9 @@ func boardingJavelineFire(ship):
 		if randi_range(1, 6) >= 5:
 			Charts.singleCrewCasualty(target)
 		ship._boardingCounter += 1
+#endregion
 
+#region Melee
 func preBoardingMelee(ship):
 	var target = ship._enemyTarget
 	var myRoll
@@ -200,7 +228,7 @@ func boardingWithdrawing(ship):
 			ship._inCollision = false
 			ship._boardingCounter = 0
 			ship._boardingPrepped = false
-
+#endregion
 
 func find_reachable_tiles(start : Tile, movement_range: int, origin_ship) -> Array[Node3D]:
 	var queue = []

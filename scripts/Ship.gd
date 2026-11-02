@@ -35,6 +35,7 @@ var _enemyTarget: Ship
 var _ballistaTargetRange: int
 var _catapultTargetRange: int
 
+#region Masts and Moving
 ## Index into HEX_DIR and the map's neighbor list. 0 is the first neighbor direction.
 var _facing: int = 0
 var _command_start_facing: int = 0
@@ -49,6 +50,7 @@ var _phase_move_stopped: bool = false
 var _slide: Tween
 var _slide_goals: Array[Vector3] = []
 var _sliding: bool = false
+#endregion
 
 #region Float, Mast, Beak, Ram, and Hole
 var _type: int
@@ -371,12 +373,12 @@ class Ballista:
 		_isLoaded = false
 	
 	func reload():
-		if (!_isLoaded):
+		if !_isLoaded:
 			for eng in _engineers:
 				if eng._allocatedTo == self:
 					_reloadTimer += 1;
 			
-			if (_reloadTimer >= 8):
+			if _reloadTimer >= 8:
 				_reloadTimer = 0;
 				_isLoaded = true;
 	
