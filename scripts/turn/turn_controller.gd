@@ -158,6 +158,13 @@ func end_match() -> bool:
 	if phase == Phase.GAME_OVER:
 		push_error("end_match was called, but the match is already over.")
 		return false
+	#Remove Dead Ships that has no Aux, Soldiers or Flotation Hits Left
+	var ships: Array[Node] = get_tree().get_nodes_in_group("ships")
+	for j in range(ships.size() - 1, -1, -1):
+		if ships[j]._fighters.size() == 0 or ships[j]._flotationHits == 0:
+			Global.baRemoveShip(ships[j])
+	#Determine Winner
+	Global.determineWinner(2)
 	execution_step = 0
 	action_step = ActionStep.NONE
 	boarding_before_fire = false

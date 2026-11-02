@@ -170,7 +170,7 @@ func _input(event: InputEvent) -> void:
 					purgeTheDead(ship)
 			#Remove Dead Ships that has no Aux or Soldiers
 			for j in range(ships.size() - 1, -1, -1):
-				if ships[j]._fighters.size() == 0:
+				if ships[j]._fighters.size() == 0 or ships[j]._flotationHits == 0:
 					baRemoveShip(ships[j])
 					print("Ship removed")
 		
@@ -265,7 +265,7 @@ func determineWinner(choice: int):
 		if isLastOneStanding():
 			var players: Array[Node] = get_tree().get_nodes_in_group("players")
 			choice = 0
-			_Log.push("%s Wins the Game!" % players[0].name)
+			_Log.push("%s Wins the Game!" % players[0]._name)
 	if choice == 2:
 		chooseWinner()
 
@@ -293,7 +293,7 @@ func chooseWinner():
 	#If only 1 Player has the most ships they win
 	if mostShipsArray.size() == 1:
 		#Print win
-		_Log.push("%s Wins the Game!" % mostShipsArray[0].name)
+		_Log.push("%s Wins the Game!" % mostShipsArray[0]._name)
 	#More conditions to win if more than 1 Player has the most ships
 	else:
 		#Get how many fighters each player has
@@ -314,7 +314,7 @@ func chooseWinner():
 		#Determien if it is a win or draw
 		if mostFightersArray.size() == 1:
 			#Print win
-			_Log.push("%s Wins the Game!" % mostFightersArray[0].name)
+			_Log.push("%s Wins the Game!" % mostFightersArray[0]._name)
 		else:
 			#Print draw
 			_Log.push("DRAW!")

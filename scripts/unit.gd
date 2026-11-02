@@ -177,7 +177,7 @@ func _on_detection_area_area_entered(area):
 		#Remove Dead Ships that has no Aux or Soldiers
 		var ships: Array[Node] = get_tree().get_nodes_in_group("ships")
 		for j in range(ships.size() - 1, -1, -1):
-			if ships[j]._fighters.size() == 0:
+			if ships[j]._fighters.size() == 0 or ships[j]._flotationHits == 0:
 				Global.baRemoveShip(ships[j])
 				print("Ship removed")
 	

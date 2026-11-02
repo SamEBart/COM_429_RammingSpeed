@@ -93,6 +93,7 @@ object_placer = NodePath("../ObjectPlacer")
 tile_parent = NodePath("../../Scene/TileParent")
 pfinder = NodePath("../Pathfinder")
 proto_unit = ExtResource("8_r58of")
+spawn_close_for_testing = true
 test_spawn_gap = 8
 camera_rig = NodePath("../../CameraParent")
 
