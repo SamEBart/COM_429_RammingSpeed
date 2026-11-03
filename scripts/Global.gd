@@ -56,7 +56,7 @@ func _input(event: InputEvent) -> void:
 	elif Input.is_action_just_pressed("CtrlEnter"):
 		#If Archery
 		if Global._action == 1 and Global._subAction == 0:
-			resolve_long_range_fire()
+			LRF.resolve_long_range_fire()
 		
 		#If Ballista
 		if Global._action == 1 and Global._subAction == 1:
@@ -91,9 +91,9 @@ func _input(event: InputEvent) -> void:
 		#Boarding Action Archery
 		elif Global._action == 2 and Global._subAction == 1:
 			var ships: Array[Node] = get_tree().get_nodes_in_group("ships")
-			#Determine which ships are boarding eachother
+			#Do the Archery if there is a target and available archers
 			for ship in ships:
-				if ship._enemyTarget and ship._boardingArchers.size() > 0 and ship._boardingCounter == 0 and ship._boardingPrepped == false:
+				if ship._boardingTarget and ship._boardingArchers.size() > 0 and ship._boardingPrepped == false:
 					BoardingActions.doBoardingArchery(ship)
 			for ship in ships:
 				ship._boardingPrepped = false
@@ -103,9 +103,9 @@ func _input(event: InputEvent) -> void:
 		#Boarding Action Javelins
 		elif Global._action == 2 and Global._subAction == 2:
 			var ships: Array[Node] = get_tree().get_nodes_in_group("ships")
-			#Determine which ships are boarding eachother
+			#Do the Javelines if there is a target and available archers
 			for ship in ships:
-				if ship._enemyTarget and ship._boardingJavelins.size() > 0 and ship._boardingCounter == 0 and ship._boardingPrepped == false:
+				if ship._boardingTarget and ship._boardingJavelins.size() > 0 and ship._boardingPrepped == false:
 					BoardingActions.doBoardingJaveline(ship)
 			for ship in ships:
 				ship._boardingPrepped = false
@@ -117,7 +117,7 @@ func _input(event: InputEvent) -> void:
 			var ships: Array[Node] = get_tree().get_nodes_in_group("ships")
 			#Determine which ships are boarding eachother
 			for ship in ships:
-				if ship._enemyTarget:
+				if ship._boardingTarget:
 					BoardingActions.preBoardingMelee(ship)
 			#Reset Ships
 			for ship in ships:
@@ -133,9 +133,12 @@ func _input(event: InputEvent) -> void:
 		elif Global._action == 2 and Global._subAction == 4:
 			var ships: Array[Node] = get_tree().get_nodes_in_group("ships")
 			for ship in ships:
-				print(ship._boardingTarget)
 				if ship._boardingTarget != null:
 					BoardingActions.boardingWithdrawing(ship)
+			#Remove Dead Ships that has no Aux or Soldiers
+			for j in range(ships.size() - 1, -1, -1):
+				if ships[j]._fighters.size() == 0 or ships[j]._flotationHits == 0:
+					baRemoveShip(ships[j])
 
 
 func compare_ship_initiatives(a: Ship, b: Ship):
@@ -286,27 +289,12 @@ func set_turn_action(action: int) -> void:
 	action_reset()
 
 
-func resolve_long_range_fire() -> void:
-	var ships: Array[Node] = get_tree().get_nodes_in_group("ships")
-	for ship in ships:
-		if ship._boardingCounter == 0:
-			LRF.archerFire(ship)
-	for ship in ships:
-		ship._enemyTarget = null
-		ship._owner._shipClicked = false
-		if ship._dead.size() > 0:
-			purgeTheDead(ship)
-
-
 func resolve_boarding() -> void:
 	var ships: Array[Node] = get_tree().get_nodes_in_group("ships")
 	for ship in ships:
-		for boat in ships:
-			if ship._tile == boat._tile and ship != boat and ship._enemyTarget == null and boat._enemyTarget == null:
-				ship._enemyTarget = boat
-				boat._enemyTarget = ship
+			ship._boardingPrepped = false
 	for ship in ships:
-		if !ship._boardingPrepped and ship._enemyTarget:
+		if !ship._boardingPrepped and ship._boardingTarget:
 			BoardingActions.determineFighting(ship)
 	for ship in ships:
 		if ship._boardingPrepped:

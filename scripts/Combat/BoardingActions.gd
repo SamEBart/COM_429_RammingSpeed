@@ -3,16 +3,15 @@ extends Node
 var neighbor_positions = WorldMap.HEXAGONAL_NEIGHBOR_DIRECTIONS
 
 func determineFighting(ship: Ship):
-	var target = ship._enemyTarget
+	var target = ship._boardingTarget
 	#Can't boarding action same team
+	print("A, ", ship, ", ", ship._boardingTarget)
 	if ship._owner == target._owner:
 		print("Boarding Target is same team!")
 		return
 	
 	ship._boardingPrepped = true
 	target._boardingPrepped = true
-	#Get Correct Fighting Order from Fighters
-	var class_priority = [Character.Marine.Soldier, Character.Marine.Javelineer, Character.Marine.Archer, Character.Engineer, Character.DeckCrew]
 	
 	#Sort fighters so that grabbing them for melee based on type is easier
 	#My Fighters
@@ -84,7 +83,7 @@ func doBoardingArchery(ship):
 	var thread1: Thread = Thread.new()
 	thread1.start(boardingArcherFire.bind(ship))
 	var thread2: Thread = Thread.new()
-	thread2.start(boardingArcherFire.bind(ship._enemyTarget))
+	thread2.start(boardingArcherFire.bind(ship._boardingTarget))
 	#Wait for each to finish before continuing
 	if thread1.is_started():
 		thread1.wait_to_finish()
@@ -93,9 +92,9 @@ func doBoardingArchery(ship):
 
 func boardingArcherFire(ship):
 	print("Attempting BAF")
-	var target = ship._enemyTarget
+	var target = ship._boardingTarget
 	ship._boardingPrepped = true
-	for i in ship._baordingArchers.size():
+	for i in ship._boardingArchers.size():
 		if randi_range(1, 6) == 6:
 			Charts.singleCrewCasualty(target)
 		ship._boardingCounter += 1
@@ -107,7 +106,7 @@ func doBoardingJaveline(ship):
 	var thread1: Thread = Thread.new()
 	thread1.start(boardingJavelineFire.bind(ship))
 	var thread2: Thread = Thread.new()
-	thread2.start(boardingJavelineFire.bind(ship._enemyTarget))
+	thread2.start(boardingJavelineFire.bind(ship._boardingTarget))
 	#Wait for each to finish before continuing
 	if thread1.is_started():
 		thread1.wait_to_finish()
@@ -116,7 +115,7 @@ func doBoardingJaveline(ship):
 
 func boardingJavelineFire(ship):
 	print("Attempting BJF")
-	var target = ship._enemyTarget
+	var target = ship._boardingTarget
 	ship._boardingPrepped = true
 	for i in ship._boardingJavelins.size():
 		if randi_range(1, 6) >= 5:
@@ -126,7 +125,7 @@ func boardingJavelineFire(ship):
 
 #region Melee
 func preBoardingMelee(ship):
-	var target = ship._enemyTarget
+	var target = ship._boardingTarget
 	var myRoll
 	var targetRoll
 	if target:
@@ -199,11 +198,11 @@ func preBoardingMelee(ship):
 						boardingMelee(ship)
 
 func boardingMelee(ship):
-	var target = ship._enemyTarget
+	var target = ship._boardingTarget
 	Charts.multiCrewCasualty(target)
 
 func boardingWithdrawing(ship):
-	var target = ship._enemyTarget
+	var target = ship._boardingTarget
 	## Temp rng for player input, 1 is withdrawal
 	var roll = randi_range(1, 2)
 	#Ship Withdrawls
@@ -224,6 +223,7 @@ func boardingWithdrawing(ship):
 			
 			#Rest Ship Varuiables
 			ship._enemyTarget = null
+			ship._boardingTarget = null
 			ship._inBoarding = false
 			ship._inCollision = false
 			ship._boardingCounter = 0

@@ -340,3 +340,34 @@ func collision(roll: int, rammer: Ship, avoider: Ship, damageModifier: int):
 	if rammer._owner != avoider._owner:
 		rammer._inBoarding = true
 		avoider._inBoarding = true
+
+func shear(ship, target: Ship, firstShip: Ship, secondShip: Ship):
+	print("Shear")
+	#Get a roll for first ship
+	var roll = randi_range(2, 12)
+	#If roll above shearers speed then fail
+	if roll > ship._speed:
+		#Prompt secondShip for decision
+		#TEMP rng for 2nd Ship
+		var roll2 = randi_range(1, 2)
+		match roll2:
+			#Ram
+			1:
+				Charts.rammingResults(secondShip, firstShip)
+			#Collision
+			2:
+				Charts.collision(roll2, secondShip, firstShip, 1)
+	
+	elif roll == ship._speed:
+		#Half reaming oar banks + rowers equal to those banks are lost
+		var banks = target.getBanks()
+		for i in int(ceil(banks.size() / 2)):
+			banks[i].removeBank(target)
+		
+	elif roll < ship._speed:
+		#Collision
+		Charts.collision(roll, firstShip, secondShip, 1)
+	
+		#Both ships are now in a BA
+		ship._inBoarding = true
+		target._inBoarding = true

@@ -87,7 +87,8 @@ static func _call_boarding(ship: Ship, other: Ship) -> void:
 	_Log.push("%s calls BoardingActions.determineFighting on %s." % [ship.name, other.name])
 	# Ramming is not written yet. Develop that function next to determineFighting in
 	# BoardingActions.gd, and call it here before the boarding setup.
-	BoardingActions.determineFighting(ship)
+	Global.resolve_boarding()
+	#BoardingActions.determineFighting(ship)
 
 
 static func _step_tile(ship: Ship, speed: int) -> Tile:
