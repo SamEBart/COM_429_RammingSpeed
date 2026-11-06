@@ -28,24 +28,6 @@ static func command_preview(ship: Ship) -> Array[Node3D]:
 	return shown
 
 
-## Tiles to highlight for the selected ship. Drift shows every open neighbor on phase 4.
-static func preview_tiles(ship: Ship, phase: int, in_execution: bool) -> Array[Node3D]:
-	var shown: Array[Node3D] = []
-	if ship.occupied_tile == null:
-		return shown
-	var speed := ship.get_overall_speed()
-	if speed == 0 and in_execution and phase == PhaseSpeedChart.DRIFT_PHASE:
-		for tile in _open_neighbors(ship.occupied_tile):
-			shown.append(tile)
-		return shown
-	if in_execution and PhaseSpeedChart.hex_count(speed, phase) == 0:
-		return shown
-	var dest := _step_tile(ship, speed)
-	if dest:
-		shown.append(dest)
-	return shown
-
-
 const _Log = preload("res://scripts/turn/game_log.gd")
 
 
@@ -200,9 +182,22 @@ static func _other_ship_here(ship: Ship) -> Ship:
 	return null
 
 
+## The odd-column neighbors in the same order as WorldMap.NEIGHBOR_DIRECTIONS_EVEN
+## (SE, NE, N, NW, SW, S), so a ship's facing index points the same way on every column.
+## Odd columns sit half a hex lower, so their side neighbors are one row further down.
+const ODD_COLUMN_DIRECTIONS := [
+	Vector2(1, 1),
+	Vector2(1, 0),
+	Vector2(0, -1),
+	Vector2(-1, 0),
+	Vector2(-1, 1),
+	Vector2(0, 1),
+]
+
+
 static func _dirs_for(tile: Tile) -> Array:
 	if WorldMap.is_map_staggered:
 		if int(tile.pos_data.grid_position.x) % 2 == 0:
 			return WorldMap.NEIGHBOR_DIRECTIONS_EVEN
-		return WorldMap.NEIGHBOR_DIRECTIONS_ODD
+		return ODD_COLUMN_DIRECTIONS
 	return WorldMap.HEXAGONAL_NEIGHBOR_DIRECTIONS

@@ -1,13 +1,12 @@
 extends Node
 
-const _Log = preload("res://scripts/turn/game_log.gd")
-
+var neighbor_positions = WorldMap.HEXAGONAL_NEIGHBOR_DIRECTIONS
 
 func determineFighting(ship: Ship):
 	var target = ship._enemyTarget
 	#Can't boarding action same team
 	if ship._owner == target._owner:
-		_Log.push("Boarding Target is same team!")
+		print("Boarding Target is same team!")
 		return
 	
 	ship._boardingPrepped = true
@@ -77,83 +76,25 @@ func determineFighting(ship: Ship):
 	#Get Javelins that are left
 	ship._boardingJavelins.append_array(my_new_fighters.filter(func(guy): return guy is Character.Marine.Javelineer))
 	target._boardingJavelins.append_array(enemy_new_fighters.filter(func(guy): return guy is Character.Marine.Javelineer))
-	_Log.push("Boarding Determination Done")
+	print("Boarding Determination Done")
 
 
 func boardingArcherFire(ship):
-	_Log.push("Attempting BAF")
+	print("Attempting BAF")
 	var target = ship._enemyTarget
 	ship._boardingPrepped = true
-	if randi_range(1, 6) == 6:
-		match randi_range(2, 12):
-			#Engineer Killed
-			2:
-				if target.getEngineers():
-					Global.addToDead(target, target.getEngineers())
-			
-			#Deck Crew Killed
-			3,9,10,11:
-				if target.getDeckCrew():
-					Global.addToDead(target, target.getDeckCrew())
-			
-			#Random Marine Killed
-			4,5:
-				match randi_range(1, 3):
-					1:
-						if target.getArchers():
-							Global.addToDead(target, target.getArchers())
-					2:
-						if target.getJavelineers():
-							Global.addToDead(target, target.getJavelineers())
-					3:
-						if target.getSoldiers():
-							Global.addToDead(target, target.getSoldiers())
-			
-			#Rower Killed
-			6,7,8:
-				if target.getReserveRowers():
-					Global.addToDead(target, target.getReserveRowers())
-				elif target.getActiveRowers():
-					Global.addToDead(target, target.getActiveRowers())
-		
+	for i in ship._baordingArchers.size():
+		if randi_range(1, 6) == 6:
+			Charts.singleCrewCasualty(target)
 		ship._boardingCounter += 1
 
 func boardingJavelineFire(ship):
-	_Log.push("Attempting BJF")
+	print("Attempting BJF")
 	var target = ship._enemyTarget
 	ship._boardingPrepped = true
-	if randi_range(1, 6) >= 5:
-		match randi_range(2, 12):
-			#Engineer Killed
-			2:
-				if target.getEngineers():
-					Global.addToDead(target, target.getEngineers())
-			
-			#Deck Crew Killed
-			3,9,10,11:
-				if target.getDeckCrew():
-					Global.addToDead(target, target.getDeckCrew())
-			
-			#Random Marine Killed
-			4,5:
-				match randi_range(1, 3):
-					1:
-						if target.getArchers():
-							Global.addToDead(target, target.getArchers())
-					2:
-						if target.getJavelineers():
-							Global.addToDead(target, target.getJavelineers())
-					3:
-						if target.getSoldiers():
-							Global.addToDead(target, target.getSoldiers())
-			
-			#Rower Killed
-			6,7,8:
-				if target.getReserveRowers():
-					Global.addToDead(target, target.getReserveRowers())
-				elif target.getActiveRowers():
-					Global.addToDead(target, target.getActiveRowers())
-		
+	for i in ship._boardingJavelins.size():
+		if randi_range(1, 6) >= 5:
+			Charts.singleCrewCasualty(target)
 		ship._boardingCounter += 1
 
 func preBoardingMelee(ship):
@@ -228,54 +169,98 @@ func preBoardingMelee(ship):
 					#Target Hits Only
 					elif targetRoll >= 7:
 						boardingMelee(ship)
-				
 
 func boardingMelee(ship):
 	var target = ship._enemyTarget
-	match randi_range(2, 12):
-		#Engineer Killed
-		2:
-			if target.getEngineers():
-				Global.addToDead(target, target.getEngineers())
+	Charts.multiCrewCasualty(target)
+
+func boardingWithdrawing(ship):
+	var target = ship._enemyTarget
+	## Temp rng for player input, 1 is withdrawal
+	var roll = randi_range(1, 2)
+	#Ship Withdrawls
+	if roll == 1:
+		#Get available tiles that are not occupied by a ship and move there
+		var avialableTiles = find_reachable_tiles(ship._tile, 1, ship)
+		if avialableTiles.size() > 0:
+			#Remove ship from tile occupier list
+			var jndex = ship._tile.occupier.find(ship)
+			ship._tile.occupier.remove_at(jndex)
+			
+			#Move Ship to new Tile
+			var index = randi_range(1, avialableTiles.size()) - 1
+			ship._tile = avialableTiles[index]
+			ship._tile.occupier.append(ship)
+			ship.position = ship._tile.position
+			ship.occupied_tile = ship._tile
+			
+			#Rest Ship Varuiables
+			ship._enemyTarget = null
+			ship._inBoarding = false
+			ship._inCollision = false
+			ship._boardingCounter = 0
+			ship._boardingPrepped = false
+
+
+func find_reachable_tiles(start : Tile, movement_range: int, origin_ship) -> Array[Node3D]:
+	var queue = []
+	var visited = []
+	var reachable_tiles : Array[Node3D]
+
+	# Start from the initial tile
+	queue.append({"tile": start, "distance": 0})
+	visited.append(Vector2(start.pos_data.grid_position.x, start.pos_data.grid_position.y))
+
+	while queue.size() > 0:
+		var current = queue.pop_front()
+		var current_tile : Tile = current["tile"]
+		var current_distance : int = current["distance"]
 		
-		#Deck Crew Killed (2)
-		3:
-			for i in 2:
-				if target.getDeckCrew():
-					Global.addToDead(target, target.getDeckCrew())
+		if current_distance > movement_range:
+			continue
 		
-		#Random Marine Killed
-		4,5:
-			match randi_range(1, 3):
-				1:
-					if target.getArchers():
-						Global.addToDead(target, target.getArchers())
-				2:
-					if target.getJavelineers():
-						Global.addToDead(target, target.getJavelineers())
-				3:
-					if target.getSoldiers():
-						Global.addToDead(target, target.getSoldiers())
+		# Add the current tile to the reachable list
+		reachable_tiles.append(current_tile)
+		current_tile.range = current_distance
+
+		var current_pos = current_tile.pos_data.grid_position
 		
-		#Rower Killed (2)
-		6,8:
-			for i in 2:
-				if target.getReserveRowers():
-					Global.addToDead(target, target.getReserveRowers())
-				elif target.getActiveRowers():
-					Global.addToDead(target, target.getActiveRowers())
-				
-		#Rower Killed
-		7:
-			if target.getReserveRowers():
-				Global.addToDead(target, target.getReserveRowers())
-			elif target.getActiveRowers():
-				Global.addToDead(target, target.getActiveRowers())
-				
-		#Deck Crew Killed
-		9,10,11:
-			if target.getDeckCrew():
-				Global.addToDead(target, target.getDeckCrew())
+		if WorldMap.is_map_staggered:
+			if current_pos.x % 2 == 0:
+				neighbor_positions = WorldMap.NEIGHBOR_DIRECTIONS_EVEN
+			else:
+				neighbor_positions = WorldMap.NEIGHBOR_DIRECTIONS_ODD
+		
+		# Explore neighbors
+		for direction in neighbor_positions:
+			var neighbor_coords = Vector2(current_pos.x + int(direction.x), current_pos.y + int(direction.y))
+			if not is_tile_valid(neighbor_coords) or visited.has(neighbor_coords):
+				continue
+			var neighbor_tile = WorldMap.map_as_dict[neighbor_coords]
+			queue.append({"tile": neighbor_tile, "distance": current_distance + 1})
+			visited.append(neighbor_coords)
+
+	#Filer out tiles that have a ship on them
+	var targetable_tiles : Array[Node3D]
+	for tile in reachable_tiles:
+		if tile != start and tile.occupier.size() == 0 and tile.range == movement_range:
+			targetable_tiles.append(tile)
+	
+	return targetable_tiles
+
+func is_tile_valid(coords : Vector2) -> bool:
+	var valid = false
+	if not WorldMap.map_as_dict.has(coords):
+		push_warning("Tile not in map!")
+		return false
+	var tile = WorldMap.map_as_dict[coords]
+	if tile and tile.mesh_data and tile.mesh_data.type == Tile.biome_type.Ocean:
+		valid = true
+	return valid
+
 
 func returnLarget(a, b):
 	return a if a > b else b
+
+func returnSmallest(a, b):
+	return a if a < b else b

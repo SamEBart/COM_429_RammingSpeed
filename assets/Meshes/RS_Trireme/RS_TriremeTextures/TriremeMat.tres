@@ -1,0 +1,18 @@
+[gd_resource type="ShaderMaterial" format=3 uid="uid://dlwltm3mnlqoe"]
+
+[ext_resource type="Shader" uid="uid://qr0oywmhpcob" path="res://assets/Meshes/RS_Trireme/RS_TriremeTextures/TriremeShader.tres" id="1_wpgor"]
+[ext_resource type="Texture2D" uid="uid://4ngrlrkhwaud" path="res://assets/Meshes/RS_Trireme/RS_TriremeTextures/TriremeTrimTexture_BaseColor.png" id="2_wv411"]
+[ext_resource type="Texture2D" uid="uid://6vnjwwc65pdl" path="res://assets/Meshes/RS_Trireme/RS_TriremeTextures/TriremeTrimTexture_Metallic.png" id="3_74rxb"]
+[ext_resource type="Texture2D" uid="uid://ce6gjxcfoldox" path="res://assets/Meshes/RS_Trireme/RS_TriremeTextures/TriremeTrimTexture_Normal.png" id="4_ul3el"]
+[ext_resource type="Texture2D" uid="uid://o85eb14hk7vh" path="res://assets/Meshes/RS_Trireme/RS_TriremeTextures/TriremeTrimTexture_Roughness.png" id="5_uxtyo"]
+[ext_resource type="Texture2D" uid="uid://danthng7f2hpj" path="res://assets/Meshes/RS_Trireme/RS_TriremeTextures/TriremeTrimTexture_TintMask.png" id="6_4jw3o"]
+
+[resource]
+render_priority = 0
+shader = ExtResource("1_wpgor")
+shader_parameter/BaseColor = ExtResource("2_wv411")
+shader_parameter/BaseColorTint = Color(1, 1, 1, 1)
+shader_parameter/TintMask = ExtResource("6_4jw3o")
+shader_parameter/Metallic = ExtResource("3_74rxb")
+shader_parameter/Roughness = ExtResource("5_uxtyo")
+shader_parameter/Normal = ExtResource("4_ul3el")

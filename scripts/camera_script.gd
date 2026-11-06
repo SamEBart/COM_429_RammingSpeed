@@ -23,19 +23,19 @@ func _process(delta: float) -> void:
 func move_camera(delta):
 	## Movement
 	var move_vector : Vector3 = Vector3.ZERO
-	if Input.is_action_pressed("ui_up"):
+	if Input.is_action_pressed("Up"):
 		move_vector += -parent.transform.basis.z
-	if Input.is_action_pressed("ui_down"):
+	if Input.is_action_pressed("Down"):
 		move_vector += parent.transform.basis.z
-	if Input.is_action_pressed("ui_left"):
+	if Input.is_action_pressed("Left"):
 		move_vector += -parent.transform.basis.x
-	if Input.is_action_pressed("ui_right"):
+	if Input.is_action_pressed("Right"):
 		move_vector += parent.transform.basis.x
 	## Rotation
-	if Input.is_action_pressed("RotateCameraLeft"):
-		parent.rotate(Vector3.UP, 0.005)
-	if Input.is_action_pressed("RotateCameraRight"):
-		parent.rotate(Vector3.UP, -0.005)
+	#if Input.is_action_pressed("RotateCameraLeft"):
+		#parent.rotate(Vector3.UP, 0.005)
+	#if Input.is_action_pressed("RotateCameraRight"):
+		#parent.rotate(Vector3.UP, -0.005)
 	## Apply movement & rotation
 	if move_vector != Vector3.ZERO:
 		move_vector = move_vector.normalized() * movespeed * delta

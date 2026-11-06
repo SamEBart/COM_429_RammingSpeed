@@ -20,6 +20,7 @@ frequency = 0.025
 script = ExtResource("1_wywib")
 tiles = Array[ExtResource("2_qmak6")]([ExtResource("4_8d6wy"), ExtResource("4_8d6wy")])
 biome_weights = Array[float]([0.0, 0.0])
+map_shape = 1
 radius = 8
 biome_noise = SubResource("FastNoiseLite_fvu5l")
 modify_height = false

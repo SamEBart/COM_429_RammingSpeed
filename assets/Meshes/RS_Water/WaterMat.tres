@@ -1,0 +1,23 @@
+[gd_resource type="ShaderMaterial" format=3 uid="uid://d4dthdkmn8k26"]
+
+[ext_resource type="Shader" uid="uid://b7y5u3yicdic4" path="res://assets/Meshes/RS_Water/WaterShader.tres" id="1_6qg13"]
+[ext_resource type="Texture2D" uid="uid://desxjq4t0h1yl" path="res://assets/Meshes/RS_Water/WaterTexture.png" id="2_vbyy1"]
+[ext_resource type="Texture2D" uid="uid://cxwmcg3lq1n58" path="res://assets/Meshes/RS_Water/WaterNoise.png" id="3_dpqod"]
+
+[resource]
+render_priority = 0
+shader = ExtResource("1_6qg13")
+shader_parameter/Water_VertexDisplacementTiling = 4.0
+shader_parameter/Water_VertexDisplacementSpeed = 0.05
+shader_parameter/Water_VertexDisplacement = ExtResource("3_dpqod")
+shader_parameter/Water_VertexDisplacementContrast = 0.2
+shader_parameter/Water_PrimaryScale = 15.0
+shader_parameter/Water_MovementDirection = Vector2(1, 1)
+shader_parameter/Water_MovementSpeed = 0.1
+shader_parameter/Water_RippleSpeed = 0.05
+shader_parameter/Water_RippleScale = 13.0
+shader_parameter/Water_Displacement = ExtResource("3_dpqod")
+shader_parameter/Water_DisplacementValueRange = 0.3
+shader_parameter/Water_BaseColor = ExtResource("2_vbyy1")
+shader_parameter/Water_SecondaryScale2 = 0.5
+shader_parameter/Water_LayerBalance = 0.5

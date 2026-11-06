@@ -19,9 +19,10 @@ config/icon="res://icon.svg"
 
 WorldMap="*uid://c56jrtr3cjcf4"
 Global="*uid://fub45mpba8el"
+TurnController="*res://scripts/turn/turn_controller.gd"
+Charts="*uid://c5nly26t0yfde"
 LRF="*uid://w2c7rfqkainc"
 BoardingActions="*uid://c4ijhmp7d8osw"
-TurnController="*res://scripts/turn/turn_controller.gd"
 
 [display]
 

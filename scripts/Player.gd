@@ -8,21 +8,33 @@ var _playerId: int;
 var _ships: Array[Ship];
 var _isSpectator: bool;
 
-#Carter WIP
+# for AI
+var _isCPU: bool;
+#@export var cpu: PackedScene;
+var cpu = load("res://scenes/scn_cpu.tscn");
+
 var _shipClicked: bool;					#Know when Player has a ship selected for an action
 var _attacker: Player;					#Know who Player has selected for thier action, i.e. who is doing the firing in LRF
 var _isReady: bool;						#Know when player is done with their turn/ready to start turn
+var _totalFighters: int
 
-func initiate(name: String, playerId: int):
+func initiate(name: String, playerId: int, isCPU: bool):
 	_name = name;
 	_playerId = playerId;
 	_ships = [];
 	_isSpectator = false;
 	_shipClicked = false;
 	_isReady = false;
+	
+	# if is an AI opponent
+	_isCPU = isCPU;
 
 func _ready() -> void:
 	self.add_to_group("players")
+	
+	if(_isCPU):
+		var CPUManager = cpu.instantiate();
+		add_child(CPUManager)
 
 func setName(name: String):
 	_name = name;
@@ -47,3 +59,6 @@ func isSpectator() -> bool:
 
 func becomeSpectator():
 	_isSpectator = true;
+	
+func isCPU() -> bool:
+	return _isCPU

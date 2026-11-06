@@ -24,6 +24,14 @@ func _ready() -> void:
 		add_child(unit_cursor)
 	deselect()
 	TurnController.phase_changed.connect(_on_phase_changed)
+	TurnController.mode_changed.connect(_on_mode_changed)
+
+
+func _on_mode_changed(_test_mode: bool) -> void:
+	if selected_unit is Ship and is_instance_valid(selected_unit) and not TurnController.is_local_ship(selected_unit):
+		if Global._lastShipClicked == selected_unit:
+			Global._lastShipClicked = null
+		deselect()
 
 
 func _input(event: InputEvent) -> void:
@@ -37,6 +45,9 @@ func _input(event: InputEvent) -> void:
 		var end = origin + dir * 1000
 		var hit_object = raycast_at_mouse(origin, end)
 		if not hit_object:
+			return
+		if Input.is_action_just_pressed("Click") and hit_object is Ship and not TurnController.is_local_ship(hit_object):
+			get_tree().call_group("ship_stats", "show_ship", hit_object)
 			return
 		if not TurnController.use_phase_movement:
 			if Input.is_action_just_pressed("Click"):
@@ -94,19 +105,19 @@ func _input(event: InputEvent) -> void:
 				elif attacker and attacker._owner._shipClicked and attacker._owner != objOwner and Input.is_action_just_pressed("RightClick"):
 					#Range Check (unit_moves is tiles)
 					if unit_moves.size() > 0:
-						for i in unit_moves.size():
+						for spot in unit_moves:
 							#If so then in range
-							if unit_moves[i].occupier:
-								for j in unit_moves[i].occupier.size():
-									if unit_moves and hit_object == unit_moves[i].occupier[j]:
+							if spot.occupier:
+								for occupied in spot.occupier:
+									if unit_moves and hit_object == occupied:
 										attacker._attacker._enemyTarget = hit_object
 										_Log.push("Shooter: %s is targetting: %s" % [attacker._attacker.name, attacker._attacker._enemyTarget.name])
 										#Ballista damage chance is based on range value
 										if Global._subAction == 1:
-											attacker._ballistaTargetRange = unit_moves[i].range
+											attacker._ballistaTargetRange = spot.range
 										#Catapult damage chance is based on range value (assuming)
 										if Global._subAction == 2:
-											attacker._catapultTargetRange = unit_moves[i].range
+											attacker._catapultTargetRange = spot.range
 										
 										#Reset
 										attacker._owner._shipClicked = false
