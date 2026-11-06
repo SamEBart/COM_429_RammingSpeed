@@ -545,6 +545,15 @@ class Trireme extends Ship:
 	func get_ship_kind() -> SpeedCalculator.ShipKind:
 		return SpeedCalculator.ShipKind.TRIREME
 	
+	func _init(owner: Player, numOfDeckCrew: int = 10, numOfReserveRowers: int = 50,
+	numOfArchers: int = 3, numOfJavelineers: int = 3, numOfSoldiers: int = 7,
+	numOfEngineers: int = 3, numOfOarBanks: int = 50, rowersPerBank: int = 3,
+	floatationHits: int = 12, mastHP: int = 4, beakHP: int = 1, beakHPMax: int = 1,
+	hasBallista: bool = true, hasCatapult: bool = true, _type: int = 1):
+		_setup(owner, numOfDeckCrew, numOfReserveRowers, numOfArchers, numOfJavelineers,
+		numOfSoldiers, numOfEngineers, numOfOarBanks, rowersPerBank, floatationHits,
+		mastHP, beakHP, beakHPMax, hasBallista, hasCatapult, _type);
+	
 	func _setup(owner: Player, numOfDeckCrew: int = 10, numOfReserveRowers: int = 50,
 	numOfArchers: int = 3, numOfJavelineers: int = 3, numOfSoldiers: int = 7,
 	numOfEngineers: int = 3, numOfOarBanks: int = 50, rowersPerBank: int = 3,
