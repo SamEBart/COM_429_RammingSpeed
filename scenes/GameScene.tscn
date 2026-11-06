@@ -13,6 +13,7 @@
 [ext_resource type="Script" uid="uid://8c4mygj6ghrg" path="res://scripts/interaction.gd" id="12_tt8b8"]
 [ext_resource type="PackedScene" uid="uid://cqxjxq25t6wuy" path="res://scenes/Cursors/unit_cursor.tscn" id="13_ydfkh"]
 [ext_resource type="Script" uid="uid://d31r5d6cq5b2u" path="res://scripts/turn/phase_hud.gd" id="14_phasehud"]
+[ext_resource type="Script" uid="uid://dv7q1e8npt71m" path="res://scripts/Test.gd" id="15_qitmq"]
 [ext_resource type="Script" uid="uid://uls4rbg8wji4" path="res://scripts/turn/ship_stats_panel.gd" id="15_shipstats"]
 
 [sub_resource type="Environment" id="Environment_f2ci6"]
@@ -111,3 +112,6 @@ tile_cursor_scene = ExtResource("11_rshvd")
 unit_cursor_scene = ExtResource("13_ydfkh")
 main_camera = NodePath("../../CameraParent/Camera3D")
 p_finder = NodePath("../Pathfinder")
+
+[node name="Node" type="Node" parent="." unique_id=19549037]
+script = ExtResource("15_qitmq")

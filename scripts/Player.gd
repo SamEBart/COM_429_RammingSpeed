@@ -18,8 +18,7 @@ var _attacker: Player;					#Know who Player has selected for thier action, i.e. 
 var _isReady: bool;						#Know when player is done with their turn/ready to start turn
 var _totalFighters: int
 
-func _init(name: String, playerId: int, isCPU: bool):
-	initiate(name, playerId, isCPU);
+
 
 func initiate(name: String, playerId: int, isCPU: bool):
 	_name = name;
