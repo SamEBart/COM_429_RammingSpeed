@@ -38,7 +38,12 @@ func _ready() -> void:
 	var quad_count := 0
 	for i in SPAWN_PLAYERS.size():
 		var info: Dictionary = SPAWN_PLAYERS[i]
-		var player = _inst_player(info["name"], i + 1)
+		
+		var isCPU = false
+		if info["player_type"] == "CPU":
+			isCPU = true
+			
+		var player = _inst_player(info["name"], i + 1, isCPU)
 		var tiles: Array[Tile] = []
 		if info.has("opposite_of"):
 			tiles = _opposite_tiles(team_tiles[info["opposite_of"]], map_middle)
@@ -98,9 +103,9 @@ func create_starting_units(count : int):
 		count -= 1
 
 ## Carter's Creating Player combined with Melia's create_starting_units
-func _inst_player(name, id):
+func _inst_player(name, id, isCPU=false):
 	var playerInstance = myPlayer.instantiate()
-	playerInstance.initiate(name, id)
+	playerInstance.initiate(name, id, isCPU)
 	add_child(playerInstance)
 	playerInstance.add_to_group("players")
 	return playerInstance
@@ -135,10 +140,10 @@ func _inst_tri(owner, name):
 ## "opposite_of" copies another team's spots spun half a turn around the middle of the map.
 ## On this hex grid that is the only mirror that lands exactly on tiles, so the two teams start in matching spots.
 const SPAWN_PLAYERS := [
-	{"name": "Chris", "corner": Vector2(-1, -1), "facing": 0, "color": Color(1.0, 0.45, 0.4)},
-	{"name": "Bobby", "corner": Vector2(1, -1), "facing": 4, "color": Color(0.45, 0.7, 1.0)},
-	{"name": "Grimm", "opposite_of": 0, "facing": 3, "color": Color(0.5, 0.95, 0.5)},
-	{"name": "Morgan", "opposite_of": 1, "facing": 1, "color": Color(1.0, 0.85, 0.35)},
+	{"name": "Chris", "corner": Vector2(-1, -1), "facing": 0, "color": Color(1.0, 0.45, 0.4), "player_type": "Human"},
+	{"name": "Bobby", "corner": Vector2(1, -1), "facing": 4, "color": Color(0.45, 0.7, 1.0), "player_type": "Human"},
+	{"name": "Grimm", "opposite_of": 0, "facing": 3, "color": Color(0.5, 0.95, 0.5), "player_type": "Human"},
+	{"name": "Robot", "opposite_of": 1, "facing": 1, "color": Color(1.0, 0.85, 0.35), "player_type": "CPU"},
 ]
 
 
