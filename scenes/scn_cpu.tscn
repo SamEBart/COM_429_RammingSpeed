@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://bhw57xak3w7aa"]
+
+[ext_resource type="Script" uid="uid://c0f88ow8r1r3x" path="res://scripts/CPU_agent.gd" id="1_jhpnk"]
+
+[node name="CPUManager" type="Node3D" unique_id=63336712]
+script = ExtResource("1_jhpnk")

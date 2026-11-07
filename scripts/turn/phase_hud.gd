@@ -30,6 +30,8 @@ func _ready() -> void:
 	_panel.custom_minimum_size = Vector2(280, 0)
 	_panel.add_theme_constant_override("margin_right", 6)
 	_panel.add_theme_constant_override("margin_bottom", 16)
+	var PHASE_HUD_STYLEBOX = load("uid://bdpbjofkq7iim") as StyleBoxTexture
+	_panel.add_theme_stylebox_override("panel",PHASE_HUD_STYLEBOX)
 	host.add_child(_panel)
 
 	var box := VBoxContainer.new()

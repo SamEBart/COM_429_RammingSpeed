@@ -1,0 +1,29 @@
+EVERYTHING HERE IS IN REFERENCE TO "Ship Card_MOCKUP" INCLUDED IN THE ZIP, UNLESS SPECIFIED OTHERWISE
+
+DO NOT pay attention to the "3 dots" in the top left corner, those are placeholders when "statuses" are implemented
+
+"Ship Type" is a placeholder for what the ships identification (i.e. "Trireme" or "Quadreme"), the font is in "Caligo" (fonts will be zipped with assets)
+
+The "NW" (North West) in the top right corner represents the direction the ship is currently facing. The font used is "Caligo" . Use it to display each cardinal direction.
+
+The "HP Bar" at the top middle should maintain it's opacity, in which case you should be able to overlay on top a simple shape that changes dynamically with the ships HP
+
+For the 3 stats in the center ("Crew," "Engineers", "Marines") it is setup as a ratio/fraction (current numbers are placeholders and not indicative of a maximum, currently). Each one should display a tooltip when moused over so the player will know what they represent
+
+The "Crew," "Engineer," & "Marine" designations use "BELL MT Bold" while the stats themselves use "Candara Italic Bold." I also recommend applying a drop shadow to both aspects, if possible. 
+
+"Crew Stats" from left to right: "Rowing/Boarding/Inactive/Total Crew/Max Capacity" (at the current state I am not fully sure if these will encapsulate the entire crew or represent a subset that is neither engineer nor marine)
+
+"Engineer Stats" "Inactive/Total Engineers"
+
+"Marine Stats" "Soldiers/Javelin/Archers/Total Marines"
+
+"Button_Repair" Should bring up a pop-up menu with a drop down, allowing the player to choose how many "Engineers" to allocate for repairs. (layout is portrayed in "Repair Popup_Mockup"). "Repair" uses "BELL MT Bold" while the dropdown uses "Candara Italic Bold."
+
+When either "Button_Sail_..." is pressed, it will swap places with the other, while the illustration in either "Ship Card_Sail_..." should swap to represent the ship's current sail status
+
+The number between the "Button_Speed_..." Assets represent the boat's current speed (presumably in hexes...?), and uses "BELL MT Bold"
+
+Only one "Button_Reload_..." is used per boat, reflecting whether it is currently holding a catapult OR ballista. Once clicked, they will swap to their designated "Greyed" version and display a number (displayed over the "Greyed" button) representing a phase cooldown until it has been reloaded. Use "Caligo" in white for that.
+
+if anything is unclear or you have questions in regards to layout, please message me (TraxEpsilon) via Discord
