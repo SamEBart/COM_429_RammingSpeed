@@ -18,7 +18,6 @@ signal phase_changed(phase: Phase, execution_step: int, turn_number: int)
 signal match_ended(turn_number: int)
 signal mode_changed(test_mode: bool)
 
-
 const _Log = preload("res://scripts/turn/game_log.gd")
 
 ## False is normal mode: only the local player's ships can be selected, and steering crew limit turns.
@@ -277,7 +276,7 @@ func _resolve_current_action() -> bool:
 	if action_step == ActionStep.MOVE and use_phase_movement:
 		return PhaseMovement.apply(get_tree(), execution_step)
 	if action_step == ActionStep.LONG_RANGE_FIRE:
-		Global.resolve_long_range_fire()
+		LRF.resolve_long_range_fire()
 	elif action_step == ActionStep.BOARDING and not boarding_before_fire:
 		Global.resolve_boarding()
 	return false
@@ -291,11 +290,14 @@ func _clear_move_stops() -> void:
 
 func _apply_action_to_game() -> void:
 	if phase == Phase.EXECUTION and action_step == ActionStep.MOVE:
+		AudioController.stop_music("combat_music", "combat_sounds")
 		Global.set_turn_action(0)
 	elif phase == Phase.EXECUTION and action_step == ActionStep.LONG_RANGE_FIRE:
 		Global.set_turn_action(1)
+		AudioController.play_music("combat_music", -15, "combat_sounds")
 	elif phase == Phase.EXECUTION and action_step == ActionStep.BOARDING:
 		Global.set_turn_action(2)
+		AudioController.play_music("combat_music", -15, "combat_sounds")
 	else:
 		Global.set_turn_action(-1)
 

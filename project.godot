@@ -23,6 +23,7 @@ TurnController="*res://scripts/turn/turn_controller.gd"
 Charts="*uid://c5nly26t0yfde"
 LRF="*uid://w2c7rfqkainc"
 BoardingActions="*uid://c4ijhmp7d8osw"
+AudioController="*uid://biiluct2qj2c2"
 
 [display]
 
@@ -32,6 +33,10 @@ window/stretch/aspect="expand"
 [filesystem]
 
 import/blender/enabled=false
+
+[global_group]
+
+combat_sounds=""
 
 [input]
 
