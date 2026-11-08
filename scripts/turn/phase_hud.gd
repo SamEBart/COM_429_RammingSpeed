@@ -1,83 +1,37 @@
 extends CanvasLayer
-## On-map controls for the phase sequence. Sits in a corner so the hex map still receives clicks.
+## Phase sequence panel. Layout is scenes/ui/phase_hud.tscn (drag nodes there, not in this script).
+## %Name nodes are unique names in that scene. MenuFrame still lets you drag and scale in play.
 
 const _DESERT_TILE := preload("res://Resources/Tiles/Desert.tres")
 const _WATER_MATERIAL := preload("res://assets/Materials/Shaders/water_shader.tres")
 const _MenuFrame := preload("res://scripts/turn/menu_frame.gd")
 const _TurnPathPreview := preload("res://scripts/turn/turn_path_preview.gd")
 
-var _panel: PanelContainer
-var _status: Label
-var _hint: Label
-var _advance: Button
-var _end_match: Button
-var _legacy: CheckButton
-var _legacy_row: HBoxContainer
-var _mode: Label
+@onready var _host: Control = %Host
+@onready var _panel: PanelContainer = %Panel
+@onready var _status: Label = %Status
+@onready var _hint: Label = %Hint
+@onready var _advance: Button = %Advance
+@onready var _end_match: Button = %EndMatch
+@onready var _legacy: CheckButton = %Legacy
+@onready var _legacy_row: HBoxContainer = %LegacyRow
+@onready var _mode: Label = %Mode
+@onready var _water: CheckButton = %WaterToggle
 var _flat_tiles: StandardMaterial3D
 
 
 func _ready() -> void:
 	_flat_tiles = StandardMaterial3D.new()
 	_flat_tiles.albedo_color = _DESERT_TILE.color
-
-	var host := Control.new()
-	host.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	host.add_to_group("screen_menu")
-	add_child(host)
-
-	_panel = PanelContainer.new()
-	_panel.custom_minimum_size = Vector2(280, 0)
-	_panel.add_theme_constant_override("margin_right", 6)
-	_panel.add_theme_constant_override("margin_bottom", 16)
-	var PHASE_HUD_STYLEBOX = load("uid://bdpbjofkq7iim") as StyleBoxTexture
-	_panel.add_theme_stylebox_override("panel",PHASE_HUD_STYLEBOX)
-	host.add_child(_panel)
-
-	var box := VBoxContainer.new()
-	box.add_theme_constant_override("separation", 8)
-	_panel.add_child(box)
-
-	var title := Label.new()
-	title.text = "Phase Sequence"
-	box.add_child(title)
-
-	_mode = Label.new()
-	_mode.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	box.add_child(_mode)
-
-	_status = Label.new()
-	_status.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	box.add_child(_status)
-
-	_hint = Label.new()
-	_hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	box.add_child(_hint)
-
-	_advance = Button.new()
-	box.add_child(_advance)
+	_host.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_host.add_to_group("screen_menu")
 	_advance.pressed.connect(TurnController.advance)
-
-	_end_match = Button.new()
-	_end_match.text = "End Match"
-	box.add_child(_end_match)
 	_end_match.pressed.connect(TurnController.end_match)
-
-	_legacy = CheckButton.new()
-	_legacy.text = "Test Movement"
 	_legacy.button_pressed = not TurnController.use_phase_movement
 	_legacy.toggled.connect(_on_legacy_toggled)
-	_legacy_row = _toggle_row(_legacy)
-	box.add_child(_legacy_row)
-
-	var water := CheckButton.new()
-	water.text = "Water toggle"
-	water.button_pressed = true
-	water.toggled.connect(_on_water_toggled)
-	box.add_child(_toggle_row(water))
-
-	_MenuFrame.new().setup(host, _panel, Vector2.ZERO, 16.0)
-
+	_water.toggled.connect(_on_water_toggled)
+	## Bottom-left start corner, 16px from the screen edge. Same helper as the ship card.
+	_MenuFrame.new().setup(_host, _panel, Vector2.ZERO, 16.0)
 	get_tree().root.add_child.call_deferred(_TurnPathPreview.new())
 	TurnController.phase_changed.connect(_refresh)
 	TurnController.mode_changed.connect(_on_mode_changed)
@@ -157,17 +111,6 @@ func _local_player_name() -> String:
 		if node is Player and node.getPlayerId() == TurnController.local_player_id:
 			return node.getName()
 	return "Player %d" % TurnController.local_player_id
-
-
-func _toggle_row(check: CheckButton) -> HBoxContainer:
-	var row := HBoxContainer.new()
-	check.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	row.add_child(check)
-	var pad := Control.new()
-	pad.custom_minimum_size = Vector2(36, 0)
-	pad.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	row.add_child(pad)
-	return row
 
 
 func _on_legacy_toggled(on: bool) -> void:

@@ -87,8 +87,7 @@ func catapultHit(target: Ship):
 		#If mast up it falls down, Roll Crew Casualty Chart (CCC)
 		3:
 			if target._isMastUp:
-				target._isMastUp = false
-				target._isMastDown = true
+				target.set_mast_down(true)
 				multiCrewCasualty(target)
 		
 		#Mast takes 1 damage, if 0 then roll CCC
@@ -96,12 +95,12 @@ func catapultHit(target: Ship):
 			if target._isMastUp:
 				target._mastHP -= 1
 				if target._mastHP == 0:
-					target._isMastUp = false
-					target._isMastDown = true
+					target.set_mast_down(true)
 					multiCrewCasualty(target)
 		
 		#If a ship has a Catapult or Ballitsa it is destroyed, otherwise roll CCC
 		5:
+			## Hulls only carry one siege weapon now, so check both helpers.
 			if target.hasBallista() or target.hasCatapult():
 				var temp = true
 				while temp:
@@ -185,7 +184,7 @@ func collisionCriticalHit(target: Ship, isRamming: bool, damageModifier: int):
 		11:
 			if target._isMastUp:
 				target._mastHP = 0
-				target._isMastDown = true
+				target.set_mast_down(true)
 			elif target.getDeckCrew():
 				Global.addToDead(target, target.getDeckCrew())
 		
@@ -193,7 +192,7 @@ func collisionCriticalHit(target: Ship, isRamming: bool, damageModifier: int):
 		12:
 			if target._isMastUp:
 				target._mastHP = 0
-				target._isMastDown = true
+				target.set_mast_down(true)
 				flotationDamage(target, 1)
 			elif target.getReserveRowers():
 				Global.addToDead(target, target.getReserveRowers())

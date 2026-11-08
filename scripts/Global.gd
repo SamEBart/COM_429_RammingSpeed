@@ -289,6 +289,11 @@ func set_turn_action(action: int) -> void:
 	action_reset()
 
 
+## TurnController calls this. Real work is in Combat/LRF.gd so SceneTree scripts can still use Global.
+func resolve_long_range_fire() -> void:
+	LRF.resolve_long_range_fire()
+
+
 func resolve_boarding() -> void:
 	var ships: Array[Node] = get_tree().get_nodes_in_group("ships")
 	for ship in ships:

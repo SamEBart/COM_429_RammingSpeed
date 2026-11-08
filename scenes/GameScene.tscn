@@ -12,8 +12,8 @@
 [ext_resource type="PackedScene" uid="uid://bb3hit25an5ti" path="res://scenes/Cursors/path_overlay.tscn" id="12_0kgq4"]
 [ext_resource type="Script" uid="uid://8c4mygj6ghrg" path="res://scripts/interaction.gd" id="12_tt8b8"]
 [ext_resource type="PackedScene" uid="uid://cqxjxq25t6wuy" path="res://scenes/Cursors/unit_cursor.tscn" id="13_ydfkh"]
-[ext_resource type="Script" uid="uid://d31r5d6cq5b2u" path="res://scripts/turn/phase_hud.gd" id="14_phasehud"]
-[ext_resource type="Script" uid="uid://uls4rbg8wji4" path="res://scripts/turn/ship_stats_panel.gd" id="15_shipstats"]
+[ext_resource type="PackedScene" path="res://scenes/ui/phase_hud.tscn" id="14_phasehud"]
+[ext_resource type="PackedScene" path="res://scenes/ui/ship_card.tscn" id="15_shipstats"]
 
 [sub_resource type="Environment" id="Environment_f2ci6"]
 background_mode = 3
@@ -39,11 +39,9 @@ dof_blur_far_transition = 45.0
 
 [node name="World" type="Node3D" unique_id=2059965356]
 
-[node name="PhaseHud" type="CanvasLayer" parent="." unique_id=1810684868]
-script = ExtResource("14_phasehud")
+[node name="PhaseHud" parent="." instance=ExtResource("14_phasehud")]
 
-[node name="ShipStats" type="CanvasLayer" parent="." unique_id=1827255696]
-script = ExtResource("15_shipstats")
+[node name="ShipStats" parent="." instance=ExtResource("15_shipstats")]
 
 [node name="CameraParent" type="Node3D" parent="." unique_id=196652453]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.117906, 15.1842, 10.1434)

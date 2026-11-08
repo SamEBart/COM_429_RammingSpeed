@@ -72,15 +72,11 @@ func _input(event: InputEvent) -> void:
 		#Long range firing (Archers and Ballista)
 		if Global._action == 1 and Global._subAction >= 0 and hit_object:
 			#Range
-			var max_range = 1
-			var min_range = 1
-			#Ballista has more range than archers
-			if Global._subAction == 1:
-				max_range = 4
-			#Catapult has more range than archers
-			if Global._subAction == 2:
-				max_range = 6
-				min_range = 2
+			var ranges := Vector2i(1, 1)
+			if Global._lastShipClicked is Ship:
+				ranges = Global._lastShipClicked.lrf_range()
+			var min_range = ranges.x
+			var max_range = ranges.y
 			
 			var attacker = Global._lastShipClicked
 			if hit_object is Unit and event.pressed and hit_object._boardingCounter == 0:
@@ -92,6 +88,10 @@ func _input(event: InputEvent) -> void:
 					attacker = Global._lastShipClicked
 					attacker._owner._shipClicked = true
 					_Log.push("Selected: %s (%s) and can select LRF target!" % [attacker._attacker.name, attacker._owner._name])
+					if hit_object is Ship:
+						ranges = hit_object.lrf_range()
+						min_range = ranges.x
+						max_range = ranges.y
 					attempt_range_select(hit_object, min_range, max_range)
 					get_tree().call_group("ship_stats", "show_ship", hit_object)
 				
@@ -113,10 +113,9 @@ func _input(event: InputEvent) -> void:
 										attacker._attacker._enemyTarget = hit_object
 										_Log.push("Shooter: %s is targetting: %s" % [attacker._attacker.name, attacker._attacker._enemyTarget.name])
 										#Ballista damage chance is based on range value
-										if Global._subAction == 1:
+										if attacker._lrfMode == 1 and attacker._ballista:
 											attacker._ballistaTargetRange = spot.range
-										#Catapult damage chance is based on range value (assuming)
-										if Global._subAction == 2:
+										if attacker._lrfMode == 1 and attacker._catapult:
 											attacker._catapultTargetRange = spot.range
 										
 										#Reset
@@ -289,15 +288,13 @@ func highlight_unit(unit):
 	unit_cursor.visible = true
 
 
+## Highlight distance comes from the ship's current LRF pick (archers vs siege).
 func _lrf_range() -> Vector2i:
-	var min_range := 1
-	var max_range := 1
-	if Global._subAction == 1:
-		max_range = 4
-	elif Global._subAction == 2:
-		max_range = 6
-		min_range = 2
-	return Vector2i(min_range, max_range)
+	if selected_unit is Ship:
+		return selected_unit.lrf_range()
+	if Global._lastShipClicked is Ship:
+		return Global._lastShipClicked.lrf_range()
+	return Vector2i(1, 1)
 
 
 func _in_long_range_fire() -> bool:

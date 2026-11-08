@@ -34,6 +34,8 @@ var _attacker = self
 var _enemyTarget: Ship
 var _ballistaTargetRange: int
 var _catapultTargetRange: int
+## 0 = archers, 1 = this ship's one siege weapon.
+var _lrfMode: int = 0
 
 #region Masts and Moving
 ## Index into HEX_DIR and the map's neighbor list. 0 is the first neighbor direction.
@@ -56,7 +58,7 @@ var _sliding: bool = false
 var _type: int
 var _flotationHits: int;
 var _mastHP: int;
-var _isMastUp: bool = false
+var _isMastUp: bool = true
 var _isMastDown: bool = false
 var _mastTimer: int = 0
 var _beakHP: int;
@@ -91,8 +93,10 @@ func adjust_rowing_speed(delta: int) -> bool:
 	return true
 
 
+## Keep both flags in sync. Combat charts read _isMastUp. Speed bonus reads _isMastDown.
 func set_mast_down(down: bool) -> void:
 	_isMastDown = down
+	_isMastUp = not down
 
 
 ## Oar speed capped at 4. Mast down can raise overall speed to 6.
@@ -289,10 +293,31 @@ func clear_phase_move_stop() -> void:
 func _ready() -> void:
 	add_to_group("ships")
 	_attacker = self
-	_ballista = Ballista.new()
-	_catapult = Catapult.new()
 	_speed = randi_range(0, 8)
 	rotation_degrees.y = Global._hexUp
+
+
+## Hex range for the LRF pick on the card. Archers 1. Ballista 1-4. Catapult 2-6.
+func lrf_range() -> Vector2i:
+	if _lrfMode == 0:
+		return Vector2i(1, 1)
+	if _ballista:
+		return Vector2i(1, 4)
+	if _catapult:
+		return Vector2i(2, 6)
+	return Vector2i(1, 1)
+
+
+func has_living_engineer() -> bool:
+	return _engineers.size() > 0
+
+
+## Called after an LRF phase if this ship did not shoot its siege weapon.
+func tick_weapon_reload() -> void:
+	if _ballista:
+		_ballista.tick_reload()
+	if _catapult:
+		_catapult.tick_reload()
 
 #region OarBank Class
 class OarBank:
@@ -369,18 +394,19 @@ class Ballista:
 				eng._allocatedTo = null
 	
 	func fire():
-		_reloadTimer = 0
 		_isLoaded = false
+		_reloadTimer = 2
+	
+	func tick_reload() -> void:
+		if _isLoaded:
+			return
+		_reloadTimer -= 1
+		if _reloadTimer <= 0:
+			_reloadTimer = 0
+			_isLoaded = true
 	
 	func reload():
-		if !_isLoaded:
-			for eng in _engineers:
-				if eng._allocatedTo == self:
-					_reloadTimer += 1;
-			
-			if _reloadTimer >= 8:
-				_reloadTimer = 0;
-				_isLoaded = true;
+		tick_reload()
 	
 	func isLoaded() -> bool:
 		return _isLoaded;
@@ -425,18 +451,19 @@ class Catapult:
 				eng._allocatedTo = null
 	
 	func fire():
-		_reloadTimer = 0
 		_isLoaded = false
+		_reloadTimer = 1
+	
+	func tick_reload() -> void:
+		if _isLoaded:
+			return
+		_reloadTimer -= 1
+		if _reloadTimer <= 0:
+			_reloadTimer = 0
+			_isLoaded = true
 	
 	func reload():
-		if (!_isLoaded):
-			for eng in _engineers:
-				if eng._allocatedTo == self:
-					_reloadTimer += 1;
-			
-			if (_reloadTimer >= 24):
-				_reloadTimer = 0;
-				_isLoaded = true;
+		tick_reload()
 	
 	func isLoaded() -> bool:
 		return _isLoaded;
@@ -543,15 +570,16 @@ func cleanup():
 #endregion
 
 #region Trireme Class
+## Placeholder until weapons are bought with points: Trireme spawns a ballista, no catapult.
 class Trireme extends Ship:
 	func get_ship_kind() -> SpeedCalculator.ShipKind:
 		return SpeedCalculator.ShipKind.TRIREME
 	
 	func _setup(owner: Player, numOfDeckCrew: int = 10, numOfReserveRowers: int = 50,
 	numOfArchers: int = 3, numOfJavelineers: int = 3, numOfSoldiers: int = 7,
-	numOfEngineers: int = 3, numOfOarBanks: int = 50, rowersPerBank: int = 3,
+	numOfEngineers: int = 5, numOfOarBanks: int = 50, rowersPerBank: int = 3,
 	floatationHits: int = 12, mastHP: int = 4, beakHP: int = 1, beakHPMax: int = 1,
-	hasBallista: bool = true, hasCatapult: bool = true, _type: int = 1):
+	hasBallista: bool = true, hasCatapult: bool = false, _type: int = 1):
 		_owner = owner;
 		
 		for i in numOfDeckCrew:
@@ -580,6 +608,7 @@ class Trireme extends Ship:
 		_beakHP = beakHP;
 		_dead = [];
 		
+		## Only one siege weapon is created. The other stays null.
 		_ballista = null;
 		if (hasBallista):
 			_ballista = Ballista.new();
@@ -591,16 +620,16 @@ class Trireme extends Ship:
 #endregion
 
 #region Quadrireme Class
-## Built the same way as a Trireme, with a bigger crew. Oar banks and flotation are placeholders the GDD does not set.
+## Same crew setup as a Trireme, bigger numbers. Placeholder weapon: catapult, no ballista.
 class Quadrireme extends Trireme:
 	func get_ship_kind() -> SpeedCalculator.ShipKind:
 		return SpeedCalculator.ShipKind.QUADRIREME
 	
 	func _setup(owner: Player, numOfDeckCrew: int = 15, numOfReserveRowers: int = 50,
 	numOfArchers: int = 4, numOfJavelineers: int = 4, numOfSoldiers: int = 12,
-	numOfEngineers: int = 4, numOfOarBanks: int = 60, rowersPerBank: int = 4,
+	numOfEngineers: int = 7, numOfOarBanks: int = 60, rowersPerBank: int = 4,
 	floatationHits: int = 16, mastHP: int = 4, beakHP: int = 1, beakHPMax: int = 1,
-	hasBallista: bool = true, hasCatapult: bool = true, _type: int = 1):
+	hasBallista: bool = false, hasCatapult: bool = true, _type: int = 1):
 		super(owner, numOfDeckCrew, numOfReserveRowers, numOfArchers, numOfJavelineers,
 		numOfSoldiers, numOfEngineers, numOfOarBanks, rowersPerBank, floatationHits, mastHP,
 		beakHP, beakHPMax, hasBallista, hasCatapult, _type)
