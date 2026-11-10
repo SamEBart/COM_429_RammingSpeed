@@ -36,7 +36,7 @@ import/blender/enabled=false
 
 [global_group]
 
-combat_sounds=""
+all_sounds=""
 
 [input]
 

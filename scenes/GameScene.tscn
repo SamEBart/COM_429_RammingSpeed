@@ -37,7 +37,7 @@ fog_height = 1.0
 dof_blur_far_distance = 40.0
 dof_blur_far_transition = 45.0
 
-[node name="World" type="Node3D" unique_id=2059965356 groups=["combat_sounds"]]
+[node name="World" type="Node3D" unique_id=2059965356 groups=["all_sounds"]]
 
 [node name="PhaseHud" type="CanvasLayer" parent="." unique_id=1810684868]
 script = ExtResource("14_phasehud")

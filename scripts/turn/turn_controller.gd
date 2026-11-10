@@ -290,14 +290,17 @@ func _clear_move_stops() -> void:
 
 func _apply_action_to_game() -> void:
 	if phase == Phase.EXECUTION and action_step == ActionStep.MOVE:
-		AudioController.stop_music("combat_music", "combat_sounds")
 		Global.set_turn_action(0)
+		AudioController.stop_music("combat_music", "combat")
+	
 	elif phase == Phase.EXECUTION and action_step == ActionStep.LONG_RANGE_FIRE:
 		Global.set_turn_action(1)
-		AudioController.play_music("combat_music", -15, "combat_sounds")
+		AudioController.play_music("combat_music", -15, "combat")
+	
 	elif phase == Phase.EXECUTION and action_step == ActionStep.BOARDING:
 		Global.set_turn_action(2)
-		AudioController.play_music("combat_music", -15, "combat_sounds")
+		AudioController.play_music("combat_music", -15, "combat")
+	
 	else:
 		Global.set_turn_action(-1)
 
