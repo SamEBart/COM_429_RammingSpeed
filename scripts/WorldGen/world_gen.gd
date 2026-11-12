@@ -21,6 +21,11 @@ extends Node
 
 var allies = 2
 
+## Different Terrain Tiles to Place (for now villages)
+@export_category("Terrain Spawning")
+@export var village : PackedScene
+@export var village_02 : PackedScene
+
 ## What to create
 var myShip = preload("res://scenes/Units/prototype_unit.tscn")
 var myPlayer = preload("res://scenes/temp_player.tscn")
@@ -303,7 +308,11 @@ func generate_world():
 	## Spawn villages
 	if settings.spawn_villages:
 		var placeable = get_placeable_tiles()
-		object_placer.place_villages(placeable, settings.spacing)
+		object_placer.place_villages(placeable, settings.spacing, village)
+		interval["Spawn Villages -- "] = Time.get_ticks_msec()
+		
+		placeable = get_placeable_tiles()
+		object_placer.place_villages(placeable, settings.spacing, village_02)
 		interval["Spawn Villages -- "] = Time.get_ticks_msec()
 	
 	print_generation_results(starttime, interval)
