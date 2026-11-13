@@ -96,9 +96,9 @@ proto_unit = ExtResource("8_r58of")
 spawn_close_for_testing = true
 test_spawn_gap = 8
 camera_rig = NodePath("../../CameraParent")
-village = ExtResource("10_hcqfn")
-village_02 = ExtResource("10_qitmq")
-village_03 = ExtResource("10_kxqg4")
+beach = ExtResource("10_hcqfn")
+island = ExtResource("10_qitmq")
+mountain = ExtResource("10_kxqg4")
 
 [node name="ObjectPlacer" type="Node" parent="Builder" unique_id=187523474]
 script = ExtResource("9_p13dw")

@@ -56,6 +56,7 @@ func determine_placeability(tile : Tile, scene : PackedScene, biome: String):
 			#Set the back of the front of the island to new biome
 				#An Island tile is 1x2 so the tile behind it needs to be an island tile as well.
 			new_neighbs[rotation].biome = biome
+#			new_neighbs[rotation].biome_type
 		
 		#If making a Mountain
 		elif biome == "Mountain":

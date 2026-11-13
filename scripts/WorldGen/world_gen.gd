@@ -23,9 +23,9 @@ var allies = 2
 
 ## Different Terrain Tiles to Place (for now villages)
 @export_category("Terrain Spawning")
-@export var village : PackedScene
-@export var village_02 : PackedScene
-@export var village_03 : PackedScene
+@export var beach : PackedScene
+@export var island : PackedScene
+@export var mountain : PackedScene
 
 ## What to create
 var myShip = preload("res://scenes/Units/prototype_unit.tscn")
@@ -213,7 +213,7 @@ func _tile_at(spot: Vector2) -> Tile:
 
 
 func _is_free_ocean(tile: Tile) -> bool:
-	return tile != null and tile.mesh_data.type == Tile.biome_type.Ocean and tile.occupier.size() == 0
+	return tile != null and tile.biome == "Ocean" and tile.occupier.size() == 0
 
 
 ## The two arms of the V go out from the middle tile, two hex sides away from the facing on each side,
@@ -311,15 +311,15 @@ func generate_world():
 		#Temporarily using this while figuring out terrain tile placement
 		#All villages are currently using same settings
 		var placeable = get_placeable_tiles()
-		object_placer.place_terrain(placeable, settings.spacing, village, "Beach")
+		object_placer.place_terrain(placeable, settings.spacing, beach, "Beach")
 		interval["Spawn Villages -- "] = Time.get_ticks_msec()
 		
 		placeable = get_placeable_tiles()
-		object_placer.place_terrain(placeable, settings.spacing, village_02, "Island")
+		object_placer.place_terrain(placeable, settings.spacing, island, "Island")
 		interval["Spawn Villages -- "] = Time.get_ticks_msec()
 		
 		placeable = get_placeable_tiles()
-		object_placer.place_terrain(placeable, settings.spacing, village_03, "Mountain")
+		object_placer.place_terrain(placeable, settings.spacing, mountain, "Mountain")
 		interval["Spawn Villages -- "] = Time.get_ticks_msec()
 	
 	print_generation_results(starttime, interval)
