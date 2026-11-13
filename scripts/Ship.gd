@@ -52,6 +52,8 @@ var _phase_move_stopped: bool = false
 var _slide: Tween
 var _slide_goals: Array[Vector3] = []
 var _sliding: bool = false
+## Set when a ship become stranded
+var _stranded = false
 #endregion
 
 #region Float, Mast, Beak, Ram, and Hole

@@ -32,7 +32,7 @@ const _Log = preload("res://scripts/turn/game_log.gd")
 
 
 static func _step(ship: Ship, phase: int, pass_index: int) -> bool:
-	if ship._phase_move_stopped or ship.occupied_tile == null:
+	if ship._phase_move_stopped or ship.occupied_tile == null or ship._stranded:
 		return false
 	var sharing := _other_ship_here(ship)
 	if sharing != null:
@@ -67,6 +67,7 @@ static func _step(ship: Ship, phase: int, pass_index: int) -> bool:
 		verb = "backward"
 	elif speed == 0:
 		verb = "adrift"
+	_stop_ship(ship, dest)
 	_Log.push("Phase %d: %s moved %s onto %s." % [phase, ship.name, verb, dest.biome])
 	if already_there == null:
 		return false
@@ -80,6 +81,11 @@ static func _stop_pair(ship: Ship, other: Ship) -> void:
 	ship._phase_move_stopped = true
 	other._phase_move_stopped = true
 
+#Detects when a ship collides with terrain
+static func _stop_ship(ship: Ship, tile: Tile) -> void:
+	if tile.biome != "Ocean":
+		ship._phase_move_stopped = true
+		ship._stranded = true
 
 static func _call_boarding(ship: Ship, other: Ship) -> void:
 	ship._enemyTarget = other
@@ -165,7 +171,8 @@ static func _open_neighbors(origin: Tile) -> Array[Tile]:
 
 
 static func _is_sailable(tile: Tile) -> bool:
-	return tile != null and tile.mesh_data != null and tile.mesh_data.type == Tile.biome_type.Ocean
+	#Removed "tile.mesh_data.type == Tile.biome_type.Ocean" to allow for stranding
+	return tile != null and tile.mesh_data != null
 
 
 static func _can_enter(tile: Tile) -> bool:

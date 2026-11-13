@@ -22,10 +22,15 @@ extends Node
 var allies = 2
 
 ## Different Terrain Tiles to Place (for now villages)
+@export_category("Village Spawning")
+@export var village : PackedScene
+
+## Different Terrain Tiles to Place (for now villages)
 @export_category("Terrain Spawning")
 @export var beach : PackedScene
 @export var island : PackedScene
-@export var mountain : PackedScene
+@export var big_rock : PackedScene
+@export var rock : PackedScene
 
 ## What to create
 var myShip = preload("res://scenes/Units/prototype_unit.tscn")
@@ -306,21 +311,30 @@ func generate_world():
 		factory.modify_terrain()
 		interval["Modify terrain and fill Gaps -- "] = Time.get_ticks_msec()
 	
-	## Spawn villages
+	## Spawn Villages
 	if settings.spawn_villages:
-		#Temporarily using this while figuring out terrain tile placement
-		#All villages are currently using same settings
 		var placeable = get_placeable_tiles()
-		object_placer.place_terrain(placeable, settings.spacing, beach, "Beach")
-		interval["Spawn Villages -- "] = Time.get_ticks_msec()
-		
-		placeable = get_placeable_tiles()
-		object_placer.place_terrain(placeable, settings.spacing, island, "Island")
-		interval["Spawn Villages -- "] = Time.get_ticks_msec()
-		
-		placeable = get_placeable_tiles()
-		object_placer.place_terrain(placeable, settings.spacing, mountain, "Mountain")
-		interval["Spawn Villages -- "] = Time.get_ticks_msec()
+		object_placer.place_villages(placeable, settings.spacing, village)
+	
+	## Spawn Rocks
+	if settings.spawn_rocks:
+		var placeable = get_placeable_tiles()
+		object_placer.place_terrain(placeable, settings.spacing_rocks, rock, "Rock")
+	
+	## Spawn Beaches
+	if settings.spawn_beaches:
+		var placeable = get_placeable_tiles()
+		object_placer.place_terrain(placeable, settings.spacing_beaches, beach, "Beach")
+	
+	## Spawn Islands
+	if settings.spawn_islands:
+		var placeable = get_placeable_tiles()
+		object_placer.place_terrain(placeable, settings.spacing_islands, island, "Island")
+	
+	## Spawn Big Rocks
+	if settings.spawn_big_rocks:
+		var placeable = get_placeable_tiles()
+		object_placer.place_terrain(placeable, settings.spacing_big_rocks, big_rock, "Big Rock")
 	
 	print_generation_results(starttime, interval)
 

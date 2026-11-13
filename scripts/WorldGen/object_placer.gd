@@ -50,23 +50,37 @@ func determine_placeability(tile : Tile, scene : PackedScene, biome: String):
 			#So the Origin tile arrays back end is the Outer arrays start. Both go counterclockwise
 		for n in range(neighbs.size() -1, -1, -1):
 			new_neighbs.append(neighbs[n])
-
-		#If making an Island
+		
+		#If Making a Rock
+		if biome == "Rock":
+			if new_neighbs[rotation].biome == "Ocean":
+				spawn_terrain_tile(tile, scene, biome, rotation * 60)
+		
+		#If Making an Island
 		if biome == "Island":
 			#Set the back of the front of the island to new biome
 				#An Island tile is 1x2 so the tile behind it needs to be an island tile as well.
-			new_neighbs[rotation].biome = biome
-#			new_neighbs[rotation].biome_type
+				#Make sure terrain doe snot overlap with other terrain.
+			if new_neighbs[rotation].biome == "Ocean":
+				new_neighbs[rotation].biome = biome
+				new_neighbs[rotation].placeable = false
+				spawn_terrain_tile(tile, scene, biome, rotation * 60)
 		
-		#If making a Mountain
-		elif biome == "Mountain":
+		#If Making a Mountain
+		elif biome == "Big Rock":
 			#Set the back of the front of the island to new biome
 				#An Island tile is 1x2 so the tile behind it needs to be an island tile as well.
-			new_neighbs[rotation].biome = biome
-			new_neighbs[(rotation + 1) % 6].biome = biome
-			
-	#Beach/All spawning
-	spawn_terrain_tile(tile, scene, biome, rotation * 60)
+				#Make sure terrain doe snot overlap with other terrain.
+			if new_neighbs[rotation].biome == "Ocean" and new_neighbs[(rotation + 1) % 6].biome == "Ocean":
+				new_neighbs[rotation].biome = biome
+				new_neighbs[rotation].placeable = false
+				new_neighbs[(rotation + 1) % 6].biome = biome
+				new_neighbs[(rotation + 1) % 6].placeable = false
+				spawn_terrain_tile(tile, scene, biome, rotation * 60)
+	
+	#If Making a Beach
+	else:
+		spawn_terrain_tile(tile, scene, biome, rotation * 60)
 
 # Spawn an object on a tile
 func spawn_terrain_tile(tile: Tile, scene: PackedScene, biome: String, rotation: int):

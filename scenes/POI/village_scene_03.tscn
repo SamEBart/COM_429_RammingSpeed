@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://bwqp1bpty37ng"]
 
 [ext_resource type="PackedScene" uid="uid://brdh662e3tx8f" path="res://assets/Meshes/Structures/hut2.0.glb" id="2_2iiuu"]
-[ext_resource type="PackedScene" uid="uid://dkibj7jx3x1db" path="res://assets/Meshes/Tiles/flathexagon.glb" id="3_u22aj"]
+[ext_resource type="PackedScene" uid="uid://dg35dukc5y6q4" path="res://assets/Meshes/Tiles/Mountain.glb" id="2_pv557"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_chw8l"]
 albedo_color = Color(0.439049, 0.439049, 0.439049, 1)
@@ -51,7 +51,7 @@ material = SubResource("StandardMaterial3D_2pql6")
 [node name="VillageScene" type="Node3D" unique_id=1457682501]
 
 [node name="CSGCylinder3D" type="CSGCylinder3D" parent="." unique_id=1328464634]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0416322, 0.0853689, 0.0892119)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0416322, 0.97363985, 0.0892119)
 radius = 0.15
 height = 0.2
 material = SubResource("StandardMaterial3D_chw8l")
@@ -67,22 +67,22 @@ process_material = SubResource("ParticleProcessMaterial_2n8n2")
 draw_pass_1 = SubResource("QuadMesh_ujkuu")
 
 [node name="hut2_0" parent="." unique_id=2014721100 instance=ExtResource("2_2iiuu")]
-transform = Transform3D(0.6411717, -0.0023766826, 0.76739335, 0.00197434, 0.999997, 0.0014474702, -0.76739454, 0.0005870141, 0.6411746, -1.605143, 0.625004, -0.96041167)
+transform = Transform3D(0.6411717, -0.0023766826, 0.76739335, 0.00197434, 0.999997, 0.0014474702, -0.76739454, 0.0005870141, 0.6411746, -1.3976487, 1.4134212, -0.80218834)
 
 [node name="hut2_1" parent="." unique_id=197047626 instance=ExtResource("2_2iiuu")]
-transform = Transform3D(-0.5398063, 0.0004206865, 0.44565558, 0.0013820399, 0.69999796, 0.00101323, -0.44565377, 0.0016612303, -0.5398056, -1.6898501, 0.46621212, 1.0214372)
+transform = Transform3D(-0.5398063, 0.0004206865, 0.44565558, 0.0013820399, 0.69999796, 0.00101323, -0.44565377, 0.0016612303, -0.5398056, -1.5718778, 1.3640165, 0.9023713)
 
 [node name="hut2_2" parent="." unique_id=1628093918 instance=ExtResource("2_2iiuu")]
-transform = Transform3D(-0.3064373, -0.00030597585, 0.6293621, 0.00138204, 0.69999796, 0.0010132298, -0.62936056, 0.0016861348, -0.30643484, -1.9776801, 0.467599, 0.6452574)
+transform = Transform3D(-0.3064373, -0.00030597585, 0.6293621, 0.00138204, 0.69999796, 0.0010132298, -0.62936056, 0.0016861348, -0.30643484, -1.9776801, 1.0443307, 0.6452574)
 
 [node name="hut2_3" parent="." unique_id=348484082 instance=ExtResource("2_2iiuu")]
-transform = Transform3D(-0.6960178, 0.0014820714, -0.074541, 0.0013820395, 0.6999979, 0.0010132298, 0.074542984, 0.00086029747, -0.69601876, -1.0846057, 0.467599, 1.0294932)
+transform = Transform3D(-0.6960178, 0.0014820714, -0.074541, 0.0013820395, 0.6999979, 0.0010132298, 0.074542984, 0.00086029747, -0.69601876, -1.0846057, 1.0443307, 1.0294932)
 
-[node name="Tile 01" parent="." unique_id=1019544963 instance=ExtResource("3_u22aj")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.004, 0.082, 0)
+[node name="Rock 01" parent="." unique_id=1571980101 instance=ExtResource("2_pv557")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.004, 0.08, 0)
 
-[node name="Tile 02" parent="." unique_id=999412332 instance=ExtResource("3_u22aj")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.487, 0.082, -0.862)
+[node name="Rock 02" parent="." unique_id=1911232108 instance=ExtResource("2_pv557")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.487, 0.08, -0.862)
 
-[node name="Tile 03" parent="." unique_id=1865731834 instance=ExtResource("3_u22aj")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.487, 0.082, 0.862)
+[node name="Rock 03" parent="." unique_id=1088521795 instance=ExtResource("2_pv557")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.487, 0.08, 0.862)

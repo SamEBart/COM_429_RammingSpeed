@@ -320,6 +320,8 @@ func rammingResults(rammer: Ship, avoider: Ship):
 		if roll > bothSpeed:
 			collision(roll, rammer, avoider, damageModifier)
 	
+	print("\nRammer target: ", avoider, "\n")
+	
 	print("Get Rammed!")
 
 func collision(roll: int, rammer: Ship, avoider: Ship, damageModifier: int):
@@ -370,3 +372,22 @@ func shear(ship, target: Ship, firstShip: Ship, secondShip: Ship):
 		#Both ships are now in a BA
 		ship._inBoarding = true
 		target._inBoarding = true
+
+
+func rammingIslandResults(rammer: Ship):
+	if rammer._speed <= randi_range(2, 12):
+		var bothSpeed = 0
+		var avSpeed = 0
+		var damageModifier = 1
+		if avSpeed < 0:
+			avSpeed = 1
+			rammer._ramAction = 1
+		
+		if rammer._beakHP < rammer._beakHPMax:
+			damageModifier = .5
+		
+		#Beak:
+		if rammer._ramAction == 1:
+			bothSpeed = rammer._speed + avSpeed
+		
+		

@@ -10,6 +10,7 @@
 [ext_resource type="PackedScene" uid="uid://5hq7deseilvo" path="res://scenes/POI/VillageScene.tscn" id="10_hcqfn"]
 [ext_resource type="PackedScene" uid="uid://bwqp1bpty37ng" path="res://scenes/POI/village_scene_03.tscn" id="10_kxqg4"]
 [ext_resource type="PackedScene" uid="uid://bd0x14n4sxbv6" path="res://scenes/POI/village_scene_02.tscn" id="10_qitmq"]
+[ext_resource type="PackedScene" uid="uid://dg35dukc5y6q4" path="res://assets/Meshes/Tiles/Mountain.glb" id="11_21xg8"]
 [ext_resource type="PackedScene" uid="uid://xm2lgya4capr" path="res://scenes/Cursors/hexagon_cursor.tscn" id="11_rshvd"]
 [ext_resource type="PackedScene" uid="uid://bb3hit25an5ti" path="res://scenes/Cursors/path_overlay.tscn" id="12_0kgq4"]
 [ext_resource type="Script" uid="uid://8c4mygj6ghrg" path="res://scripts/interaction.gd" id="12_tt8b8"]
@@ -98,7 +99,8 @@ test_spawn_gap = 8
 camera_rig = NodePath("../../CameraParent")
 beach = ExtResource("10_hcqfn")
 island = ExtResource("10_qitmq")
-mountain = ExtResource("10_kxqg4")
+big_rock = ExtResource("10_kxqg4")
+rock = ExtResource("11_21xg8")
 
 [node name="ObjectPlacer" type="Node" parent="Builder" unique_id=187523474]
 script = ExtResource("9_p13dw")
