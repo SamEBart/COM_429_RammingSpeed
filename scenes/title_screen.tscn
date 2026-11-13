@@ -1,0 +1,320 @@
+[gd_scene format=3 uid="uid://chkcsfg3npqrm"]
+
+[ext_resource type="Script" uid="uid://nw8gc621w0dl" path="res://scripts/Title/title_screen.gd" id="1_s4lrb"]
+[ext_resource type="Texture2D" uid="uid://bghtwe846sph3" path="res://assets/TitleScreen/Ramming Speed - Main Menu (2).jpg" id="2_s4lrb"]
+[ext_resource type="FontFile" uid="uid://domonsy8xpxno" path="res://assets/TitleScreen/BELL MT Bold.TTF" id="3_s4lrb"]
+[ext_resource type="Script" uid="uid://cjdscmekypemk" path="res://scripts/Title/volume_slider.gd" id="4_mgrm8"]
+[ext_resource type="Script" uid="uid://c18kavyj2eg5f" path="res://scripts/Title/full_screen.gd" id="6_e54dn"]
+[ext_resource type="Script" uid="uid://cqdv86bxxcpi0" path="res://scripts/Title/turn_limit.gd" id="8_cs5ya"]
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_g4v7s"]
+texture = ExtResource("2_s4lrb")
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_odsoh"]
+bg_color = Color(0, 0, 0, 1)
+
+[sub_resource type="StyleBoxLine" id="StyleBoxLine_g4v7s"]
+thickness = 6
+
+[sub_resource type="StyleBoxLine" id="StyleBoxLine_yf5fn"]
+color = Color(1, 1, 1, 1)
+thickness = 7
+
+[node name="TitleScreen" type="Control" unique_id=2115868782]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_s4lrb")
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="." unique_id=1954059424]
+autoplay = true
+
+[node name="Panel" type="Panel" parent="." unique_id=1492407013]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxTexture_g4v7s")
+
+[node name="SOQ" type="VBoxContainer" parent="." unique_id=207034377]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 85.0
+offset_top = -197.0
+offset_right = 374.0
+offset_bottom = -6.0
+grow_vertical = 2
+theme_override_constants/separation = 10
+
+[node name="Start" type="Button" parent="SOQ" unique_id=143135203]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("3_s4lrb")
+theme_override_font_sizes/font_size = 50
+theme_override_styles/normal = SubResource("StyleBoxFlat_odsoh")
+text = "Start"
+
+[node name="Options" type="Button" parent="SOQ" unique_id=537854581]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("3_s4lrb")
+theme_override_font_sizes/font_size = 50
+theme_override_styles/normal = SubResource("StyleBoxFlat_odsoh")
+text = "Options"
+
+[node name="Quit" type="Button" parent="SOQ" unique_id=1242198688]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("3_s4lrb")
+theme_override_font_sizes/font_size = 50
+theme_override_styles/normal = SubResource("StyleBoxFlat_odsoh")
+text = "Quit"
+
+[node name="Options" type="Panel" parent="." unique_id=895769163]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Back" type="Button" parent="Options" unique_id=1731504331]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_top = -57.0
+offset_right = 124.0
+grow_vertical = 0
+theme_override_fonts/font = ExtResource("3_s4lrb")
+theme_override_font_sizes/font_size = 50
+theme_override_styles/normal = SubResource("StyleBoxFlat_odsoh")
+text = "Back"
+
+[node name="Label" type="Label" parent="Options" unique_id=1284140244]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_top = 44.0
+offset_bottom = 110.0
+grow_horizontal = 2
+theme_override_fonts/font = ExtResource("3_s4lrb")
+theme_override_font_sizes/font_size = 50
+text = "Options"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="VolumeSlider" type="HSlider" parent="Options" unique_id=94083718]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -237.5
+offset_top = -182.0
+offset_right = 237.5
+offset_bottom = -88.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/slider = SubResource("StyleBoxLine_g4v7s")
+theme_override_styles/grabber_area = SubResource("StyleBoxLine_yf5fn")
+theme_override_styles/grabber_area_highlight = SubResource("StyleBoxLine_yf5fn")
+max_value = 1.0
+step = 0.05
+value = 1.0
+script = ExtResource("4_mgrm8")
+audio_bus_name = "Master"
+
+[node name="Volume" type="Label" parent="Options/VolumeSlider" unique_id=106431907]
+layout_mode = 0
+offset_right = 474.5
+offset_bottom = 23.0
+theme_override_fonts/font = ExtResource("3_s4lrb")
+theme_override_font_sizes/font_size = 32
+text = "Volume"
+horizontal_alignment = 1
+
+[node name="FullScreen" type="CheckBox" parent="Options" unique_id=1103892449]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -239.0
+offset_top = -108.0
+offset_right = -54.0
+offset_bottom = -64.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_fonts/font = ExtResource("3_s4lrb")
+theme_override_font_sizes/font_size = 32
+text = "Full Screen"
+script = ExtResource("6_e54dn")
+
+[node name="SetUp" type="Panel" parent="." unique_id=313750561]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Begin" type="Button" parent="SetUp" unique_id=929817631]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -181.0
+offset_top = -57.0
+offset_right = 174.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_fonts/font = ExtResource("3_s4lrb")
+theme_override_font_sizes/font_size = 50
+theme_override_styles/normal = SubResource("StyleBoxFlat_odsoh")
+text = "Begin Scenario"
+
+[node name="Back" type="Button" parent="SetUp" unique_id=148472101]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_top = -57.0
+offset_right = 124.0
+grow_vertical = 0
+theme_override_fonts/font = ExtResource("3_s4lrb")
+theme_override_font_sizes/font_size = 50
+theme_override_styles/normal = SubResource("StyleBoxFlat_odsoh")
+text = "Back"
+
+[node name="ScenarioBuilder" type="Label" parent="SetUp" unique_id=2060546358]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -174.0
+offset_top = 51.0
+offset_right = 174.0
+offset_bottom = 105.0
+grow_horizontal = 2
+theme_override_fonts/font = ExtResource("3_s4lrb")
+theme_override_font_sizes/font_size = 48
+text = "Scenario Builder"
+horizontal_alignment = 1
+
+[node name="ArmyCount" type="SpinBox" parent="SetUp" unique_id=428451650]
+layout_mode = 0
+offset_left = 492.0
+offset_top = 112.0
+offset_right = 682.5
+offset_bottom = 171.0
+min_value = 2.0
+max_value = 4.0
+value = 2.0
+alignment = 1
+prefix = "Number of Armies:"
+
+[node name="PlayerCount" type="SpinBox" parent="SetUp" unique_id=2105466327]
+layout_mode = 0
+offset_left = 492.0
+offset_top = 181.0
+offset_right = 682.5
+offset_bottom = 240.0
+min_value = 1.0
+max_value = 4.0
+value = 2.0
+alignment = 1
+prefix = "Number of Players:"
+
+[node name="TurnLimit" type="CheckButton" parent="SetUp" unique_id=1436243941]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -88.5
+offset_top = -75.0
+offset_right = 88.5
+offset_bottom = -39.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_fonts/font = ExtResource("3_s4lrb")
+theme_override_font_sizes/font_size = 24
+text = "Turn Limit?"
+script = ExtResource("8_cs5ya")
+
+[node name="TurnCount" type="SpinBox" parent="SetUp/TurnLimit" unique_id=2129848527]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 0.065000005
+anchor_bottom = 0.43100002
+offset_left = 30.5
+offset_top = 32.0
+offset_right = 117.994995
+offset_bottom = 47.484
+min_value = 5.0
+max_value = 50.0
+value = 5.0
+editable = false
+suffix = "Turns"
+
+[node name="Difficulty" type="OptionButton" parent="SetUp" unique_id=1039922311]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -72.0
+offset_top = 31.0
+offset_right = 72.0
+offset_bottom = 75.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_fonts/font = ExtResource("3_s4lrb")
+theme_override_font_sizes/font_size = 32
+selected = 1
+item_count = 3
+popup/item_0/text = "Easy"
+popup/item_0/id = 0
+popup/item_1/text = "Normal"
+popup/item_1/id = 1
+popup/item_2/text = "Hard"
+popup/item_2/id = 2
+
+[node name="DiffSelect" type="Label" parent="SetUp/Difficulty" unique_id=1978465519]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -137.0
+offset_top = -58.0
+offset_right = 137.0
+offset_bottom = -22.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_fonts/font = ExtResource("3_s4lrb")
+theme_override_font_sizes/font_size = 32
+text = "Select AI Difficulty"
+horizontal_alignment = 1
+
+[connection signal="pressed" from="SOQ/Start" to="." method="_on_start_pressed"]
+[connection signal="pressed" from="SOQ/Options" to="." method="_on_options_pressed"]
+[connection signal="pressed" from="SOQ/Quit" to="." method="_on_quit_pressed"]
+[connection signal="pressed" from="Options/Back" to="." method="_on_back_pressed"]
+[connection signal="value_changed" from="Options/VolumeSlider" to="Options/VolumeSlider" method="_on_value_changed"]
+[connection signal="toggled" from="Options/FullScreen" to="Options/FullScreen" method="_on_toggled"]
+[connection signal="pressed" from="SetUp/Begin" to="." method="_on_begin_pressed"]
+[connection signal="pressed" from="SetUp/Back" to="." method="_on_back_pressed"]
+[connection signal="toggled" from="SetUp/TurnLimit" to="SetUp/TurnLimit" method="_on_toggled"]
