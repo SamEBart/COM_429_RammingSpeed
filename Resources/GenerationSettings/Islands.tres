@@ -29,4 +29,4 @@ ocean_tile = ExtResource("1_bc6dd")
 ocean_noise = SubResource("FastNoiseLite_3udsx")
 ocean_height = -0.5
 map_edge_buffer = 1
-spacing = 4
+spacing = 16

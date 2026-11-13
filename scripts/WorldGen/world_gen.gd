@@ -25,6 +25,7 @@ var allies = 2
 @export_category("Terrain Spawning")
 @export var village : PackedScene
 @export var village_02 : PackedScene
+@export var village_03 : PackedScene
 
 ## What to create
 var myShip = preload("res://scenes/Units/prototype_unit.tscn")
@@ -307,12 +308,18 @@ func generate_world():
 	
 	## Spawn villages
 	if settings.spawn_villages:
+		#Temporarily using this while figuring out terrain tile placement
+		#All villages are currently using same settings
 		var placeable = get_placeable_tiles()
-		object_placer.place_villages(placeable, settings.spacing, village)
+		object_placer.place_terrain(placeable, settings.spacing, village, "Beach")
 		interval["Spawn Villages -- "] = Time.get_ticks_msec()
 		
 		placeable = get_placeable_tiles()
-		object_placer.place_villages(placeable, settings.spacing, village_02)
+		object_placer.place_terrain(placeable, settings.spacing, village_02, "Island")
+		interval["Spawn Villages -- "] = Time.get_ticks_msec()
+		
+		placeable = get_placeable_tiles()
+		object_placer.place_terrain(placeable, settings.spacing, village_03, "Mountain")
 		interval["Spawn Villages -- "] = Time.get_ticks_msec()
 	
 	print_generation_results(starttime, interval)

@@ -28,14 +28,61 @@ func place_terrain(tiles: Array[Tile], spacing: int, object_to_place: PackedScen
 				
 		if valid:
 			placed_positions.append(Vector2(candidate.pos_data.grid_position.x, candidate.pos_data.grid_position.y))
-			spawn_on_tile(candidate, object_to_place, biome)
-			
-			#Temp rotation to "front"/"north"/"up"
-			candidate.global_rotation_degrees = Vector3(0, 0, 0)
+			determine_placeability(candidate, object_to_place, biome)
 			
 #			for n in WorldMap.get_tile_neighbors(candidate):
 #				n.placeable = false
 	print("placed " + str(placed_positions.size()) + " in " + str(current_index) + " attempts")
+
+
+func determine_placeability(tile : Tile, scene : PackedScene, biome: String):
+	#Get random orientation and set base tile rotation
+	var rotation = randi_range(0, 5)
+	
+	#Since some terrain tiles span multiple hexes check to see if those hexes are empty
+	if biome != "Beach":
+		#Put tiles neighbors into an array
+		var neighbs = WorldMap.get_tile_neighbors_02(tile)
+		var new_neighbs = []
+		
+		#Reverse said array to line up with terrain rotation
+			#Origin tile and the Outer tile(s) are off by 3 values between arrays.
+			#So the Origin tile arrays back end is the Outer arrays start. Both go counterclockwise
+		for n in range(neighbs.size() -1, -1, -1):
+			new_neighbs.append(neighbs[n])
+
+		#If making an Island
+		if biome == "Island":
+			#Set the back of the front of the island to new biome
+				#An Island tile is 1x2 so the tile behind it needs to be an island tile as well.
+			new_neighbs[rotation].biome = biome
+		
+		#If making a Mountain
+		elif biome == "Mountain":
+			#Set the back of the front of the island to new biome
+				#An Island tile is 1x2 so the tile behind it needs to be an island tile as well.
+			new_neighbs[rotation].biome = biome
+			new_neighbs[(rotation + 1) % 6].biome = biome
+			
+	#Beach/All spawning
+	spawn_terrain_tile(tile, scene, biome, rotation * 60)
+
+# Spawn an object on a tile
+func spawn_terrain_tile(tile: Tile, scene: PackedScene, biome: String, rotation: int):
+	if not tile or not scene:
+		push_warning("tile not found!")
+		return
+
+	var instance = scene.instantiate()
+	add_child(instance)
+	call_deferred("position_object", instance, tile.global_position)
+	
+	#Make Islands face random rotation
+	instance.global_rotation_degrees = Vector3(0, rotation, 0)
+	
+	tile.biome = biome
+	tile.placeable = false
+
 
 func place_villages(tiles : Array[Tile], spacing : int, object: PackedScene):
 	var tiles_copy = tiles.duplicate(true) #copy tiles and leave original unaffected
@@ -64,14 +111,14 @@ func place_villages(tiles : Array[Tile], spacing : int, object: PackedScene):
 				
 		if valid and candidate.biome != "Village":
 			placed_positions.append(Vector2(candidate.pos_data.grid_position.x, candidate.pos_data.grid_position.y))
-			spawn_on_tile(candidate, object, "Village")
+			spawn_on_tile(candidate, object)
 #			for n in WorldMap.get_tile_neighbors(candidate):
 #				n.placeable = false
 	print("placed " + str(placed_positions.size()) + " in " + str(current_index) + " attempts")
 
 
 # Spawn an object on a tile
-func spawn_on_tile(tile : Tile, scene : PackedScene, biome: String):
+func spawn_on_tile(tile : Tile, scene : PackedScene):
 	if not tile or not scene:
 		push_warning("tile not found!")
 		return
@@ -79,8 +126,6 @@ func spawn_on_tile(tile : Tile, scene : PackedScene, biome: String):
 	var instance = scene.instantiate()
 	add_child(instance)
 	call_deferred("position_object", instance, tile.global_position)
-	
-	tile.biome = biome
 
 
 func position_object(object : Node3D, target_location : Vector3):
