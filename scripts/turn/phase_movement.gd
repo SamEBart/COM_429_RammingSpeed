@@ -86,6 +86,8 @@ static func _stop_ship(ship: Ship, tile: Tile) -> void:
 	if tile.biome != "Ocean":
 		ship._phase_move_stopped = true
 		ship._stranded = true
+		Charts.rammingIsland(ship)
+		_Log.push("%S Grounded!" % [ship.name])
 
 static func _call_boarding(ship: Ship, other: Ship) -> void:
 	ship._enemyTarget = other

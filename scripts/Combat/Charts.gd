@@ -320,7 +320,6 @@ func rammingResults(rammer: Ship, avoider: Ship):
 		if roll > bothSpeed:
 			collision(roll, rammer, avoider, damageModifier)
 	
-	print("\nRammer target: ", avoider, "\n")
 	
 	print("Get Rammed!")
 
@@ -341,6 +340,7 @@ func collision(roll: int, rammer: Ship, avoider: Ship, damageModifier: int):
 	if rammer._owner != avoider._owner:
 		rammer._inBoarding = true
 		avoider._inBoarding = true
+
 
 func shear(ship, target: Ship, firstShip: Ship, secondShip: Ship):
 	print("Shear")
@@ -374,20 +374,8 @@ func shear(ship, target: Ship, firstShip: Ship, secondShip: Ship):
 		target._inBoarding = true
 
 
-func rammingIslandResults(rammer: Ship):
-	if rammer._speed <= randi_range(2, 12):
-		var bothSpeed = 0
-		var avSpeed = 0
-		var damageModifier = 1
-		if avSpeed < 0:
-			avSpeed = 1
-			rammer._ramAction = 1
-		
-		if rammer._beakHP < rammer._beakHPMax:
-			damageModifier = .5
-		
-		#Beak:
-		if rammer._ramAction == 1:
-			bothSpeed = rammer._speed + avSpeed
-		
-		
+func rammingIsland(rammer: Ship):
+	var damageModifier = 1
+	if rammer._beakHP < rammer._beakHPMax:
+		damageModifier = .5
+	collisionCriticalHit(rammer, true, damageModifier)

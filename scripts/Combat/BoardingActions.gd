@@ -242,12 +242,11 @@ func ship_area_entered(self_ship: Ship, target: Ship):
 		else:
 			firstShip = target; secondShip = self_ship
 		var direction = 0
-		var firstY = ceil(fposmod(firstShip.rotation_degrees.y, 360))
-		var secondY = ceil(fposmod(secondShip.rotation_degrees.y, 360))
+		var firstY = snapped(firstShip.rotation_degrees.y, 10)
+		var secondY = snapped(secondShip.rotation_degrees.y, 10)
 		
 		#Check if Ships are Beak to Beak
-		print("Enetred!")
-		if ceil(fposmod(firstShip.rotation_degrees.y + 180, 360)) == secondY or ceil(fposmod(firstShip.rotation_degrees.y - 180, 360)) == secondY:
+		if ceil(fposmod(firstY + 180, 360)) == secondY or ceil(fposmod(firstY - 180, 360)) == secondY:
 			print("Beak to Beak")
 			## Temp auto rng, replace!!
 			match randi_range(1, 3):
@@ -268,10 +267,10 @@ func ship_area_entered(self_ship: Ship, target: Ship):
 					print("Attenp to Avoid")
 					firstShip._ramAction = 2
 					secondShip._ramAction = randi_range(1, 2)
-				
+		
 		
 		#Check Beak to front 1/4ths
-		elif ceil(fposmod(firstShip.rotation_degrees.y, 360)) == ceil(fposmod(secondShip.rotation_degrees.y + 60 ,360)) or ceil(fposmod(firstShip.rotation_degrees.y, 360)) == ceil(fposmod(secondShip.rotation_degrees.y - 60 ,360)):
+		elif firstY == fposmod(secondY + 60 ,360) or firstY == fposmod(secondY - 60 ,360):
 			print("Beak to 1/4th")
 			firstShip._ramAction = randi_range(1, 2)
 			secondShip._ramAction = randi_range(1, 2)
@@ -282,7 +281,7 @@ func ship_area_entered(self_ship: Ship, target: Ship):
 		
 		#Check if Ships are in Front 1/4th to each other
 		#Right to left, Left to Right
-		elif ceil(fposmod(firstShip.rotation_degrees.y - 60, 360)) == ceil(fposmod(secondShip.rotation_degrees.y + 60 ,360)) or ceil(fposmod(firstShip.rotation_degrees.y + 60, 360)) == ceil(fposmod(secondShip.rotation_degrees.y - 60 ,360)):
+		elif fposmod(firstY - 60, 360) == fposmod(secondY + 60 ,360) or fposmod(firstY + 60, 360) == fposmod(secondY - 60 ,360):
 			#Ship One declares Ram or Avoid, then Ship Two
 			#TEMP, ask players
 			print("Front 1/4th")
@@ -298,27 +297,29 @@ func ship_area_entered(self_ship: Ship, target: Ship):
 		#Because ceil may round up to a 1 and not down to a 0 I have to have a slight tange on every side check
 		
 		#If Ship 1 is at Ship 2s back left
-		elif firstY >= ceil(fposmod(secondShip.rotation_degrees.y - 65 ,360)) and firstY <= ceil(fposmod(secondShip.rotation_degrees.y - 55 ,360)):
+		elif firstY == fposmod(secondY - 60 ,360):
 			direction = 1
 		#If Ship 1 is at Ship 2s back right
-		elif firstY >= ceil(fposmod(secondShip.rotation_degrees.y + 55 ,360)) and firstY <= ceil(fposmod(secondShip.rotation_degrees.y + 65 ,360)):
+		elif firstY == fposmod(secondY + 60 ,360):
 			direction = 1
 		#If Ship 1 is at Ships 2s back
-		elif firstY >= ceil(fposmod(secondShip.rotation_degrees.y + 5 ,360)) and firstY <= ceil(fposmod(secondShip.rotation_degrees.y - 5 ,360)):
+		elif firstY == secondY:
 			direction = 1
+		
 		#If Ship 2 is at Ship 1s back left
-		elif secondY >= ceil(fposmod(firstShip.rotation_degrees.y - 65 ,360)) and secondY <= ceil(fposmod(firstShip.rotation_degrees.y - 55 ,360)):
+		elif secondY == fposmod(firstY - 60 ,360):
 			direction = 2
 		#If Ship 2 is at Ship 1s back right
-		elif secondY >= ceil(fposmod(firstShip.rotation_degrees.y + 55 ,360)) and secondY <= ceil(fposmod(firstShip.rotation_degrees.y + 65 ,360)):
+		elif secondY == fposmod(firstY + 60 ,360):
 			direction = 2
-		#If Ship 2 is at Ship 1s back
-		elif secondY >= ceil(fposmod(firstShip.rotation_degrees.y - 5 ,360)) and secondY <= ceil(fposmod(firstShip.rotation_degrees.y + 5 ,360)):
+		#If Ship 2 is at Ships 1s back
+		elif secondY == firstY:
 			direction = 2
 		
 		
 		#If ship 1 is between ship 2s back left and back right
 		if direction == 1:
+			print("D1")
 			#Only the ship facing the other can declare Ram or Avoid.
 			#Other ship awlays declares avoid action
 			firstShip._ramAction = randi_range(1, 2)
@@ -328,6 +329,7 @@ func ship_area_entered(self_ship: Ship, target: Ship):
 		
 		#If ship 2 is between ship 1s back left and back right
 		if direction == 2:
+			print("D2")
 			#Only the ship facing the other can declare Ram or Avoid.
 			#Other ship always declares avoid action
 			secondShip._ramAction = randi_range(1, 2)
