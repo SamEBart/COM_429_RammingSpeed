@@ -323,6 +323,27 @@ func rammingResults(rammer: Ship, avoider: Ship):
 	
 	print("Get Rammed!")
 
+
+func rammingIsland(rammer: Ship):
+	#Set Damage Modifier
+	var damageModifier = 1
+	if rammer._beakHP < rammer._beakHPMax:
+		damageModifier = .5
+	
+	#Rammed ship gains a hole
+	rammer._holes += 1		#Might need to change to both ships depending on roll
+	
+	#Flotation Damage
+	flotationDamage(rammer, rammer._speed)
+	
+	#Roll
+	if randi_range(1, 6) == 1:
+		collisionCriticalHit(rammer, true, damageModifier)
+			
+	#Set ship speed to 0
+	rammer._speed = 0
+
+
 func collision(roll: int, rammer: Ship, avoider: Ship, damageModifier: int):
 	#Roll
 	if roll == 6:
@@ -372,10 +393,3 @@ func shear(ship, target: Ship, firstShip: Ship, secondShip: Ship):
 		#Both ships are now in a BA
 		ship._inBoarding = true
 		target._inBoarding = true
-
-
-func rammingIsland(rammer: Ship):
-	var damageModifier = 1
-	if rammer._beakHP < rammer._beakHPMax:
-		damageModifier = .5
-	collisionCriticalHit(rammer, true, damageModifier)

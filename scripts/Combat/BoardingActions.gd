@@ -2,6 +2,57 @@ extends Node
 
 var neighbor_positions = WorldMap.HEXAGONAL_NEIGHBOR_DIRECTIONS
 
+func doBoaridingTurn():
+	#A new set of ships is called everytime incase a ship has been killed in each action
+	var ships: Array[Node] = get_tree().get_nodes_in_group("ships")
+	for ship in ships:
+			ship._boardingPrepped = false
+	
+	
+	#Archery
+	ships = get_tree().get_nodes_in_group("ships")
+	#Do the Archery if there is a target and available archers
+	for ship in ships:
+		if ship._boardingTarget and ship._boardingArchers.size() > 0 and ship._boardingPrepped == false:
+			doBoardingArchery(ship)
+	#Remove Dead ships and crew
+	for ship in ships:
+		ship._boardingPrepped = false
+		Global.removeDeadCrewAndShip(ship)
+	
+	#Boarding Action Javelins
+	ships = get_tree().get_nodes_in_group("ships")
+	#Do the Javelines if there is a target and available archers
+	for ship in ships:
+		if ship._boardingTarget and ship._boardingJavelins.size() > 0 and ship._boardingPrepped == false:
+			doBoardingJaveline(ship)
+	#Remove Dead ships and crew
+	for ship in ships:
+		ship._boardingPrepped = false
+		Global.removeDeadCrewAndShip(ship)
+	
+	#Boarding Action Melee/Victory
+	ships = get_tree().get_nodes_in_group("ships")
+	#Determine which ships are boarding eachother
+	for ship in ships:
+		if ship._boardingTarget:
+			preBoardingMelee(ship)
+	#Remove Dead ships and crew
+	for ship in ships:
+		ship._boardingPrepped = false
+		Global.removeDeadCrewAndShip(ship)
+	
+	#Boarding Withdrawing
+	ships = get_tree().get_nodes_in_group("ships")
+	for ship in ships:
+		if ship._boardingTarget != null:
+			boardingWithdrawing(ship)
+	#Remove Dead ships and crew
+	for ship in ships:
+		ship._boardingPrepped = false
+		Global.removeDeadCrewAndShip(ship)
+
+
 func determineFighting(ship: Ship):
 	var target = ship._boardingTarget
 	#Can't boarding action same team
@@ -76,6 +127,7 @@ func determineFighting(ship: Ship):
 	ship._boardingJavelins.append_array(my_new_fighters.filter(func(guy): return guy is Character.Marine.Javelineer))
 	target._boardingJavelins.append_array(enemy_new_fighters.filter(func(guy): return guy is Character.Marine.Javelineer))
 	print("Boarding Determination Done")
+
 
 #region Archery
 func doBoardingArchery(ship):
@@ -200,6 +252,16 @@ func preBoardingMelee(ship):
 func boardingMelee(ship):
 	var target = ship._boardingTarget
 	Charts.multiCrewCasualty(target)
+	
+	#Check if ship died in order to give attacking ship a kill point so that if they are...
+	#...ramming on a terrain tile they can be put back in the water
+	if Global.isShipDead(ship):
+			Global.baRemoveShip(target)
+			if ship._tile.biome != "Ocean":
+				for n in WorldMap.get_tile_neighbors(ship._tile):
+					if n.biome == "Ocean":
+						ship.place_unit(n.position, n)
+
 
 func boardingWithdrawing(ship):
 	var target = ship._boardingTarget
@@ -442,6 +504,10 @@ func sort_initiative(a: Ship, b: Ship) -> bool:
 		return true
 	else:
 		return false
+
+
+func is_target_dead(ship: Ship, target: Ship):
+	pass
 
 
 func returnLarget(a, b):

@@ -286,7 +286,8 @@ func _resolve_current_action() -> bool:
 	if action_step == ActionStep.LONG_RANGE_FIRE:
 		LRF.resolve_long_range_fire()
 	elif action_step == ActionStep.BOARDING and not boarding_before_fire:
-		Global.resolve_boarding()
+		#Entirety of the Boarding Action turn in one function
+		BoardingActions.doBoaridingTurn()
 	return false
 
 

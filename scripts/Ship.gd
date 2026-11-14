@@ -79,6 +79,7 @@ var _boardingArchers = []
 var _boardingJavelins = []
 var _boardingMelee = []
 var _inCollision: bool = false
+var _killed_target = false
 #endregion
 
 ## Quadrireme speed changes are +1 or -1.
