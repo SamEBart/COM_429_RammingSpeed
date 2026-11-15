@@ -161,6 +161,12 @@ func compare_ship_initiatives(a: Ship, b: Ship):
 			rolling = false
 
 #region Dead Functions
+func removeDeadCrewAndShip(ship: Ship):
+	if ship._dead.size() > 0:
+		purgeTheDead(ship)
+	if isShipDead(ship):
+		baRemoveShip(ship)
+
 func addToDead(ship, deadGuys):
 	var guy = deadGuys.pick_random()
 	guy._isDead = true
@@ -175,6 +181,12 @@ func purgeTheDead(ship):
 			ship._fighters.erase(ship._dead[i])
 	ship._dead.clear()
 	_Log.push("After: %s has A: %d, J: %d, S: %d, E: %d, D: %d" % [ship.name, ship._marineArchers.size(), ship._marineJavelineers.size(), ship._marineSoldiers.size(), ship._engineers.size(), ship._deckCrew.size()])
+
+func isShipDead(ship: Ship):
+	if ship._fighters.size() == 0 or ship._flotationHits == 0:
+		return true
+	else:
+		return false
 
 func baRemoveShip(ship):
 	#Remove Ship from Tile Occupir List

@@ -88,7 +88,7 @@ func stop_music(sound_name: String, group_name: String):
 					sound.remove_from_group(group_name)
 					sound.remove_from_group("all_sounds")
 					sound.queue_free()
-					print(sound_name + "removed!\n")
+					print(sound_name + " removed!\n")
 				else:
 					print(sound_name + " not found in " + group_name + ", please try again!")
 			else:

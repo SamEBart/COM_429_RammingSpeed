@@ -32,8 +32,29 @@ const _Log = preload("res://scripts/turn/game_log.gd")
 
 
 static func _step(ship: Ship, phase: int, pass_index: int) -> bool:
-	if ship._phase_move_stopped or ship.occupied_tile == null:
+	if ship._phase_move_stopped or ship.occupied_tile == null or ship._stranded:
 		return false
+	
+	#Help an allied stranded ship
+	if ship._help_stranded:
+		for tile in WorldMap.get_tile_neighbors(ship._tile):
+			for boat in tile.occupier:
+				print("\n%s is maybe helping %s" % [ship.name, boat.name])	
+				print("%s| BP: %s | CP: %s" % [ship.name, boat._stranded_phase, phase])
+				if boat._stranded and boat._owner == ship._owner and tile.occupier.size() == 1 and boat._stranded_phase != phase:
+					#When a ship comes next to a stranded ship save it the next turn, not this one
+					if ship._next_to_stranded_phase == 0:
+						ship._next_to_stranded_phase = phase
+					if ship._next_to_stranded_phase != phase:
+						print("Helping")
+						for newTile in WorldMap.get_tile_neighbors(boat._tile):
+							if newTile.biome == "Ocean" and newTile.occupier.size() == 0:
+								boat.place_unit(newTile.position, newTile)
+								boat.unstranded()
+								ship._speed = 0
+								print("Helped!\n")
+								return false
+	
 	var sharing := _other_ship_here(ship)
 	if sharing != null:
 		_stop_pair(ship, sharing)
@@ -67,6 +88,8 @@ static func _step(ship: Ship, phase: int, pass_index: int) -> bool:
 		verb = "backward"
 	elif speed == 0:
 		verb = "adrift"
+	if dest.biome != "Ocean":
+		_stop_ship(ship, dest, phase)
 	_Log.push("Phase %d: %s moved %s onto %s." % [phase, ship.name, verb, dest.biome])
 	if already_there == null:
 		return false
@@ -79,6 +102,14 @@ static func _step(ship: Ship, phase: int, pass_index: int) -> bool:
 static func _stop_pair(ship: Ship, other: Ship) -> void:
 	ship._phase_move_stopped = true
 	other._phase_move_stopped = true
+
+#Detects when a ship collides with terrain
+static func _stop_ship(ship: Ship, tile: Tile, phase: int) -> void:
+	ship._phase_move_stopped = true
+	ship._stranded = true
+	Charts.rammingIsland(ship, phase)
+	Global.removeDeadCrewAndShip(ship)
+	_Log.push("%s Grounded!\n" % [ship.name])
 
 
 static func _call_boarding(ship: Ship, other: Ship) -> void:
@@ -165,7 +196,8 @@ static func _open_neighbors(origin: Tile) -> Array[Tile]:
 
 
 static func _is_sailable(tile: Tile) -> bool:
-	return tile != null and tile.mesh_data != null and tile.mesh_data.type == Tile.biome_type.Ocean
+	#Removed "tile.mesh_data.type == Tile.biome_type.Ocean" to allow for stranding
+	return tile != null and tile.mesh_data != null
 
 
 static func _can_enter(tile: Tile) -> bool:

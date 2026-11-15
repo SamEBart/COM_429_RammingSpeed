@@ -52,11 +52,16 @@ var _phase_move_stopped: bool = false
 var _slide: Tween
 var _slide_goals: Array[Vector3] = []
 var _sliding: bool = false
+## Set when a ship become stranded
+var _stranded = false
+var _help_stranded = true
+var _stranded_phase: int
+var _next_to_stranded_phase: int = 0
 #endregion
 
 #region Float, Mast, Beak, Ram, and Hole
 var _type: int
-var _flotationHits: int;
+var _flotationHits: int = 10
 var _mastHP: int;
 var _isMastUp: bool = true
 var _isMastDown: bool = false
@@ -77,7 +82,15 @@ var _boardingArchers = []
 var _boardingJavelins = []
 var _boardingMelee = []
 var _inCollision: bool = false
+var _killed_target = false
 #endregion
+
+## Reset stranded variables
+func unstranded():
+	_stranded = false
+	_stranded_phase = 0
+	_inCollision = false
+	_speed = 0
 
 ## Quadrireme speed changes are +1 or -1.
 func get_ship_kind() -> SpeedCalculator.ShipKind:
@@ -543,28 +556,29 @@ func getCatapult() -> Catapult:
 # NEEDS TESTING: NOT CONFIDENT IF THIS WILL WORK.
 # KILLING ACTIVE ROWERS NOT SUPPORTED YET.
 func kill(target: Character):
-	if (target is Character.DeckCrew):
-		_dead.push_back(target);
-		_deckCrew.erase(target);
-	elif (target is Character.Rower):
-		_dead.push_back(target);
-		_reserveRowers.erase(target);
-	elif (target is Character.Marine.Archer):
-		_dead.push_back(target);
-		_marineArchers.erase(target);
-	elif (target is Character.Marine.Javelineer):
-		_dead.push_back(target);
-		_marineJavelineers.erase(target);
-	elif (target is Character.Marine.Soldier):
-		_dead.push_back(target);
-		_marineSoldiers.erase(target);
-	elif (target is Character.Engineer):
-		_dead.push_back(target);
-		_engineers.erase(target);
-		_ballista._engineers.erase(target)
-		_catapult._engineers.erase(target)
-	else:
-		assert(false, "Ship.kill: Function broke. Wow, such a suprise.");
+	if target != null:
+		if (target is Character.DeckCrew):
+			_dead.push_back(target);
+			_deckCrew.erase(target);
+		elif (target is Character.Rower):
+			_dead.push_back(target);
+			_reserveRowers.erase(target);
+		elif (target is Character.Marine.Archer):
+			_dead.push_back(target);
+			_marineArchers.erase(target);
+		elif (target is Character.Marine.Javelineer):
+			_dead.push_back(target);
+			_marineJavelineers.erase(target);
+		elif (target is Character.Marine.Soldier):
+			_dead.push_back(target);
+			_marineSoldiers.erase(target);
+		elif (target is Character.Engineer):
+			_dead.push_back(target);
+			_engineers.erase(target);
+			_ballista._engineers.erase(target)
+			_catapult._engineers.erase(target)
+		else:
+			assert(false, "Ship.kill: Function broke. Wow, such a suprise.");
 func cleanup():
 	_dead.clear();
 #endregion

@@ -35,3 +35,23 @@ enum shape {HEXAGONAL, RECTANGULAR, DIAMOND, CIRCLE}
 @export var spawn_villages = true
 @export var map_edge_buffer = 2
 @export_range(1, 99) var spacing = 6
+
+@export_category("Beaches")
+@export var spawn_beaches = true
+@export var map_edge_buffer_beach = 2
+@export_range(1, 99) var spacing_beaches = 5
+
+@export_category("Islands")
+@export var spawn_islands = true
+@export var map_edge_buffer_island = 2
+@export_range(1, 99) var spacing_islands = 13
+
+@export_category("Big Rock")
+@export var spawn_big_rocks = true
+@export var map_edge_buffer_big_rocks = 2
+@export_range(1, 99) var spacing_big_rocks = 15
+
+@export_category("Rocks")
+@export var spawn_rocks = true
+@export var map_edge_buffer_rocks = 2
+@export_range(1, 99) var spacing_rocks = 10
