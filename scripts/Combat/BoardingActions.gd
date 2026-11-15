@@ -6,8 +6,7 @@ func doBoaridingTurn():
 	#A new set of ships is called everytime incase a ship has been killed in each action
 	var ships: Array[Node] = get_tree().get_nodes_in_group("ships")
 	for ship in ships:
-			ship._boardingPrepped = false
-	
+		ship._boardingPrepped = false
 	
 	#Archery
 	ships = get_tree().get_nodes_in_group("ships")
@@ -255,13 +254,13 @@ func boardingMelee(ship):
 	
 	#Check if ship died in order to give attacking ship a kill point so that if they are...
 	#...ramming on a terrain tile they can be put back in the water
-	if Global.isShipDead(ship):
-			Global.baRemoveShip(target)
-			if ship._tile.biome != "Ocean":
-				for n in WorldMap.get_tile_neighbors(ship._tile):
-					if n.biome == "Ocean":
-						ship.place_unit(n.position, n)
-
+	if Global.isShipDead(ship.target) and ship._tile.biome != "Ocean":
+		Global.baRemoveShip(target)
+		for n in WorldMap.get_tile_neighbors(ship._tile):
+			if n.biome == "Ocean" and n.occuper.size() == 0:
+				ship.place_unit(n.position, n)
+				ship.unstranded()
+				break
 
 func boardingWithdrawing(ship):
 	var target = ship._boardingTarget

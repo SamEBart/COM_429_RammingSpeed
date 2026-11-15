@@ -183,7 +183,7 @@ func purgeTheDead(ship):
 	_Log.push("After: %s has A: %d, J: %d, S: %d, E: %d, D: %d" % [ship.name, ship._marineArchers.size(), ship._marineJavelineers.size(), ship._marineSoldiers.size(), ship._engineers.size(), ship._deckCrew.size()])
 
 func isShipDead(ship: Ship):
-	if ship._fighters.size() == 0 or ship._flotationHits == 0 or ship._health == 0:
+	if ship._fighters.size() == 0 or ship._flotationHits == 0:
 		return true
 	else:
 		return false

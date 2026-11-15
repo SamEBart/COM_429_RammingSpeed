@@ -147,7 +147,7 @@ func collisionCriticalHit(target: Ship, isRamming: bool, damageModifier: int):
 		
 		#If ship has a catapult destroy it, else suffer 2 flotation damage
 		3:
-			if target.hasCatapult():
+			if target.hasBallista():
 				for j in target._ballista._engineers.size():
 					target._ballista._engineers[j]._target = null
 				target._ballista = null
@@ -155,7 +155,7 @@ func collisionCriticalHit(target: Ship, isRamming: bool, damageModifier: int):
 		
 		#If ship has a ballista destroy it, else suffer 2 flotation damage
 		4:
-			if target.hasBallista():
+			if target.hasCatapult():
 				for j in target._catapult._engineers.size():
 					target._catapult._engineers[j]._target = null
 				target._catapult = null
@@ -199,10 +199,11 @@ func collisionCriticalHit(target: Ship, isRamming: bool, damageModifier: int):
 			elif target.getActiveRowers():
 				Global.addToDead(target, target.getActiveRowers())
 
-func flotationDamage(ship: Ship, amount: int):
+func flotationDamage(ship: Ship, amount):
 	while ship._flotationHits > 0:
-		for i in ceil(amount):		#Excutive decision to round up
+		for i in int(ceil(amount)):		#Excutive decision to round up
 			ship._flotationHits -= 1
+		break
 
 func repairHole(target: Ship):
 	var roll = randi_range(1, 6)
@@ -324,24 +325,29 @@ func rammingResults(rammer: Ship, avoider: Ship):
 	print("Get Rammed!")
 
 
-func rammingIsland(rammer: Ship):
+func rammingIsland(rammer: Ship, phase: int):
 	#Set Damage Modifier
 	var damageModifier = 1
-	if rammer._beakHP < rammer._beakHPMax:
-		damageModifier = .5
 	
 	#Rammed ship gains a hole
 	rammer._holes += 1		#Might need to change to both ships depending on roll
 	
 	#Flotation Damage
-	flotationDamage(rammer, rammer._speed)
+#	print("(FD) Ship: ", rammer.name, " | ", ceil(rammer._speed * 0.25), " | ", rammer._flotationHits)
+	var amount = ceil(rammer._speed * 0.25)
+	flotationDamage(rammer, amount)
+	
+	#Set ship speed to 0
+	rammer._speed = 0
 	
 	#Roll
 	if randi_range(1, 6) == 1:
 		collisionCriticalHit(rammer, true, damageModifier)
-			
-	#Set ship speed to 0
-	rammer._speed = 0
+	
+	rammer._stranded = true
+	rammer._stranded_phase = phase
+	rammer._inCollision = true
+
 
 
 func collision(roll: int, rammer: Ship, avoider: Ship, damageModifier: int):
