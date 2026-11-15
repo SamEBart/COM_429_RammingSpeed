@@ -108,6 +108,7 @@ static func _stop_ship(ship: Ship, tile: Tile, phase: int) -> void:
 	ship._phase_move_stopped = true
 	ship._stranded = true
 	Charts.rammingIsland(ship, phase)
+	Global.removeDeadCrewAndShip(ship)
 	_Log.push("%s Grounded!\n" % [ship.name])
 
 

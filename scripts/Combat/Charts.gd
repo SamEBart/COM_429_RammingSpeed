@@ -347,6 +347,10 @@ func rammingIsland(rammer: Ship, phase: int):
 	rammer._stranded = true
 	rammer._stranded_phase = phase
 	rammer._inCollision = true
+	
+	#Kill ship if it hits a rock
+	if rammer._tile.biome == "Rock" or rammer._tile.biome == "Big Rock":
+		rammer._flotationHits = 0
 
 
 
