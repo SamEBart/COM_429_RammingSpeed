@@ -121,6 +121,8 @@ func press_ready() -> bool:
 		return false
 	local_ready = true
 	_Log.push("Orders locked. Waiting for the other players.")
+	if local_player_id <= 2 : #change to match to total human players
+		local_player_id += 1
 	if all_players_ready():
 		return lock_command()
 	phase_changed.emit(phase, execution_step, turn_number)
