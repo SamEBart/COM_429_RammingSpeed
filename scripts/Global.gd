@@ -5,6 +5,7 @@ const _Log = preload("res://scripts/turn/game_log.gd")
 var _action = 0
 var _subAction = 0
 var threads: Array[Thread] = []
+var humanPlayers : int = 2
 
 ## Currently setup for prototype_unit rotation (block part as head)
 var _hexUp: int = 270
