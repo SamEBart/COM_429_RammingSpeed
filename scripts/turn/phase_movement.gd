@@ -37,23 +37,7 @@ static func _step(ship: Ship, phase: int, pass_index: int) -> bool:
 	
 	#Help an allied stranded ship
 	if ship._help_stranded:
-		for tile in WorldMap.get_tile_neighbors(ship._tile):
-			for boat in tile.occupier:
-				print("\n%s is maybe helping %s" % [ship.name, boat.name])	
-				print("%s| BP: %s | CP: %s" % [ship.name, boat._stranded_phase, phase])
-				if boat._stranded and boat._owner == ship._owner and tile.occupier.size() == 1 and boat._stranded_phase != phase:
-					#When a ship comes next to a stranded ship save it the next turn, not this one
-					if ship._next_to_stranded_phase == 0:
-						ship._next_to_stranded_phase = phase
-					if ship._next_to_stranded_phase != phase:
-						print("Helping")
-						for newTile in WorldMap.get_tile_neighbors(boat._tile):
-							if newTile.biome == "Ocean" and newTile.occupier.size() == 0:
-								boat.place_unit(newTile.position, newTile)
-								boat.unstranded()
-								ship._speed = 0
-								print("Helped!\n")
-								return false
+		ship.help_stranded_ally(ship, phase)
 	
 	var sharing := _other_ship_here(ship)
 	if sharing != null:
