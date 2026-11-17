@@ -119,8 +119,10 @@ func lock_command() -> bool:
 func press_ready() -> bool:
 	if phase != Phase.COMMAND or local_ready:
 		return false
-	local_ready = true
+	#local_ready = true
 	_Log.push("Orders locked. Waiting for the other players.")
+	local_player_id += 1
+	if local_player_id > Global.humanPlayers : local_player_id = 1
 	if all_players_ready():
 		return lock_command()
 	phase_changed.emit(phase, execution_step, turn_number)
