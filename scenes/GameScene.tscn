@@ -15,7 +15,7 @@
 [ext_resource type="PackedScene" uid="uid://bb3hit25an5ti" path="res://scenes/Cursors/path_overlay.tscn" id="12_0kgq4"]
 [ext_resource type="Script" uid="uid://8c4mygj6ghrg" path="res://scripts/interaction.gd" id="12_tt8b8"]
 [ext_resource type="PackedScene" uid="uid://cqxjxq25t6wuy" path="res://scenes/Cursors/unit_cursor.tscn" id="13_ydfkh"]
-[ext_resource type="PackedScene" path="res://scenes/ui/phase_hud.tscn" id="14_phasehud"]
+[ext_resource type="PackedScene" uid="uid://drnml1p5mkewc" path="res://scenes/ui/phase_hud.tscn" id="14_phasehud"]
 [ext_resource type="PackedScene" uid="uid://bobxyec6w7tm7" path="res://scenes/ui/ship_card.tscn" id="15_shipstats"]
 
 [sub_resource type="Environment" id="Environment_f2ci6"]
