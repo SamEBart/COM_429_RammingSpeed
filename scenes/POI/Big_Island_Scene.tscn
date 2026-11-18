@@ -1,0 +1,21 @@
+[gd_scene format=3 uid="uid://bcfp60h5jytc4"]
+
+[ext_resource type="PackedScene" uid="uid://dkibj7jx3x1db" path="res://assets/Meshes/Tiles/flathexagon.glb" id="1_fbg6e"]
+[ext_resource type="PackedScene" uid="uid://fpgquwb1ogm3" path="res://assets/Meshes/Tiles/Big Island/Big island.glb" id="2_61hwk"]
+
+[node name="Big Island Scene" type="Node3D" unique_id=1457682501]
+
+[node name="Tile 01" parent="." unique_id=1019544963 instance=ExtResource("1_fbg6e")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.004, 0.08, 0)
+visible = false
+
+[node name="Tile 02" parent="." unique_id=1439564806 instance=ExtResource("1_fbg6e")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.487, 0.08, -0.862)
+visible = false
+
+[node name="Tile 03" parent="." unique_id=1892774258 instance=ExtResource("1_fbg6e")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.487, 0.08, 0.862)
+visible = false
+
+[node name="Big island" parent="." unique_id=499959351 instance=ExtResource("2_61hwk")]
+transform = Transform3D(0.21910441, 0, -0.1265, 0, 0.253, 0, 0.1265, 0, 0.21910441, -0.9441723, -0.27289343, -0.07832229)

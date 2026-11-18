@@ -257,7 +257,7 @@ func boardingMelee(ship):
 	if Global.isShipDead(ship.target) and ship._tile.biome != "Ocean":
 		Global.baRemoveShip(target)
 		for n in WorldMap.get_tile_neighbors(ship._tile):
-			if n.biome == "Ocean" and n.occuper.size() == 0:
+			if n.biome == "Ocean" and n.occupier.size() == 0:
 				ship.place_unit(n.position, n)
 				ship.unstranded()
 				break

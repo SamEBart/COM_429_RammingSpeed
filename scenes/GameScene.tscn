@@ -4,13 +4,13 @@
 [ext_resource type="Texture2D" uid="uid://dvbkqw12i4obk" path="res://assets/Materials/SkyBG.png" id="2_l7mlp"]
 [ext_resource type="Script" uid="uid://bjw6prx0uxiil" path="res://scripts/WorldGen/world_gen.gd" id="3_davhy"]
 [ext_resource type="Resource" uid="uid://d2vlx6mnfatwt" path="res://Resources/GenerationSettings/Islands.tres" id="4_6pl24"]
+[ext_resource type="PackedScene" uid="uid://53qf0oe4oxbi" path="res://scenes/POI/Small_Island_Scene.tscn" id="8_21xg8"]
 [ext_resource type="PackedScene" uid="uid://grijaagmqw4" path="res://scenes/Units/prototype_unit.tscn" id="8_r58of"]
+[ext_resource type="PackedScene" uid="uid://dkitegfoaa1e7" path="res://scenes/POI/Average_Island_Scene.tscn" id="9_icif4"]
 [ext_resource type="Script" uid="uid://bne86up5eweyd" path="res://scripts/WorldGen/object_placer.gd" id="9_p13dw"]
 [ext_resource type="Script" uid="uid://bdy82nphtcvus" path="res://scripts/pathfinder.gd" id="10_0b4my"]
-[ext_resource type="PackedScene" uid="uid://5hq7deseilvo" path="res://scenes/POI/VillageScene.tscn" id="10_hcqfn"]
-[ext_resource type="PackedScene" uid="uid://bwqp1bpty37ng" path="res://scenes/POI/village_scene_03.tscn" id="10_kxqg4"]
-[ext_resource type="PackedScene" uid="uid://bd0x14n4sxbv6" path="res://scenes/POI/village_scene_02.tscn" id="10_qitmq"]
-[ext_resource type="PackedScene" uid="uid://dg35dukc5y6q4" path="res://assets/Meshes/Tiles/Mountain.glb" id="11_21xg8"]
+[ext_resource type="PackedScene" uid="uid://bcfp60h5jytc4" path="res://scenes/POI/Big_Island_Scene.tscn" id="10_iaegw"]
+[ext_resource type="PackedScene" uid="uid://d2ljb7si6nmnr" path="res://scenes/POI/Rock_Scene.tscn" id="11_21xg8"]
 [ext_resource type="PackedScene" uid="uid://xm2lgya4capr" path="res://scenes/Cursors/hexagon_cursor.tscn" id="11_rshvd"]
 [ext_resource type="PackedScene" uid="uid://bb3hit25an5ti" path="res://scenes/Cursors/path_overlay.tscn" id="12_0kgq4"]
 [ext_resource type="Script" uid="uid://8c4mygj6ghrg" path="res://scripts/interaction.gd" id="12_tt8b8"]
@@ -97,9 +97,9 @@ proto_unit = ExtResource("8_r58of")
 spawn_close_for_testing = true
 test_spawn_gap = 8
 camera_rig = NodePath("../../CameraParent")
-beach = ExtResource("10_hcqfn")
-island = ExtResource("10_qitmq")
-big_rock = ExtResource("10_kxqg4")
+beach = ExtResource("8_21xg8")
+island = ExtResource("9_icif4")
+big_rock = ExtResource("10_iaegw")
 rock = ExtResource("11_21xg8")
 
 [node name="ObjectPlacer" type="Node" parent="Builder" unique_id=187523474]

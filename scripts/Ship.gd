@@ -284,6 +284,11 @@ func _play_slide() -> void:
 	_slide = create_tween()
 	_slide.tween_property(self, "global_position", goal, 0.45).set_trans(Tween.TRANS_LINEAR)
 	_slide.finished.connect(_play_slide)
+	await _slide.finished
+	#If Beach or Island modify ships position to fit on terrain
+	if _tile.biome == "Beach" or _tile.biome == "Island":
+		position.y += 0.35
+		rotation_degrees.z += 10
 
 
 ## The hull's bow is the ship's local +X. look_at aims local -Z, then a quarter turn brings the bow onto that hex.
@@ -297,6 +302,29 @@ func aim_at_facing() -> void:
 	target.y = global_position.y
 	look_at(target, Vector3.UP)
 	rotate_object_local(Vector3.UP, PI * 0.5)
+	#If collision
+	if _tile.occupier.size() > 1:
+		occupier_placement(self, _tile, .75)
+
+
+func help_stranded_ally(ship: Ship, phase: int):
+	for tile in WorldMap.get_tile_neighbors(ship._tile):
+		for boat in tile.occupier:
+			print("\n%s is maybe helping %s" % [ship.name, boat.name])	
+			print("%s| BP: %s | CP: %s" % [ship.name, boat._stranded_phase, phase])
+			if boat._stranded and boat._owner == ship._owner and tile.occupier.size() == 1 and boat._stranded_phase != phase:
+				#When a ship comes next to a stranded ship save it the next turn, not this one
+				if ship._next_to_stranded_phase == 0:
+					ship._next_to_stranded_phase = phase
+				if ship._next_to_stranded_phase != phase:
+					print("Helping")
+					for newTile in WorldMap.get_tile_neighbors(boat._tile):
+						if newTile.biome == "Ocean" and newTile.occupier.size() == 0:
+							boat.place_unit(newTile.position, newTile)
+							boat.unstranded()
+							ship._speed = 0
+							print("Helped!\n")
+							return false
 
 
 func clear_phase_move_stop() -> void:
@@ -329,7 +357,7 @@ func has_living_engineer() -> bool:
 func tick_weapon_reload() -> void:
 	if _ballista:
 		_ballista.tick_reload()
-	if _catapult:
+	elif _catapult:
 		_catapult.tick_reload()
 
 #region OarBank Class
@@ -575,8 +603,10 @@ func kill(target: Character):
 		elif (target is Character.Engineer):
 			_dead.push_back(target);
 			_engineers.erase(target);
-			_ballista._engineers.erase(target)
-			_catapult._engineers.erase(target)
+			if _ballista:
+				_ballista._engineers.erase(target)
+			if _catapult:
+				_catapult._engineers.erase(target)
 		else:
 			assert(false, "Ship.kill: Function broke. Wow, such a suprise.");
 func cleanup():

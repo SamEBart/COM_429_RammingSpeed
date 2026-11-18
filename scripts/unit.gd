@@ -32,12 +32,17 @@ func place_unit(new_position : Vector3, tile):
 func occupy_tile(tile : Tile):
 	occupied_tile = tile
 	tile.occupier.append(self)
-	#TEMP way to put multiple ships on one hex
-	#temp comment
+	#Put collided ships next each other for ease of access when selecting ships
 	if tile.occupier.size() > 1:
-		for i in tile.occupier.size() - 1:
-			self.position.y += 1;
-			tile.occupier[i]._tile = tile
+		occupier_placement(self, tile, .75)
+
+
+func occupier_placement(ship: Ship, tile: Tile, amount: int):
+	for i in tile.occupier.size() - 1:
+		tile.occupier[i]._tile = tile
+		tile.occupier[0].position.y += amount
+		print("PLACE")
+
 
 func leave_tile():
 	if occupied_tile:
