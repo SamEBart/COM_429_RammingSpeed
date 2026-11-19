@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="GenerationSettings" load_steps=10 format=3 uid="uid://cv7afygtq3o7n"]
+[gd_resource type="Resource" script_class="GenerationSettings" format=3 uid="uid://cv7afygtq3o7n"]
 
 [ext_resource type="Script" uid="uid://0k8jgfy8cqfx" path="res://scripts/WorldGen/generation_settings.gd" id="1_07xjw"]
 [ext_resource type="Resource" uid="uid://3nrb2x1h7p1f" path="res://Resources/Tiles/Ocean.tres" id="1_l8qs3"]
@@ -21,21 +21,12 @@ frequency = 0.08
 script = ExtResource("1_07xjw")
 tiles = Array[ExtResource("2_2d2ag")]([ExtResource("4_0x1xi"), ExtResource("3_om64t"), ExtResource("5_xyh1h")])
 biome_weights = Array[float]([0.2, 1.0, 1.0])
-tile_size = 1.0
-debug = false
 map_seed = 830
-map_shape = 0
 radius = 50
 biome_noise = SubResource("FastNoiseLite_5msdv")
-modify_height = true
-hill_height = 0.5
 heightmap_treshold = 0.5
 heightmap_noise = SubResource("FastNoiseLite_jjfev")
-create_water = true
 ocean_tile = ExtResource("1_l8qs3")
 ocean_noise = SubResource("FastNoiseLite_gruh4")
-ocean_height = -0.4
 ocean_treshold = 0.79
 spawn_villages = false
-map_edge_buffer = 2
-spacing = 6

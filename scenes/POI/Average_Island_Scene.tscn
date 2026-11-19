@@ -1,0 +1,17 @@
+[gd_scene format=3 uid="uid://dkitegfoaa1e7"]
+
+[ext_resource type="PackedScene" uid="uid://dkibj7jx3x1db" path="res://assets/Meshes/Tiles/flathexagon.glb" id="1_w0pui"]
+[ext_resource type="PackedScene" uid="uid://dac3vt0sr6iod" path="res://assets/Meshes/Tiles/Average Island/average island.glb" id="2_hbvqj"]
+
+[node name="Average Island Scene" type="Node3D" unique_id=1457682501]
+
+[node name="Tile 01" parent="." unique_id=1019544963 instance=ExtResource("1_w0pui")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0076830387, 0.08221173, -0.0002309084)
+visible = false
+
+[node name="Tile 02" parent="." unique_id=1432555084 instance=ExtResource("1_w0pui")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.4872466, 0.08221173, -0.8623171)
+visible = false
+
+[node name="average island2" parent="." unique_id=877549971 instance=ExtResource("2_hbvqj")]
+transform = Transform3D(0.19327727, 0, -0.111597136, 0, 0.23, 0, 0.11158869, 0, 0.19329189, -0.739343, -0.037692517, -0.42822546)

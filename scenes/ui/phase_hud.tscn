@@ -1,0 +1,86 @@
+[gd_scene format=3 uid="uid://drnml1p5mkewc"]
+
+[ext_resource type="Script" uid="uid://d31r5d6cq5b2u" path="res://scripts/turn/phase_hud.gd" id="1_script"]
+[ext_resource type="StyleBox" uid="uid://bdpbjofkq7iim" path="res://Resources/phase_hud_stylebox.tres" id="2_style"]
+
+[node name="PhaseHud" type="CanvasLayer" unique_id=1593247262]
+script = ExtResource("1_script")
+
+[node name="Host" type="Control" parent="." unique_id=1937407482]
+unique_name_in_owner = true
+layout_mode = 3
+anchors_preset = 0
+mouse_filter = 2
+
+[node name="Panel" type="PanelContainer" parent="Host" unique_id=899558839]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(280, 0)
+layout_mode = 0
+theme_override_styles/panel = ExtResource("2_style")
+
+[node name="Box" type="VBoxContainer" parent="Host/Panel" unique_id=300319018]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Title" type="Label" parent="Host/Panel/Box" unique_id=1688612847]
+layout_mode = 2
+text = "Phase Sequence"
+
+[node name="Mode" type="Label" parent="Host/Panel/Box" unique_id=1880757637]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+autowrap_mode = 3
+
+[node name="Status" type="Label" parent="Host/Panel/Box" unique_id=1780461961]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.0056611504, 0.0056611514, 0.00566115, 1)
+autowrap_mode = 3
+
+[node name="Hint" type="Label" parent="Host/Panel/Box" unique_id=302355037]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+autowrap_mode = 3
+
+[node name="Advance" type="Button" parent="Host/Panel/Box" unique_id=866020015]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="EndMatch" type="Button" parent="Host/Panel/Box" unique_id=1978349377]
+unique_name_in_owner = true
+layout_mode = 2
+text = "End Match"
+
+[node name="LegacyRow" type="HBoxContainer" parent="Host/Panel/Box" unique_id=42632974]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="Legacy" type="CheckButton" parent="Host/Panel/Box/LegacyRow" unique_id=702038201]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Test Movement"
+
+[node name="LegacyPad" type="Control" parent="Host/Panel/Box/LegacyRow" unique_id=1776560793]
+custom_minimum_size = Vector2(36, 0)
+layout_mode = 2
+mouse_filter = 2
+
+[node name="WaterRow" type="HBoxContainer" parent="Host/Panel/Box" unique_id=1722440330]
+layout_mode = 2
+
+[node name="WaterToggle" type="CheckButton" parent="Host/Panel/Box/WaterRow" unique_id=5741491]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_hover_color = Color(0, 0, 0, 1)
+theme_override_colors/font_hover_pressed_color = Color(0, 0, 0, 1)
+button_pressed = true
+text = "Water toggle"
+
+[node name="WaterPad" type="Control" parent="Host/Panel/Box/WaterRow" unique_id=1810844195]
+custom_minimum_size = Vector2(36, 0)
+layout_mode = 2
+mouse_filter = 2

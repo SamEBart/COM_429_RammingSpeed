@@ -87,8 +87,7 @@ func catapultHit(target: Ship):
 		#If mast up it falls down, Roll Crew Casualty Chart (CCC)
 		3:
 			if target._isMastUp:
-				target._isMastUp = false
-				target._isMastDown = true
+				target.set_mast_down(true)
 				multiCrewCasualty(target)
 		
 		#Mast takes 1 damage, if 0 then roll CCC
@@ -96,12 +95,12 @@ func catapultHit(target: Ship):
 			if target._isMastUp:
 				target._mastHP -= 1
 				if target._mastHP == 0:
-					target._isMastUp = false
-					target._isMastDown = true
+					target.set_mast_down(true)
 					multiCrewCasualty(target)
 		
 		#If a ship has a Catapult or Ballitsa it is destroyed, otherwise roll CCC
 		5:
+			## Hulls only carry one siege weapon now, so check both helpers.
 			if target.hasBallista() or target.hasCatapult():
 				var temp = true
 				while temp:
@@ -148,7 +147,7 @@ func collisionCriticalHit(target: Ship, isRamming: bool, damageModifier: int):
 		
 		#If ship has a catapult destroy it, else suffer 2 flotation damage
 		3:
-			if target.hasCatapult():
+			if target.hasBallista():
 				for j in target._ballista._engineers.size():
 					target._ballista._engineers[j]._target = null
 				target._ballista = null
@@ -156,7 +155,7 @@ func collisionCriticalHit(target: Ship, isRamming: bool, damageModifier: int):
 		
 		#If ship has a ballista destroy it, else suffer 2 flotation damage
 		4:
-			if target.hasBallista():
+			if target.hasCatapult():
 				for j in target._catapult._engineers.size():
 					target._catapult._engineers[j]._target = null
 				target._catapult = null
@@ -185,7 +184,7 @@ func collisionCriticalHit(target: Ship, isRamming: bool, damageModifier: int):
 		11:
 			if target._isMastUp:
 				target._mastHP = 0
-				target._isMastDown = true
+				target.set_mast_down(true)
 			elif target.getDeckCrew():
 				Global.addToDead(target, target.getDeckCrew())
 		
@@ -193,17 +192,18 @@ func collisionCriticalHit(target: Ship, isRamming: bool, damageModifier: int):
 		12:
 			if target._isMastUp:
 				target._mastHP = 0
-				target._isMastDown = true
+				target.set_mast_down(true)
 				flotationDamage(target, 1)
 			elif target.getReserveRowers():
 				Global.addToDead(target, target.getReserveRowers())
 			elif target.getActiveRowers():
 				Global.addToDead(target, target.getActiveRowers())
 
-func flotationDamage(ship: Ship, amount: int):
+func flotationDamage(ship: Ship, amount):
 	while ship._flotationHits > 0:
-		for i in ceil(amount):		#Excutive decision to round up
+		for i in int(ceil(amount)):		#Excutive decision to round up
 			ship._flotationHits -= 1
+		break
 
 func repairHole(target: Ship):
 	var roll = randi_range(1, 6)
@@ -321,7 +321,38 @@ func rammingResults(rammer: Ship, avoider: Ship):
 		if roll > bothSpeed:
 			collision(roll, rammer, avoider, damageModifier)
 	
+	
 	print("Get Rammed!")
+
+
+func rammingIsland(rammer: Ship, phase: int):
+	#Set Damage Modifier
+	var damageModifier = 1
+	
+	#Rammed ship gains a hole
+	rammer._holes += 1		#Might need to change to both ships depending on roll
+	
+	#Flotation Damage
+#	print("(FD) Ship: ", rammer.name, " | ", ceil(rammer._speed * 0.25), " | ", rammer._flotationHits)
+	var amount = ceil(rammer._speed * 0.25)
+	flotationDamage(rammer, amount)
+	
+	#Set ship speed to 0
+	rammer._speed = 0
+	
+	#Roll
+	if randi_range(1, 6) == 1:
+		collisionCriticalHit(rammer, true, damageModifier)
+	
+	rammer._stranded = true
+	rammer._stranded_phase = phase
+	rammer._inCollision = true
+	
+	#Kill ship if it hits a rock
+	if rammer._tile.biome == "Rock" or rammer._tile.biome == "Big Rock":
+		rammer._flotationHits = 0
+
+
 
 func collision(roll: int, rammer: Ship, avoider: Ship, damageModifier: int):
 	#Roll
@@ -340,3 +371,35 @@ func collision(roll: int, rammer: Ship, avoider: Ship, damageModifier: int):
 	if rammer._owner != avoider._owner:
 		rammer._inBoarding = true
 		avoider._inBoarding = true
+
+
+func shear(ship, target: Ship, firstShip: Ship, secondShip: Ship):
+	print("Shear")
+	#Get a roll for first ship
+	var roll = randi_range(2, 12)
+	#If roll above shearers speed then fail
+	if roll > ship._speed:
+		#Prompt secondShip for decision
+		#TEMP rng for 2nd Ship
+		var roll2 = randi_range(1, 2)
+		match roll2:
+			#Ram
+			1:
+				Charts.rammingResults(secondShip, firstShip)
+			#Collision
+			2:
+				Charts.collision(roll2, secondShip, firstShip, 1)
+	
+	elif roll == ship._speed:
+		#Half reaming oar banks + rowers equal to those banks are lost
+		var banks = target.getBanks()
+		for i in int(ceil(banks.size() / 2)):
+			banks[i].removeBank(target)
+		
+	elif roll < ship._speed:
+		#Collision
+		Charts.collision(roll, firstShip, secondShip, 1)
+	
+		#Both ships are now in a BA
+		ship._inBoarding = true
+		target._inBoarding = true

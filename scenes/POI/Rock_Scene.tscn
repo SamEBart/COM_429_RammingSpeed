@@ -1,0 +1,13 @@
+[gd_scene format=3 uid="uid://d2ljb7si6nmnr"]
+
+[ext_resource type="PackedScene" uid="uid://dkibj7jx3x1db" path="res://assets/Meshes/Tiles/flathexagon.glb" id="1_udce2"]
+[ext_resource type="PackedScene" uid="uid://dg35dukc5y6q4" path="res://assets/Meshes/Tiles/Mountain.glb" id="2_udce2"]
+
+[node name="Small Island Scene" type="Node3D" unique_id=1457682501]
+
+[node name="Tile 01" parent="." unique_id=1019544963 instance=ExtResource("1_udce2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0076830387, 0.08221173, -0.0002309084)
+visible = false
+
+[node name="Mountain2" parent="." unique_id=1571980101 instance=ExtResource("2_udce2")]
+transform = Transform3D(1.05, 0, 0, 0, 1, 0, 0, 0, 1.05, 0.008, -0.124871016, 0)

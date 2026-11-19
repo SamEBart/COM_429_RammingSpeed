@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="Ramming Speed"
-run/main_scene="uid://bbqxpsy3vniy8"
+run/main_scene="uid://chkcsfg3npqrm"
 config/features=PackedStringArray("4.7", "GL Compatibility")
 config/icon="res://icon.svg"
 
@@ -23,6 +23,7 @@ TurnController="*res://scripts/turn/turn_controller.gd"
 Charts="*uid://c5nly26t0yfde"
 LRF="*uid://w2c7rfqkainc"
 BoardingActions="*uid://c4ijhmp7d8osw"
+AudioController="*uid://biiluct2qj2c2"
 
 [display]
 
@@ -32,6 +33,10 @@ window/stretch/aspect="expand"
 [filesystem]
 
 import/blender/enabled=false
+
+[global_group]
+
+all_sounds=""
 
 [input]
 

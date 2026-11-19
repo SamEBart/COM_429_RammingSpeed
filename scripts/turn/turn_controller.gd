@@ -18,7 +18,6 @@ signal phase_changed(phase: Phase, execution_step: int, turn_number: int)
 signal match_ended(turn_number: int)
 signal mode_changed(test_mode: bool)
 
-
 const _Log = preload("res://scripts/turn/game_log.gd")
 
 ## False is normal mode: only the local player's ships can be selected, and steering crew limit turns.
@@ -119,8 +118,10 @@ func lock_command() -> bool:
 func press_ready() -> bool:
 	if phase != Phase.COMMAND or local_ready:
 		return false
-	local_ready = true
+	#local_ready = true
 	_Log.push("Orders locked. Waiting for the other players.")
+	local_player_id += 1
+	if local_player_id > Global.humanPlayers : local_player_id = 1
 	if all_players_ready():
 		return lock_command()
 	phase_changed.emit(phase, execution_step, turn_number)
@@ -149,6 +150,7 @@ func complete_execution_phase() -> bool:
 	execution_step = 0
 	action_step = ActionStep.NONE
 	turn_number += 1
+	if turn_number > Global.turnCap : end_match()
 	_enter(Phase.COMMAND)
 	_apply_action_to_game()
 	return true
@@ -286,9 +288,10 @@ func _resolve_current_action() -> bool:
 	if action_step == ActionStep.MOVE and use_phase_movement:
 		return PhaseMovement.apply(get_tree(), execution_step)
 	if action_step == ActionStep.LONG_RANGE_FIRE:
-		Global.resolve_long_range_fire()
+		LRF.resolve_long_range_fire()
 	elif action_step == ActionStep.BOARDING and not boarding_before_fire:
-		Global.resolve_boarding()
+		#Entirety of the Boarding Action turn in one function
+		BoardingActions.doBoaridingTurn()
 	return false
 
 
@@ -301,10 +304,16 @@ func _clear_move_stops() -> void:
 func _apply_action_to_game() -> void:
 	if phase == Phase.EXECUTION and action_step == ActionStep.MOVE:
 		Global.set_turn_action(0)
+		AudioController.stop_music("combat_music", "combat")
+	
 	elif phase == Phase.EXECUTION and action_step == ActionStep.LONG_RANGE_FIRE:
 		Global.set_turn_action(1)
+		AudioController.play_music("combat_music", -15, "combat")
+	
 	elif phase == Phase.EXECUTION and action_step == ActionStep.BOARDING:
 		Global.set_turn_action(2)
+		AudioController.play_music("combat_music", -15, "combat")
+	
 	else:
 		Global.set_turn_action(-1)
 

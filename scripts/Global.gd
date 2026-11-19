@@ -5,6 +5,10 @@ const _Log = preload("res://scripts/turn/game_log.gd")
 var _action = 0
 var _subAction = 0
 var threads: Array[Thread] = []
+var humanPlayers : int = 2
+var totalPlayers : int = 4
+var turnCap : int = 999
+var difficulty : int = 1
 
 ## Currently setup for prototype_unit rotation (block part as head)
 var _hexUp: int = 270
@@ -56,29 +60,14 @@ func _input(event: InputEvent) -> void:
 	elif Input.is_action_just_pressed("CtrlEnter"):
 		#If Archery
 		if Global._action == 1 and Global._subAction == 0:
-			resolve_long_range_fire()
+			LRF.resolve_long_range_fire()
 		
 		#If Ballista
 		if Global._action == 1 and Global._subAction == 1:
 			var ships: Array[Node] = get_tree().get_nodes_in_group("ships")
 			for ship in ships:
-				if ship._ballista and !ship.getBallista().isBroken() and ship._boardingCounter == 0:
-					var ballista = ship.getBallista()
-					if ballista.isLoaded() and ship.getEngineers() and ship._enemyTarget:
-						# (TEMP) If ballista does not have an eng and one is available, assign eng to ballista
-						if ballista._engineers.size() == 0:
-							ballista.allocateEngineer(ship)
-						if ballista._engineers.size() >= 1:
-							LRF.ballistaFire(ship)
-							ship._ballista.fire()
-							_Log.push("Fired %s's Ballista!" % ship.name)
-					elif !ballista.isLoaded() and ship.getEngineers():
-						# (TEMP) If ballista does not have an eng and one is available, assign eng to ballista
-						if ballista._engineers.size() == 0:
-							ballista.allocateEngineer(ship)
-						if ballista._engineers.size() >= 1:
-							ballista.reload()
-							_Log.push("Reloading %s's Ballista now at (%s)" % [ship.name, ship._ballista._reloadTimer])
+				if ship._ballista and !ship.getBallista().isBroken() and !ship._inBoarding:
+					LRF.determineBallistaAction(ship)
 			#Reset Ship
 			for ship in ships:
 				ship._enemyTarget = null
@@ -90,23 +79,8 @@ func _input(event: InputEvent) -> void:
 		elif Global._action == 1 and Global._subAction == 2:
 			var ships: Array[Node] = get_tree().get_nodes_in_group("ships")
 			for ship in ships:
-				if ship._catapult and !ship.getCatapult().isBroken() and ship._boardingCounter == 0:
-					var catapult = ship.getCatapult()
-					if catapult.isLoaded() and ship.getEngineers() and ship._enemyTarget:
-						# (TEMP) If catapult does not have an eng and one is available, assign eng to catapult
-						if catapult._engineers.size() == 0:
-							catapult.allocateEngineer(ship)
-						if catapult._engineers.size() >= 1:
-							LRF.catapultFire(ship)
-							ship._catapult.fire()
-							_Log.push("Fired %s's Catapult!" % ship.name)
-					elif !catapult.isLoaded() and ship.getEngineers():
-						# (TEMP) If catapult does not have an eng and one is available, assign eng to catapult
-						if catapult._engineers.size() == 0:
-							catapult.allocateEngineer(ship)
-						if catapult._engineers.size() >= 1:
-							catapult.reload()
-							_Log.push("Reloading %s's Catapult now at (%s)" % [ship.name, ship._catapult._reloadTimer])
+				if ship._catapult and !ship.getCatapult().isBroken() and !ship._inBoarding:
+					LRF.determineCatapultAction(ship)
 			#Reset Ship
 			for ship in ships:
 				ship._enemyTarget = null
@@ -121,17 +95,10 @@ func _input(event: InputEvent) -> void:
 		#Boarding Action Archery
 		elif Global._action == 2 and Global._subAction == 1:
 			var ships: Array[Node] = get_tree().get_nodes_in_group("ships")
-			#Determine which ships are boarding eachother
+			#Do the Archery if there is a target and available archers
 			for ship in ships:
-				if ship._enemyTarget and ship._boardingArchers.size() > 0 and ship._boardingCounter == 0 and ship._boardingPrepped == false:
-					var thread1: Thread = Thread.new()
-					thread1.start(BoardingActions.boardingArcherFire.bind(ship))
-					var thread2: Thread = Thread.new()
-					thread2.start(BoardingActions.boardingArcherFire.bind(ship._enemyTarget))
-					if thread1.is_started():
-						thread1.wait_to_finish()
-					if thread2.is_started():
-						thread2.wait_to_finish()
+				if ship._boardingTarget and ship._boardingArchers.size() > 0 and ship._boardingPrepped == false:
+					BoardingActions.doBoardingArchery(ship)
 			for ship in ships:
 				ship._boardingPrepped = false
 				if ship._dead.size() > 0:
@@ -140,17 +107,10 @@ func _input(event: InputEvent) -> void:
 		#Boarding Action Javelins
 		elif Global._action == 2 and Global._subAction == 2:
 			var ships: Array[Node] = get_tree().get_nodes_in_group("ships")
-			#Determine which ships are boarding eachother
+			#Do the Javelines if there is a target and available archers
 			for ship in ships:
-				if ship._enemyTarget and ship._boardingJavelins.size() > 0 and ship._boardingCounter == 0 and ship._boardingPrepped == false:
-					var thread1: Thread = Thread.new()
-					thread1.start(BoardingActions.boardingJavelineFireFire.bind(ship))
-					var thread2: Thread = Thread.new()
-					thread2.start(BoardingActions.boardingJavelineFire.bind(ship._enemyTarget))
-					if thread1.is_started():
-						thread1.wait_to_finish()
-					if thread2.is_started():
-						thread2.wait_to_finish()
+				if ship._boardingTarget and ship._boardingJavelins.size() > 0 and ship._boardingPrepped == false:
+					BoardingActions.doBoardingJaveline(ship)
 			for ship in ships:
 				ship._boardingPrepped = false
 				if ship._dead.size() > 0:
@@ -161,7 +121,7 @@ func _input(event: InputEvent) -> void:
 			var ships: Array[Node] = get_tree().get_nodes_in_group("ships")
 			#Determine which ships are boarding eachother
 			for ship in ships:
-				if ship:
+				if ship._boardingTarget:
 					BoardingActions.preBoardingMelee(ship)
 			#Reset Ships
 			for ship in ships:
@@ -172,15 +132,17 @@ func _input(event: InputEvent) -> void:
 			for j in range(ships.size() - 1, -1, -1):
 				if ships[j]._fighters.size() == 0 or ships[j]._flotationHits == 0:
 					baRemoveShip(ships[j])
-					print("Ship removed")
 		
 		#Boarding Withdrawing
 		elif Global._action == 2 and Global._subAction == 4:
 			var ships: Array[Node] = get_tree().get_nodes_in_group("ships")
 			for ship in ships:
-				print(ship._boardingTarget)
 				if ship._boardingTarget != null:
 					BoardingActions.boardingWithdrawing(ship)
+			#Remove Dead Ships that has no Aux or Soldiers
+			for j in range(ships.size() - 1, -1, -1):
+				if ships[j]._fighters.size() == 0 or ships[j]._flotationHits == 0:
+					baRemoveShip(ships[j])
 
 
 func compare_ship_initiatives(a: Ship, b: Ship):
@@ -203,6 +165,12 @@ func compare_ship_initiatives(a: Ship, b: Ship):
 			rolling = false
 
 #region Dead Functions
+func removeDeadCrewAndShip(ship: Ship):
+	if ship._dead.size() > 0:
+		purgeTheDead(ship)
+	if isShipDead(ship):
+		baRemoveShip(ship)
+
 func addToDead(ship, deadGuys):
 	var guy = deadGuys.pick_random()
 	guy._isDead = true
@@ -217,6 +185,12 @@ func purgeTheDead(ship):
 			ship._fighters.erase(ship._dead[i])
 	ship._dead.clear()
 	_Log.push("After: %s has A: %d, J: %d, S: %d, E: %d, D: %d" % [ship.name, ship._marineArchers.size(), ship._marineJavelineers.size(), ship._marineSoldiers.size(), ship._engineers.size(), ship._deckCrew.size()])
+
+func isShipDead(ship: Ship):
+	if ship._fighters.size() == 0 or ship._flotationHits == 0:
+		return true
+	else:
+		return false
 
 func baRemoveShip(ship):
 	#Remove Ship from Tile Occupir List
@@ -311,13 +285,37 @@ func chooseWinner():
 			if player._totalFighters == maxValue:
 				mostFightersArray.append(player)
 		
-		#Determien if it is a win or draw
+		#Determine if it is a win or to check more conditions
 		if mostFightersArray.size() == 1:
 			#Print win
 			_Log.push("%s Wins the Game!" % mostFightersArray[0]._name)
+		
+		#More conditions to win; check total flotation points. Player with most wins (least hit player)
 		else:
-			#Print draw
-			_Log.push("DRAW!")
+			#Get how many flotation points each player has
+			for player in mostShipsArray:
+				player._totalFlotationHits = 0
+				for ship in player._ships:
+					player._totalFlotationHits += ship._flotationHits
+			
+			#Get list of Players with the most flotation hits
+			maxValue = null
+			for player in mostShipsArray:
+				if maxValue == null or player._totalFlotationHits > maxValue:
+					maxValue = player._totalFlotationHits
+			var mostFloatersArray = []
+			for player in players:
+				if player._totalFlotationHits == maxValue:
+					mostFloatersArray.append(player)
+			
+			#Determine if it is a win or draw
+			if mostFloatersArray.size() == 1:
+				#Print win
+				_Log.push("%s Wins the Game!" % mostFloatersArray[0]._name)
+			
+			else:
+				#Print draw
+				_Log.push("DRAW!")
 #endregion
 
 func action_reset():
@@ -331,27 +329,17 @@ func set_turn_action(action: int) -> void:
 	action_reset()
 
 
+## TurnController calls this. Real work is in Combat/LRF.gd so SceneTree scripts can still use Global.
 func resolve_long_range_fire() -> void:
-	var ships: Array[Node] = get_tree().get_nodes_in_group("ships")
-	for ship in ships:
-		if ship._boardingCounter == 0:
-			LRF.archerFire(ship)
-	for ship in ships:
-		ship._enemyTarget = null
-		ship._owner._shipClicked = false
-		if ship._dead.size() > 0:
-			purgeTheDead(ship)
+	LRF.resolve_long_range_fire()
 
 
 func resolve_boarding() -> void:
 	var ships: Array[Node] = get_tree().get_nodes_in_group("ships")
 	for ship in ships:
-		for boat in ships:
-			if ship._tile == boat._tile and ship != boat and ship._enemyTarget == null and boat._enemyTarget == null:
-				ship._enemyTarget = boat
-				boat._enemyTarget = ship
+			ship._boardingPrepped = false
 	for ship in ships:
-		if !ship._boardingPrepped and ship._enemyTarget:
+		if !ship._boardingPrepped and ship._boardingTarget:
 			BoardingActions.determineFighting(ship)
 	for ship in ships:
 		if ship._boardingPrepped:

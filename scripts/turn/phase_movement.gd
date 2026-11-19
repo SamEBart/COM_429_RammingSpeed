@@ -32,8 +32,13 @@ const _Log = preload("res://scripts/turn/game_log.gd")
 
 
 static func _step(ship: Ship, phase: int, pass_index: int) -> bool:
-	if ship._phase_move_stopped or ship.occupied_tile == null:
+	if ship._phase_move_stopped or ship.occupied_tile == null or ship._stranded:
 		return false
+	
+	#Help an allied stranded ship
+	if ship._help_stranded:
+		ship.help_stranded_ally(ship, phase)
+	
 	var sharing := _other_ship_here(ship)
 	if sharing != null:
 		_stop_pair(ship, sharing)
@@ -67,6 +72,8 @@ static func _step(ship: Ship, phase: int, pass_index: int) -> bool:
 		verb = "backward"
 	elif speed == 0:
 		verb = "adrift"
+	if dest.biome != "Ocean":
+		_stop_ship(ship, dest, phase)
 	_Log.push("Phase %d: %s moved %s onto %s." % [phase, ship.name, verb, dest.biome])
 	if already_there == null:
 		return false
@@ -80,6 +87,14 @@ static func _stop_pair(ship: Ship, other: Ship) -> void:
 	ship._phase_move_stopped = true
 	other._phase_move_stopped = true
 
+#Detects when a ship collides with terrain
+static func _stop_ship(ship: Ship, tile: Tile, phase: int) -> void:
+	ship._phase_move_stopped = true
+	ship._stranded = true
+	Charts.rammingIsland(ship, phase)
+	Global.removeDeadCrewAndShip(ship)
+	_Log.push("%s Grounded!\n" % [ship.name])
+
 
 static func _call_boarding(ship: Ship, other: Ship) -> void:
 	ship._enemyTarget = other
@@ -87,7 +102,8 @@ static func _call_boarding(ship: Ship, other: Ship) -> void:
 	_Log.push("%s calls BoardingActions.determineFighting on %s." % [ship.name, other.name])
 	# Ramming is not written yet. Develop that function next to determineFighting in
 	# BoardingActions.gd, and call it here before the boarding setup.
-	BoardingActions.determineFighting(ship)
+	Global.resolve_boarding()
+	#BoardingActions.determineFighting(ship)
 
 
 static func _step_tile(ship: Ship, speed: int) -> Tile:
@@ -164,7 +180,8 @@ static func _open_neighbors(origin: Tile) -> Array[Tile]:
 
 
 static func _is_sailable(tile: Tile) -> bool:
-	return tile != null and tile.mesh_data != null and tile.mesh_data.type == Tile.biome_type.Ocean
+	#Removed "tile.mesh_data.type == Tile.biome_type.Ocean" to allow for stranding
+	return tile != null and tile.mesh_data != null
 
 
 static func _can_enter(tile: Tile) -> bool:

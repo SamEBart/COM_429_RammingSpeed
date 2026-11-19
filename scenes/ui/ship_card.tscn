@@ -1,0 +1,639 @@
+[gd_scene format=3 uid="uid://bobxyec6w7tm7"]
+
+[ext_resource type="Script" uid="uid://uls4rbg8wji4" path="res://scripts/turn/ship_stats_panel.gd" id="1_script"]
+[ext_resource type="Texture2D" uid="uid://hvbnwxap3m2o" path="res://assets/2D/Ship Card_Sail_Up.png" id="2_base"]
+[ext_resource type="Texture2D" uid="uid://jubvolk6eene" path="res://assets/2D/HP_Bar.png" id="3_hp"]
+[ext_resource type="Texture2D" uid="uid://bju8y7mu7yrne" path="res://assets/2D/Button_Turn_Middle.png" id="4_wheel"]
+[ext_resource type="Texture2D" uid="uid://bk3d744r6a4ia" path="res://assets/2D/Button_Turn_Left.png" id="5_turn_l"]
+[ext_resource type="Texture2D" uid="uid://nygy6agjfyex" path="res://assets/2D/Button_Turn_Right.png" id="6_turn_r"]
+[ext_resource type="Texture2D" uid="uid://41c1lcwwlvlp" path="res://assets/2D/Button_Sail_Up.png" id="7_sail_up"]
+[ext_resource type="Texture2D" uid="uid://gamxi0oauspj" path="res://assets/2D/Button_Sail_Down.png" id="8_sail_down"]
+[ext_resource type="Texture2D" uid="uid://d8vvsqpr38n6" path="res://assets/2D/Button_Reload_Ballista.png" id="9_ballista"]
+[ext_resource type="Texture2D" uid="uid://b2rl8f8g45144" path="res://assets/2D/Button_Speed_Down.png" id="10_spd_dn"]
+[ext_resource type="Texture2D" uid="uid://cmugisyntvo3n" path="res://assets/2D/Button_Speed_Up.png" id="11_spd_up"]
+[ext_resource type="Texture2D" uid="uid://csu1vircmsgu8" path="res://assets/2D/Button_Archer.png" id="12_archer"]
+[ext_resource type="FontFile" uid="uid://ctb0pktljabuy" path="res://assets/2D/Fonts/Caligo.ttf" id="13_caligo"]
+[ext_resource type="FontFile" uid="uid://dk1b0l73bfx2s" path="res://assets/2D/Fonts/BELL MT Bold.TTF" id="14_bell"]
+[ext_resource type="FontFile" uid="uid://2e47fxn1pahr" path="res://assets/2D/Fonts/Candara Italic Bold.ttf" id="15_candara"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_panel"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_empty"]
+content_margin_left = 8.0
+content_margin_top = 4.0
+content_margin_right = 8.0
+content_margin_bottom = 4.0
+bg_color = Color(0.04, 0.04, 0.06, 0.96)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[node name="ShipStats" type="CanvasLayer" unique_id=1840699728]
+script = ExtResource("1_script")
+
+[node name="Host" type="Control" parent="." unique_id=1800485797]
+unique_name_in_owner = true
+layout_mode = 3
+anchors_preset = 0
+mouse_filter = 2
+
+[node name="Panel" type="PanelContainer" parent="Host" unique_id=1824444784]
+unique_name_in_owner = true
+layout_mode = 0
+theme_override_styles/panel = SubResource("StyleBoxEmpty_panel")
+
+[node name="Stack" type="VBoxContainer" parent="Host/Panel" unique_id=1514198398]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="EmptyHint" type="PanelContainer" parent="Host/Panel/Stack" unique_id=1253463410]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_empty")
+
+[node name="EmptyLabel" type="Label" parent="Host/Panel/Stack/EmptyHint" unique_id=231554983]
+layout_mode = 2
+theme_override_font_sizes/font_size = 13
+text = "Click a ship"
+
+[node name="Card" type="Control" parent="Host/Panel/Stack" unique_id=1550802794]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(340, 460)
+layout_mode = 2
+mouse_filter = 2
+
+[node name="CardBase" type="TextureRect" parent="Host/Panel/Stack/Card" unique_id=1802110142]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("2_base")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="Overlay" type="Control" parent="Host/Panel/Stack/Card" unique_id=1729920819]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="TypeLabel" type="Label" parent="Host/Panel/Stack/Card/Overlay" unique_id=1331766367]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.12
+anchor_top = 0.035
+anchor_right = 0.88
+anchor_bottom = 0.105
+theme_override_colors/font_color = Color(0.14, 0.09, 0.04, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.55)
+theme_override_constants/shadow_offset_x = 1
+theme_override_constants/shadow_offset_y = 1
+theme_override_fonts/font = ExtResource("13_caligo")
+theme_override_font_sizes/font_size = 22
+text = "Click a ship"
+horizontal_alignment = 1
+
+[node name="OwnerLabel" type="Label" parent="Host/Panel/Stack/Card/Overlay" unique_id=1248532068]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.18
+anchor_top = 0.1
+anchor_right = 0.82
+anchor_bottom = 0.15
+theme_override_colors/font_color = Color(0.14, 0.09, 0.04, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.55)
+theme_override_constants/shadow_offset_x = 1
+theme_override_constants/shadow_offset_y = 1
+theme_override_fonts/font = ExtResource("13_caligo")
+theme_override_font_sizes/font_size = 16
+horizontal_alignment = 1
+
+[node name="NextButton" type="Button" parent="Host/Panel/Stack/Card/Overlay" unique_id=1779536031]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.08
+anchor_top = 0.04
+anchor_right = 0.22
+anchor_bottom = 0.1
+theme_override_fonts/font = ExtResource("13_caligo")
+theme_override_font_sizes/font_size = 11
+text = "Next"
+
+[node name="HpSlot" type="Control" parent="Host/Panel/Stack/Card/Overlay" unique_id=1384114923]
+unique_name_in_owner = true
+layout_mode = 1
+anchor_left = 0.08
+anchor_top = 0.155
+anchor_right = 0.92
+anchor_bottom = 0.255
+mouse_filter = 1
+
+[node name="HpFill" type="ColorRect" parent="Host/Panel/Stack/Card/Overlay/HpSlot" unique_id=64369020]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = -1
+anchor_top = 0.2
+anchor_right = 1.0
+anchor_bottom = 0.8
+mouse_filter = 2
+color = Color(0.55, 0.12, 0.12, 0.9)
+
+[node name="HpArt" type="TextureRect" parent="Host/Panel/Stack/Card/Overlay/HpSlot" unique_id=1133923842]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("3_hp")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="FacingLabel" type="Label" parent="Host/Panel/Stack/Card/Overlay" unique_id=114924065]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.72
+anchor_top = 0.26
+anchor_right = 0.94
+anchor_bottom = 0.34
+theme_override_colors/font_color = Color(0.14, 0.09, 0.04, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.55)
+theme_override_constants/shadow_offset_x = 1
+theme_override_constants/shadow_offset_y = 1
+theme_override_fonts/font = ExtResource("13_caligo")
+theme_override_font_sizes/font_size = 20
+horizontal_alignment = 2
+
+[node name="Play" type="Control" parent="Host/Panel/Stack/Card/Overlay" unique_id=2097095591]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Helm" type="Control" parent="Host/Panel/Stack/Card/Overlay/Play" unique_id=756486551]
+layout_mode = 1
+anchor_left = 0.04
+anchor_top = 0.26
+anchor_right = 0.3
+anchor_bottom = 0.56
+mouse_filter = 2
+
+[node name="Wheel" type="TextureRect" parent="Host/Panel/Stack/Card/Overlay/Play/Helm" unique_id=354166475]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.1
+anchor_right = 0.9
+anchor_bottom = 0.58
+offset_left = -7.4400005
+offset_top = -7.5999985
+offset_right = -7.4400024
+offset_bottom = -7.5999985
+mouse_filter = 2
+texture = ExtResource("4_wheel")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="TurnRight" type="TextureButton" parent="Host/Panel/Stack/Card/Overlay/Play/Helm" unique_id=21776030]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = -1
+anchor_left = -0.029000001
+anchor_top = 0.3
+anchor_right = 0.208
+anchor_bottom = 0.60400003
+offset_left = -12.036399
+offset_top = -4.999996
+offset_right = 9.012798
+offset_bottom = -10.951996
+texture_normal = ExtResource("5_turn_l")
+ignore_texture_size = true
+stretch_mode = 5
+
+[node name="TurnLeft" type="TextureButton" parent="Host/Panel/Stack/Card/Overlay/Play/Helm" unique_id=1662112786]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.74
+anchor_top = 0.264
+anchor_right = 0.93200004
+anchor_bottom = 0.5
+offset_left = -15.016006
+offset_top = -0.031993866
+offset_right = 0.011192322
+offset_bottom = 3.5200043
+texture_normal = ExtResource("6_turn_r")
+ignore_texture_size = true
+stretch_mode = 5
+
+[node name="MastUp" type="TextureButton" parent="Host/Panel/Stack/Card/Overlay/Play" unique_id=405972286]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.43
+anchor_top = 0.775
+anchor_right = 0.57
+anchor_bottom = 0.855
+offset_left = -125.2
+offset_top = -158.5
+offset_right = -125.2
+offset_bottom = -158.5
+scale = Vector2(1.1999996, 1.2400006)
+texture_normal = ExtResource("8_sail_down")
+ignore_texture_size = true
+stretch_mode = 5
+
+[node name="MastDown" type="TextureButton" parent="Host/Panel/Stack/Card/Overlay/Play" unique_id=118619620]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.43
+anchor_top = 0.775
+anchor_right = 0.57
+anchor_bottom = 0.855
+offset_left = -125.2
+offset_top = -158.5
+offset_right = -125.2
+offset_bottom = -158.5
+scale = Vector2(1.1999996, 1.2400006)
+texture_normal = ExtResource("7_sail_up")
+ignore_texture_size = true
+stretch_mode = 5
+
+[node name="CrewName" type="Label" parent="Host/Panel/Stack/Card/Overlay/Play" unique_id=353154463]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.1
+anchor_top = 0.655
+anchor_right = 0.42
+anchor_bottom = 0.71
+theme_override_colors/font_color = Color(0.14, 0.09, 0.04, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.55)
+theme_override_constants/shadow_offset_x = 1
+theme_override_constants/shadow_offset_y = 1
+theme_override_fonts/font = ExtResource("14_bell")
+theme_override_font_sizes/font_size = 13
+text = "Crew:"
+
+[node name="CrewLabel" type="Label" parent="Host/Panel/Stack/Card/Overlay/Play" unique_id=1187740394]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.42
+anchor_top = 0.655
+anchor_right = 0.9
+anchor_bottom = 0.71
+theme_override_colors/font_color = Color(0.14, 0.09, 0.04, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.55)
+theme_override_constants/shadow_offset_x = 1
+theme_override_constants/shadow_offset_y = 1
+theme_override_fonts/font = ExtResource("15_candara")
+theme_override_font_sizes/font_size = 13
+horizontal_alignment = 2
+
+[node name="EngineerName" type="Label" parent="Host/Panel/Stack/Card/Overlay/Play" unique_id=1852525720]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.1
+anchor_top = 0.705
+anchor_right = 0.48
+anchor_bottom = 0.76
+theme_override_colors/font_color = Color(0.14, 0.09, 0.04, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.55)
+theme_override_constants/shadow_offset_x = 1
+theme_override_constants/shadow_offset_y = 1
+theme_override_fonts/font = ExtResource("14_bell")
+theme_override_font_sizes/font_size = 13
+text = "Engineers:"
+
+[node name="EngineerLabel" type="Label" parent="Host/Panel/Stack/Card/Overlay/Play" unique_id=1740022008]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.48
+anchor_top = 0.705
+anchor_right = 0.9
+anchor_bottom = 0.76
+theme_override_colors/font_color = Color(0.14, 0.09, 0.04, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.55)
+theme_override_constants/shadow_offset_x = 1
+theme_override_constants/shadow_offset_y = 1
+theme_override_fonts/font = ExtResource("15_candara")
+theme_override_font_sizes/font_size = 13
+horizontal_alignment = 2
+
+[node name="MarineName" type="Label" parent="Host/Panel/Stack/Card/Overlay/Play" unique_id=1430597185]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.1
+anchor_top = 0.76
+anchor_right = 0.46
+anchor_bottom = 0.815
+theme_override_colors/font_color = Color(0.14, 0.09, 0.04, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.55)
+theme_override_constants/shadow_offset_x = 1
+theme_override_constants/shadow_offset_y = 1
+theme_override_fonts/font = ExtResource("14_bell")
+theme_override_font_sizes/font_size = 13
+text = "Marines:"
+
+[node name="MarineLabel" type="Label" parent="Host/Panel/Stack/Card/Overlay/Play" unique_id=1642467386]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.46
+anchor_top = 0.76
+anchor_right = 0.9
+anchor_bottom = 0.815
+theme_override_colors/font_color = Color(0.14, 0.09, 0.04, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.55)
+theme_override_constants/shadow_offset_x = 1
+theme_override_constants/shadow_offset_y = 1
+theme_override_fonts/font = ExtResource("15_candara")
+theme_override_font_sizes/font_size = 13
+horizontal_alignment = 2
+
+[node name="WeaponRow" type="HBoxContainer" parent="Host/Panel/Stack/Card/Overlay/Play" unique_id=846186647]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.08
+anchor_top = 0.83
+anchor_right = 0.92
+anchor_bottom = 0.97
+theme_override_constants/separation = 8
+alignment = 1
+
+[node name="WeaponStack" type="Control" parent="Host/Panel/Stack/Card/Overlay/Play/WeaponRow" unique_id=269404510]
+custom_minimum_size = Vector2(44, 44)
+layout_mode = 2
+
+[node name="WeaponBtn" type="TextureButton" parent="Host/Panel/Stack/Card/Overlay/Play/WeaponRow/WeaponStack" unique_id=198697861]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture_normal = ExtResource("9_ballista")
+ignore_texture_size = true
+stretch_mode = 5
+
+[node name="WeaponCd" type="Label" parent="Host/Panel/Stack/Card/Overlay/Play/WeaponRow/WeaponStack" unique_id=1630123314]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_fonts/font = ExtResource("13_caligo")
+theme_override_font_sizes/font_size = 18
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Slower" type="TextureButton" parent="Host/Panel/Stack/Card/Overlay/Play/WeaponRow" unique_id=1376762247]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+texture_normal = ExtResource("10_spd_dn")
+ignore_texture_size = true
+stretch_mode = 5
+
+[node name="SpeedLabel" type="Label" parent="Host/Panel/Stack/Card/Overlay/Play/WeaponRow" unique_id=1421726785]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(28, 40)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.14, 0.09, 0.04, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.55)
+theme_override_constants/shadow_offset_x = 1
+theme_override_constants/shadow_offset_y = 1
+theme_override_fonts/font = ExtResource("14_bell")
+theme_override_font_sizes/font_size = 22
+text = "0"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Faster" type="TextureButton" parent="Host/Panel/Stack/Card/Overlay/Play/WeaponRow" unique_id=743399028]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+texture_normal = ExtResource("11_spd_up")
+ignore_texture_size = true
+stretch_mode = 5
+
+[node name="ArcherBtn" type="TextureButton" parent="Host/Panel/Stack/Card/Overlay/Play/WeaponRow" unique_id=844236687]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+texture_normal = ExtResource("12_archer")
+ignore_texture_size = true
+stretch_mode = 5
+
+[node name="Details" type="VBoxContainer" parent="Host/Panel/Stack" unique_id=860884932]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="StatusRow" type="HBoxContainer" parent="Host/Panel/Stack/Details" unique_id=416750]
+layout_mode = 2
+
+[node name="CommanderLabel" type="Label" parent="Host/Panel/Stack/Details/StatusRow" unique_id=236615499]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 11
+
+[node name="DeckLabel" type="Label" parent="Host/Panel/Stack/Details/StatusRow" unique_id=346899112]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 11
+
+[node name="Jobs" type="GridContainer" parent="Host/Panel/Stack/Details" unique_id=1549574653]
+layout_mode = 2
+theme_override_constants/h_separation = 12
+theme_override_constants/v_separation = 2
+columns = 2
+
+[node name="SteerRow" type="HBoxContainer" parent="Host/Panel/Stack/Details/Jobs" unique_id=1660132582]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="SteerLabel" type="Label" parent="Host/Panel/Stack/Details/Jobs/SteerRow" unique_id=1039215771]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 11
+
+[node name="SteerMinus" type="Button" parent="Host/Panel/Stack/Details/Jobs/SteerRow" unique_id=1036801503]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "-"
+
+[node name="SteerPlus" type="Button" parent="Host/Panel/Stack/Details/Jobs/SteerRow" unique_id=633806041]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "+"
+
+[node name="MastCrewRow" type="HBoxContainer" parent="Host/Panel/Stack/Details/Jobs" unique_id=504977782]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="MastCrewLabel" type="Label" parent="Host/Panel/Stack/Details/Jobs/MastCrewRow" unique_id=609402925]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 11
+
+[node name="MastCrewMinus" type="Button" parent="Host/Panel/Stack/Details/Jobs/MastCrewRow" unique_id=743242830]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "-"
+
+[node name="MastCrewPlus" type="Button" parent="Host/Panel/Stack/Details/Jobs/MastCrewRow" unique_id=1792142483]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "+"
+
+[node name="RowerRow" type="HBoxContainer" parent="Host/Panel/Stack/Details/Jobs" unique_id=929294993]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="RowerLabel" type="Label" parent="Host/Panel/Stack/Details/Jobs/RowerRow" unique_id=1031252481]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 11
+
+[node name="RowerMinus" type="Button" parent="Host/Panel/Stack/Details/Jobs/RowerRow" unique_id=650898908]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "-"
+
+[node name="RowerPlus" type="Button" parent="Host/Panel/Stack/Details/Jobs/RowerRow" unique_id=1759534283]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "+"
+
+[node name="HpCheatRow" type="HBoxContainer" parent="Host/Panel/Stack/Details" unique_id=1508678135]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="HpName" type="Label" parent="Host/Panel/Stack/Details/HpCheatRow" unique_id=1492455620]
+layout_mode = 2
+theme_override_font_sizes/font_size = 11
+text = "HP"
+
+[node name="HpMinus" type="Button" parent="Host/Panel/Stack/Details/HpCheatRow" unique_id=2091974188]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "-"
+
+[node name="HpPlus" type="Button" parent="Host/Panel/Stack/Details/HpCheatRow" unique_id=979072104]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "+"
+
+[node name="EngCheatRow" type="HBoxContainer" parent="Host/Panel/Stack/Details" unique_id=238890200]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="EngName" type="Label" parent="Host/Panel/Stack/Details/EngCheatRow" unique_id=142892723]
+layout_mode = 2
+text = "Eng"
+
+[node name="EngMinus" type="Button" parent="Host/Panel/Stack/Details/EngCheatRow" unique_id=2083906575]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "-"
+
+[node name="EngPlus" type="Button" parent="Host/Panel/Stack/Details/EngCheatRow" unique_id=1422095854]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "+"
+
+[node name="MarineCheatRow" type="HBoxContainer" parent="Host/Panel/Stack/Details" unique_id=1946493994]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="SName" type="Label" parent="Host/Panel/Stack/Details/MarineCheatRow" unique_id=1715036190]
+layout_mode = 2
+text = "S"
+
+[node name="SoldMinus" type="Button" parent="Host/Panel/Stack/Details/MarineCheatRow" unique_id=24107711]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "-"
+
+[node name="SoldPlus" type="Button" parent="Host/Panel/Stack/Details/MarineCheatRow" unique_id=271645544]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "+"
+
+[node name="JName" type="Label" parent="Host/Panel/Stack/Details/MarineCheatRow" unique_id=886284710]
+layout_mode = 2
+text = "J"
+
+[node name="JavMinus" type="Button" parent="Host/Panel/Stack/Details/MarineCheatRow" unique_id=1122108674]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "-"
+
+[node name="JavPlus" type="Button" parent="Host/Panel/Stack/Details/MarineCheatRow" unique_id=724880744]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "+"
+
+[node name="AName" type="Label" parent="Host/Panel/Stack/Details/MarineCheatRow" unique_id=406688205]
+layout_mode = 2
+text = "A"
+
+[node name="ArchMinus" type="Button" parent="Host/Panel/Stack/Details/MarineCheatRow" unique_id=319482736]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "-"
+
+[node name="ArchPlus" type="Button" parent="Host/Panel/Stack/Details/MarineCheatRow" unique_id=1011269204]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "+"
