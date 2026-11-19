@@ -294,23 +294,24 @@ func chooseWinner():
 		else:
 			#Get how many flotation points each player has
 			for player in mostShipsArray:
+				player._totalFlotationHits = 0
 				for ship in player._ships:
-					player.mostFlotatersArray += ship._flotationHits
+					player._totalFlotationHits += ship._flotationHits
 			
 			#Get list of Players with the most flotation hits
 			maxValue = null
 			for player in mostShipsArray:
-				if maxValue == null or player.mostFlotatersArray > maxValue:
-					maxValue = player.mostFlotatersArray
-			var mostFlotatersArray = []
+				if maxValue == null or player._totalFlotationHits > maxValue:
+					maxValue = player._totalFlotationHits
+			var mostFloatersArray = []
 			for player in players:
-				if player._totalFighters == maxValue:
-					mostFlotatersArray.append(player)
+				if player._totalFlotationHits == maxValue:
+					mostFloatersArray.append(player)
 			
 			#Determine if it is a win or draw
-			if mostFlotatersArray.size() == 1:
+			if mostFloatersArray.size() == 1:
 				#Print win
-				_Log.push("%s Wins the Game!" % mostFlotatersArray[0]._name)
+				_Log.push("%s Wins the Game!" % mostFloatersArray[0]._name)
 			
 			else:
 				#Print draw
