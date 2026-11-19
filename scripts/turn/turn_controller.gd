@@ -151,6 +151,7 @@ func complete_execution_phase() -> bool:
 	execution_step = 0
 	action_step = ActionStep.NONE
 	turn_number += 1
+	if turn_number > Global.turnCap : end_match()
 	_enter(Phase.COMMAND)
 	_apply_action_to_game()
 	return true
