@@ -36,6 +36,7 @@ var _ballistaTargetRange: int
 var _catapultTargetRange: int
 ## 0 = archers, 1 = this ship's one siege weapon.
 var _lrfMode: int = 0
+var aiTarget : Ship
 
 #region Masts and Moving
 ## Index into HEX_DIR and the map's neighbor list. 0 is the first neighbor direction.

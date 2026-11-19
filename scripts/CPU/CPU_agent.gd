@@ -43,7 +43,6 @@ func target_ship_LRF(owned_ship):
 	if not targetable_ships.is_empty():
 		var target = targetable_ships.pick_random()
 		owned_ship.set_enemy_target(target.occupier[0])
-		print(target)
 		
 func get_target(owned_ship):
 	var targetable_ships = []
