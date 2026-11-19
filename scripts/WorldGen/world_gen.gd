@@ -39,6 +39,7 @@ var myPlayer = preload("res://scenes/temp_player.tscn")
 
 ## Starting point: Generate a random seed, create the tiles, place POI's
 func _ready() -> void:
+	print(Global.difficulty)
 	init_seed()
 	generate_world()
 	
@@ -47,7 +48,7 @@ func _ready() -> void:
 	var team_tiles: Array = []
 	var tri_count := 0
 	var quad_count := 0
-	for i in SPAWN_PLAYERS.size():
+	for i in Global.totalPlayers:
 		var info: Dictionary = SPAWN_PLAYERS[i]
 		
 		var isCPU = false
