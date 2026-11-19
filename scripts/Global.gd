@@ -6,6 +6,9 @@ var _action = 0
 var _subAction = 0
 var threads: Array[Thread] = []
 var humanPlayers : int = 2
+var totalPlayers : int = 4
+var turnCap : int = 999
+var difficulty : int = 1
 
 ## Currently setup for prototype_unit rotation (block part as head)
 var _hexUp: int = 270
