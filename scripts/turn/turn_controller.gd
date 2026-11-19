@@ -108,7 +108,6 @@ func lock_command() -> bool:
 	execution_step = 1
 	action_step = ActionStep.MOVE
 	boarding_before_fire = false
-	get_AI_moves()
 	_clear_move_stops()
 	_enter(Phase.EXECUTION)
 	_apply_action_to_game()
@@ -196,6 +195,7 @@ func get_phase_label() -> String:
 ## During Execution the usual order is Move, Long Range Fire, Boarding.
 ## A move into an occupied hex opens Boarding first, then Long Range Fire.
 func advance() -> bool:
+	get_AI_moves()
 	if phase == Phase.SETUP or phase == Phase.GAME_OVER:
 		return begin_match()
 	if phase == Phase.COMMAND:
@@ -269,8 +269,9 @@ func get_AI_moves() -> void:
 		if player.isCPU():
 			for child in player.get_children():
 				if child.has_method("choose_action"):
-					child.choose_action()
-
+					child.choose_action(phase, action_step)
+					
+					
 func _finish_execution_phase() -> bool:
 	var finished_phase_six := execution_step >= EXECUTION_PHASE_COUNT
 	if not complete_execution_phase():
