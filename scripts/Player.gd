@@ -10,7 +10,7 @@ var _isSpectator: bool;
 
 # for AI
 var _isCPU: bool;
-#@export var cpu: PackedScene;
+var _profile: String;
 var cpu = load("res://scenes/scn_cpu.tscn");
 
 var _shipClicked: bool;					#Know when Player has a ship selected for an action
