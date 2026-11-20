@@ -96,7 +96,10 @@ func unstranded():
 ## Quadrireme speed changes are +1 or -1.
 func get_ship_kind() -> SpeedCalculator.ShipKind:
 	return SpeedCalculator.ShipKind.QUADRIREME
+	
 
+func set_enemy_target(target):
+	_enemyTarget = target
 
 ## Changes rowing speed when the change is legal for this ship.
 ## A Quadrireme may change by +1 or -1. A Trireme may change by +1 or -2.
