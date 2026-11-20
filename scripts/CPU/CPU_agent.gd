@@ -25,7 +25,6 @@ func choose_action(phase, action_step):
 	if phase == 1:
 		for ship in owned_ships:
 			get_target(ship)
-			print(target_ship_ram(ship))
 			
 	if action_step == 2:
 		for ship in owned_ships:
