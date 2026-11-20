@@ -3,12 +3,12 @@ extends Unit
 class_name Ship;
 
 const HEX_DIR = [
-	"up",			# ~0 deg
-	"right_up",		# ~60deg
-	"right_down",	# ~120 deg
-	"down",			# ~180 deg
-	"left_down",	# ~240 deg
-	"left_up"		# ~300 deg
+	"up", # ~0 deg
+	"right_up", # ~60deg
+	"right_down", # ~120 deg
+	"down", # ~180 deg
+	"left_down", # ~240 deg
+	"left_up" # ~300 deg
 ];
 
 var _deckCrew: Array[Character.DeckCrew];
@@ -60,11 +60,11 @@ var _mastTimer: int = 0
 var _beakHP: int;
 var _beakHPMax: int
 var _holes: int
-var _ramAction: int = 0					#1 if ram, 2 is avoid
+var _ramAction: int = 0 # 1 if ram, 2 is avoid
 #endregion
 
 #region Boarding
-var _boardingCounter: int = 0			#Used to determine if inn first ever boarding action for ths ship
+var _boardingCounter: int = 0 # Used to determine if inn first ever boarding action for ths ship
 var _inBoarding: bool = false
 var _boardingPrepped: bool = false
 var _boardingTarget: Ship;
@@ -240,7 +240,7 @@ func can_turn_to(next_facing: int) -> bool:
 	return away <= crew
 
 
-func place_unit(new_position : Vector3, tile):
+func place_unit(new_position: Vector3, tile):
 	var start := global_position
 	var first_drop := occupied_tile == null
 	super.place_unit(new_position, tile)
@@ -318,13 +318,13 @@ class OarBank:
 		return _activeRowers;
 	
 	func pushRower(rower: Character.Rower):
-		assert(_activeRowers.size() < _maxRowers, 
+		assert(_activeRowers.size() < _maxRowers,
 		"Oar Bank already has enough rowers allocated! Check code!")
 		
 		_activeRowers.push_back(rower);
 	
 	func popRower(index: int) -> Character.Rower:
-		assert(index >= _activeRowers.size(),
+		assert(index < _activeRowers.size(),
 		"No Rower exists at index %d. Check code!" % index);
 		
 		return _activeRowers.pop_at(index);
@@ -544,7 +544,6 @@ func cleanup():
 class Trireme extends Ship:
 	func get_ship_kind() -> SpeedCalculator.ShipKind:
 		return SpeedCalculator.ShipKind.TRIREME
-	
 	
 	
 	func _setup(owner: Player, numOfDeckCrew: int = 10, numOfReserveRowers: int = 50,

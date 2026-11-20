@@ -115,3 +115,4 @@ p_finder = NodePath("../Pathfinder")
 
 [node name="Node" type="Node" parent="." unique_id=19549037]
 script = ExtResource("15_qitmq")
+runTests = null
