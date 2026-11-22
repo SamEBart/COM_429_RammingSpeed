@@ -224,6 +224,9 @@ func repairHole(target: Ship):
 	elif roll < target._engineers.size():
 		target._holes -= 1
 		flotationDamage(target, 1)
+	
+	#Play Sound
+	AudioController.play_sfx("boat_repair", -15)
 
 func rammingResults(rammer: Ship, avoider: Ship):
 	if rammer._speed <= randi_range(2, 12):
@@ -335,7 +338,6 @@ func rammingIsland(rammer: Ship, phase: int):
 	rammer._holes += 1		#Might need to change to both ships depending on roll
 	
 	#Flotation Damage
-#	print("(FD) Ship: ", rammer.name, " | ", ceil(rammer._speed * 0.25), " | ", rammer._flotationHits)
 	var amount = ceil(rammer._speed * 0.25)
 	flotationDamage(rammer, amount)
 	
@@ -349,6 +351,9 @@ func rammingIsland(rammer: Ship, phase: int):
 	rammer._stranded = true
 	rammer._stranded_phase = phase
 	rammer._inCollision = true
+	
+	#Play Beaching Sound
+	AudioController.play_sfx("beached_boat", -10)
 	
 	#Kill ship if it hits a rock
 	if rammer._tile.biome == "Rock" or rammer._tile.biome == "Big Rock":

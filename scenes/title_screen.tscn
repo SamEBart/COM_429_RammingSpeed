@@ -1,14 +1,15 @@
 [gd_scene format=3 uid="uid://chkcsfg3npqrm"]
 
 [ext_resource type="Script" uid="uid://nw8gc621w0dl" path="res://scripts/Title/title_screen.gd" id="1_s4lrb"]
-[ext_resource type="Texture2D" uid="uid://bghtwe846sph3" path="res://assets/TitleScreen/Ramming Speed - Main Menu (2).jpg" id="2_s4lrb"]
+[ext_resource type="Texture2D" uid="uid://bcv81jsdy41eu" path="res://assets/TitleScreen/Ramming Speed - Main Menu v3.jpg" id="2_3yumr"]
 [ext_resource type="FontFile" uid="uid://domonsy8xpxno" path="res://assets/TitleScreen/BELL MT Bold.TTF" id="3_s4lrb"]
 [ext_resource type="Script" uid="uid://cjdscmekypemk" path="res://scripts/Title/volume_slider.gd" id="4_mgrm8"]
 [ext_resource type="Script" uid="uid://c18kavyj2eg5f" path="res://scripts/Title/full_screen.gd" id="6_e54dn"]
+[ext_resource type="Texture2D" uid="uid://cdgf2k1y3w8mq" path="res://assets/2D/Ramming Speed_Logo_Textured.png" id="7_cs5ya"]
 [ext_resource type="Script" uid="uid://cqdv86bxxcpi0" path="res://scripts/Title/turn_limit.gd" id="8_cs5ya"]
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_g4v7s"]
-texture = ExtResource("2_s4lrb")
+texture = ExtResource("2_3yumr")
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_odsoh"]
 bg_color = Color(0, 0, 0, 1)
@@ -41,38 +42,51 @@ grow_horizontal = 2
 grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxTexture_g4v7s")
 
+[node name="RammingSpeedLogoTextured" type="Sprite2D" parent="Panel" unique_id=862363184]
+position = Vector2(182, 178)
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("7_cs5ya")
+
 [node name="SOQ" type="VBoxContainer" parent="." unique_id=207034377]
 layout_mode = 1
 anchors_preset = 4
 anchor_top = 0.5
 anchor_bottom = 0.5
-offset_left = 85.0
-offset_top = -197.0
-offset_right = 374.0
-offset_bottom = -6.0
+offset_top = -4.0
+offset_right = 289.0
+offset_bottom = 187.0
 grow_vertical = 2
 theme_override_constants/separation = 10
 
 [node name="Start" type="Button" parent="SOQ" unique_id=143135203]
 layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
 theme_override_fonts/font = ExtResource("3_s4lrb")
-theme_override_font_sizes/font_size = 50
+theme_override_font_sizes/font_size = 56
 theme_override_styles/normal = SubResource("StyleBoxFlat_odsoh")
 text = "Start"
+flat = true
+alignment = 2
 
 [node name="Options" type="Button" parent="SOQ" unique_id=537854581]
 layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
 theme_override_fonts/font = ExtResource("3_s4lrb")
-theme_override_font_sizes/font_size = 50
+theme_override_font_sizes/font_size = 56
 theme_override_styles/normal = SubResource("StyleBoxFlat_odsoh")
 text = "Options"
+flat = true
+alignment = 2
 
 [node name="Quit" type="Button" parent="SOQ" unique_id=1242198688]
 layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
 theme_override_fonts/font = ExtResource("3_s4lrb")
-theme_override_font_sizes/font_size = 50
+theme_override_font_sizes/font_size = 56
 theme_override_styles/normal = SubResource("StyleBoxFlat_odsoh")
 text = "Quit"
+flat = true
+alignment = 2
 
 [node name="Options" type="Panel" parent="." unique_id=895769163]
 layout_mode = 1

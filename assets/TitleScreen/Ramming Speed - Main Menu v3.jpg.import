@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bghtwe846sph3"
-path="res://.godot/imported/Ramming Speed - Main Menu (2).jpg-8aa93536209d1effa557c2929cf77876.ctex"
+uid="uid://bcv81jsdy41eu"
+path="res://.godot/imported/Ramming Speed - Main Menu v3.jpg-44865d5f86f2133c7e9009ea50879026.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/TitleScreen/Ramming Speed - Main Menu (2).jpg"
-dest_files=["res://.godot/imported/Ramming Speed - Main Menu (2).jpg-8aa93536209d1effa557c2929cf77876.ctex"]
+source_file="res://assets/TitleScreen/Ramming Speed - Main Menu v3.jpg"
+dest_files=["res://.godot/imported/Ramming Speed - Main Menu v3.jpg-44865d5f86f2133c7e9009ea50879026.ctex"]
 
 [params]
 

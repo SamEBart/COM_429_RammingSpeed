@@ -327,5 +327,5 @@ func _enter(next: Phase) -> void:
 		for node in get_tree().get_nodes_in_group("ships"):
 			if node is Ship:
 				node.begin_command()
-	_Log.push("TurnController: %s" % get_phase_label())
+	_Log.push("\nTurnController: %s\n" % get_phase_label())
 	phase_changed.emit(phase, execution_step, turn_number)

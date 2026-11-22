@@ -1,0 +1,19 @@
+[remap]
+
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://0mkvm0bpjrpw"
+path="res://.godot/imported/Beached Boat.ogg-c81a4e582c5483a7920fa037dee7299f.oggvorbisstr"
+
+[deps]
+
+source_file="res://assets/Audio/Beached Boat.ogg"
+dest_files=["res://.godot/imported/Beached Boat.ogg-c81a4e582c5483a7920fa037dee7299f.oggvorbisstr"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

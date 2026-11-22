@@ -5,6 +5,8 @@ extends Node
 var sound_library: Dictionary = {
 	"combat_music":		preload("res://assets/Audio/CombatMusic.ogg"),
 	"main_menu_music":	preload("res://assets/Audio/ram speedd music.ogg"),
+	"beached_boat":	preload("res://assets/Audio/Beached Boat.ogg"),
+	"boat_repair":	preload("res://assets/Audio/BoatRep.ogg"),
 #	"___":	preload("res://assets/Audio/___"),
 }
 
