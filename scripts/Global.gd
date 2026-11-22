@@ -20,130 +20,6 @@ var _hexUpLeft: int = 330
 ## TEMPORARAY until we figure out multiplayer
 var _lastShipClicked = null
 
-func _input(event: InputEvent) -> void:
-	# Temporary to designate current main action
-	if Input.is_action_just_pressed("ShiftEnter"):
-		_action += 1
-		match _action:
-			0:
-				#See if there is only one Player left
-				Global.determineWinner(1)
-				action_reset()
-				_Log.push("Now on Move Ships %d" % _action)
-			1:
-				#See if there is only one Player left
-				Global.determineWinner(1)
-				action_reset()
-				_Log.push("Now on Long Range Firing %d" % _action)
-			2:
-				#See if there is only one Player left
-				Global.determineWinner(1)
-				action_reset()
-				_Log.push("Now on Boarding Actions %d" % _action)
-			3:
-				#See if there is only one Player left
-				Global.determineWinner(1)
-				action_reset()
-				_Log.push("Reset %d" % _action)
-				_action = -1
-				return
-	
-	# Temporary to go to next sub action
-	elif Input.is_action_just_pressed("NextSubAction"):
-		#See if there is only one Player left
-		Global.determineWinner(1)
-		get_tree().call_group("ships", "ship_reset")
-		_subAction += 1
-		_Log.push("New Sub Action: %d on Global: %d" % [_subAction, _action])
-	
-	# Temporary to  induce action truns/events manually
-	elif Input.is_action_just_pressed("CtrlEnter"):
-		#If Archery
-		if Global._action == 1 and Global._subAction == 0:
-			LRF.resolve_long_range_fire()
-		
-		#If Ballista
-		if Global._action == 1 and Global._subAction == 1:
-			var ships: Array[Node] = get_tree().get_nodes_in_group("ships")
-			for ship in ships:
-				if ship._ballista and !ship.getBallista().isBroken() and !ship._inBoarding:
-					LRF.determineBallistaAction(ship)
-			#Reset Ship
-			for ship in ships:
-				ship._enemyTarget = null
-				ship._owner._shipClicked = false
-				if ship._dead.size() > 0:
-					purgeTheDead(ship)
-		
-		#If Catapult
-		elif Global._action == 1 and Global._subAction == 2:
-			var ships: Array[Node] = get_tree().get_nodes_in_group("ships")
-			for ship in ships:
-				if ship._catapult and !ship.getCatapult().isBroken() and !ship._inBoarding:
-					LRF.determineCatapultAction(ship)
-			#Reset Ship
-			for ship in ships:
-				ship._enemyTarget = null
-				ship._owner._shipClicked = false
-				if ship._dead.size() > 0:
-					purgeTheDead(ship)
-		
-		#Boarding Action Fighting Determinating
-		elif Global._action == 2 and Global._subAction == 0:
-			resolve_boarding()
-		
-		#Boarding Action Archery
-		elif Global._action == 2 and Global._subAction == 1:
-			var ships: Array[Node] = get_tree().get_nodes_in_group("ships")
-			#Do the Archery if there is a target and available archers
-			for ship in ships:
-				if ship._boardingTarget and ship._boardingArchers.size() > 0 and ship._boardingPrepped == false:
-					BoardingActions.doBoardingArchery(ship)
-			for ship in ships:
-				ship._boardingPrepped = false
-				if ship._dead.size() > 0:
-					purgeTheDead(ship)
-		
-		#Boarding Action Javelins
-		elif Global._action == 2 and Global._subAction == 2:
-			var ships: Array[Node] = get_tree().get_nodes_in_group("ships")
-			#Do the Javelines if there is a target and available archers
-			for ship in ships:
-				if ship._boardingTarget and ship._boardingJavelins.size() > 0 and ship._boardingPrepped == false:
-					BoardingActions.doBoardingJaveline(ship)
-			for ship in ships:
-				ship._boardingPrepped = false
-				if ship._dead.size() > 0:
-					purgeTheDead(ship)
-		
-		#Boarding Action Melee/Victory
-		elif Global._action == 2 and Global._subAction == 3:
-			var ships: Array[Node] = get_tree().get_nodes_in_group("ships")
-			#Determine which ships are boarding eachother
-			for ship in ships:
-				if ship._boardingTarget:
-					BoardingActions.preBoardingMelee(ship)
-			#Reset Ships
-			for ship in ships:
-				ship._boardingPrepped = false
-				if ship._dead.size() > 0:
-					purgeTheDead(ship)
-			#Remove Dead Ships that has no Aux or Soldiers
-			for j in range(ships.size() - 1, -1, -1):
-				if ships[j]._fighters.size() == 0 or ships[j]._flotationHits == 0:
-					baRemoveShip(ships[j])
-		
-		#Boarding Withdrawing
-		elif Global._action == 2 and Global._subAction == 4:
-			var ships: Array[Node] = get_tree().get_nodes_in_group("ships")
-			for ship in ships:
-				if ship._boardingTarget != null:
-					BoardingActions.boardingWithdrawing(ship)
-			#Remove Dead Ships that has no Aux or Soldiers
-			for j in range(ships.size() - 1, -1, -1):
-				if ships[j]._fighters.size() == 0 or ships[j]._flotationHits == 0:
-					baRemoveShip(ships[j])
-
 
 func compare_ship_initiatives(a: Ship, b: Ship):
 	#Highest Speed (Highest Wins)
@@ -177,14 +53,36 @@ func addToDead(ship, deadGuys):
 	ship._dead.append(guy)
 
 func purgeTheDead(ship):
-	_Log.push("%s's Dead: %d" % [ship.name, ship._dead.size()])
-	_Log.push("Before: %s has A: %d, J: %d, S: %d, E: %d, D: %d" % [ship.name, ship._marineArchers.size(), ship._marineJavelineers.size(), ship._marineSoldiers.size(), ship._engineers.size(), ship._deckCrew.size()])
 	for i in ship._dead.size():
+		#Get a count for each type of character killed for informaton purposes
+		var archers = 0; var javs = 0; var soldiers = 0; var engs = 0; var deck = 0
+		if ship._dead[i] is Character.Marine.Archer:
+			archers += 1
+		if ship._dead[i] is Character.Marine.Javelineer:
+			javs += 1
+		if ship._dead[i] is Character.Marine.Soldier:
+			soldiers += 1
+		if ship._dead[i] is Character.Engineer:
+			engs += 1
+		if ship._dead[i] is Character.DeckCrew:
+			deck += 1
+		
+		#Print the death results
+		var line := ""
+		if archers > 0: line += str(archers) + " Archers, "
+		if javs > 0: line += str(javs) + " Javelineers, "
+		if soldiers > 0: line += str(soldiers) + " Soldiers, "
+		if engs > 0: line += str(engs) + " Engineers, "
+		if deck > 0: line += str(deck) + " Deck Crew "
+		if line != "":
+			_Log.push("%s %s lost: %s" % [ship._owner._name, ship.name, line])
+		
+		#Remove Characters
 		ship.kill(ship._dead[i])
 		if ship._fighters.has(ship._dead[i]):
 			ship._fighters.erase(ship._dead[i])
 	ship._dead.clear()
-	_Log.push("After: %s has A: %d, J: %d, S: %d, E: %d, D: %d" % [ship.name, ship._marineArchers.size(), ship._marineJavelineers.size(), ship._marineSoldiers.size(), ship._engineers.size(), ship._deckCrew.size()])
+
 
 func isShipDead(ship: Ship):
 	if ship._fighters.size() == 0 or ship._flotationHits == 0:
@@ -215,6 +113,7 @@ func baRemoveShip(ship):
 	for boat in ship._owner._ships:
 		if boat == ship:
 			ship._owner._ships.erase(boat)
+			_Log.push("%ss %s has been captured or sunk and removed from the game!" % [ship._owner._name, boat.name])
 			break
 	
 	#Remove Ship from Ships list
@@ -227,6 +126,7 @@ func baRemoveShip(ship):
 	var players: Array[Node] = get_tree().get_nodes_in_group("players")
 	for j in range(players.size() - 1, -1, -1):
 		if players[j]._ships.size() == 0:
+			_Log.push("%s has 0 ships left and has been removed from the game!" % [players[j]._name])
 			players[j].remove_from_group("players")
 	
 	#See if there is only one Player left

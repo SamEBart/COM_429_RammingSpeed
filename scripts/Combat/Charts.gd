@@ -1,5 +1,7 @@
 extends Node
 
+const _Log = preload("res://scripts/turn/game_log.gd")
+
 func singleCrewCasualty(target: Ship):
 	match randi_range(2, 12):
 		#Engineer Killed
@@ -351,6 +353,7 @@ func rammingIsland(rammer: Ship, phase: int):
 	#Kill ship if it hits a rock
 	if rammer._tile.biome == "Rock" or rammer._tile.biome == "Big Rock":
 		rammer._flotationHits = 0
+		_Log.push("%s hit a rock and sank" % [rammer.name])
 
 
 

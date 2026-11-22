@@ -289,9 +289,11 @@ func _resolve_current_action() -> bool:
 		return PhaseMovement.apply(get_tree(), execution_step)
 	if action_step == ActionStep.LONG_RANGE_FIRE:
 		LRF.resolve_long_range_fire()
+		Global.determineWinner(1)
 	elif action_step == ActionStep.BOARDING and not boarding_before_fire:
 		#Entirety of the Boarding Action turn in one function
 		BoardingActions.doBoaridingTurn()
+		Global.determineWinner(1)
 	return false
 
 

@@ -1,6 +1,7 @@
 extends Node
 
 var neighbor_positions = WorldMap.HEXAGONAL_NEIGHBOR_DIRECTIONS
+const _Log = preload("res://scripts/turn/game_log.gd")
 
 func doBoaridingTurn():
 	#A new set of ships is called everytime incase a ship has been killed in each action
@@ -289,6 +290,8 @@ func boardingWithdrawing(ship):
 			ship._inCollision = false
 			ship._boardingCounter = 0
 			ship._boardingPrepped = false
+			
+			_Log.push("%s withdrewl" % [ship.name])
 #endregion
 
 func ship_area_entered(self_ship: Ship, target: Ship):
